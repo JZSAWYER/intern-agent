@@ -1,5 +1,20 @@
 # Feature and fix record
 
+## 0.2.1 — Structured questions and semantic goal retries
+
+Imports maintained commit ea1ca9e9b651f5fb0a31f15ea4e3218723e74764. Redaction
+cleans question text fields without damaging card JSON or live answer controls.
+Secret question hints direct users to secure local input. Diagnostic test cards
+do not block genuine goal work. Repeated semantic selection preserves the
+original owner boundary while synthetic continuations remain ineligible.
+The prior product decision-serialization repair is now included upstream; keep
+its placeholder, known-secret and Git-persistence regression coverage.
+
+The MIT source, stable VSIX and complete skills get a fresh immutable version.
+The repository and uploads remain private under the owner's visibility hold.
+Offline, isolated installation and remote-byte verification are recorded
+separately from real-account or production acceptance.
+
 ## 0.2.0 — Goals, questions and private release synchronization
 
 Imports maintained commit 56edf2640439c25d088ee844063f41faf6a99f70: durable

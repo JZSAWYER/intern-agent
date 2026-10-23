@@ -1,15 +1,15 @@
 # Intern Agent product release handoff
 
-Current release channel: **private**, version **0.2.0**, maintained source
-`56edf2640439c25d088ee844063f41faf6a99f70`. The owner's private-visibility hold
+Current release channel: **private**, version **0.2.1**, maintained source
+`ea1ca9e9b651f5fb0a31f15ea4e3218723e74764`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
 automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
 
 The owner authorized synchronizing the clean, separate Intern Agent product at
 `JZSAWYER/intern-agent`, under MIT, from verified maintained-source commit
-`56edf2640439c25d088ee844063f41faf6a99f70`. The current version is 0.2.0, provided that version is unused. Version 0.1.0
-is retained; this update remains private under the owner hold. The existing private tracking repository, its
+`ea1ca9e9b651f5fb0a31f15ea4e3218723e74764`. The current version is 0.2.1, provided that version is unused. Versions 0.1.0 and 0.2.0
+are retained; this update remains private under the owner hold. The existing private tracking repository, its
 branches, operational records and Git history remain private.
 
 This document defines the reviewed release handoff. Offline and isolated install
@@ -18,7 +18,7 @@ release URL and uploaded asset hashes belong in the completed release receipt.
 
 ## Product contents
 
-The public frontend identity is `intern-agent.intern-agent`, version 0.2.0, with
+The public frontend identity is `intern-agent.intern-agent`, version 0.2.1, with
 39 commands in the `internAgentPublic` namespace. The maintained development
 extension's 0.8.0 preview identity is separate. Public settings, views and context
 values use the public namespace; packaging records generated frontend metadata

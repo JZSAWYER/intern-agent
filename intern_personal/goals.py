@@ -128,7 +128,8 @@ def owner_turn(state,session):
     if not r or r['sender']!=state.identity()['owner']:raise Invalid('Semantic goal selection requires the current owner request')
     for table in ['goal_runs','research_event_scope','release_jobs']:
         column='event_seq' if table=='release_jobs' else 'seq'
-        if state.db.execute('SELECT 1 FROM '+table+' WHERE '+column+'=?',(r['seq'],)).fetchone():raise Invalid('A continuation cannot authorize another goal')
+        synthetic=' AND predecessor>=0' if table=='goal_runs' else ''
+        if state.db.execute('SELECT 1 FROM '+table+' WHERE '+column+'=?'+synthetic,(r['seq'],)).fetchone():raise Invalid('A continuation cannot authorize another goal')
     from .peer_mail import binding
     if binding(state,r['seq'])[1]:raise Invalid('Peer messages cannot authorize goals')
     if state.db.execute('SELECT 1 FROM recovery_runs WHERE seq=?',(r['seq'],)).fetchone():raise Invalid('Recovery cannot authorize goals')

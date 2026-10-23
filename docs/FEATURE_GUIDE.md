@@ -1,10 +1,11 @@
 # Intern Agent feature tutorial
 
-## Installable product 0.2.0
+## Installable product 0.2.1
 
-This update includes durable goal continuation and owner question forms. Decision
-history redacts individual text fields before serialization, preserving valid
-JSON and excluding secret answers from published decision records.
+This update preserves structured question cards and live answer controls during
+text redaction. Secret prompts use secure local input; diagnostic cards do not
+hold real goal work. Semantic retries preserve the original owner boundary.
+Decision history remains valid JSON with secret values redacted.
 
 The product repository and releases stay private until the owner explicitly asks
 for public visibility. Install the versioned product VSIX with its matching isolated runtime and verify
@@ -24,7 +25,8 @@ are part of the same tutorial; they contain setup, command syntax and recovery
 details. Use [the change record](CHANGELOG.md) to see what changed, and
 [the development workflow](DEVELOPMENT_WORKFLOW.md) when adding or fixing a feature.
 
-This checkout is the development preview. The separate published product uses
+This checkout is the stable product source. The maintained development preview uses
+a separate identity. The published product uses
 a stable extension identity, licensed clean source and versioned VSIX/skills
 artifacts; see [the release workflow](PUBLISHED_RELEASE.md). “Implemented” does
 not imply every account permission, editor installation or live operation has
@@ -137,8 +139,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.0 uses
-maintained source 56edf2640439c25d088ee844063f41faf6a99f70 and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.1 uses
+maintained source ea1ca9e9b651f5fb0a31f15ea4e3218723e74764 and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace

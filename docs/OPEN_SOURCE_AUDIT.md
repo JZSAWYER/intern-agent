@@ -1,7 +1,7 @@
 # Source and release readiness audit
 
-Current release channel: **private**, version **0.2.0**, maintained source
-`56edf2640439c25d088ee844063f41faf6a99f70`. The owner's private-visibility hold
+Current release channel: **private**, version **0.2.1**, maintained source
+`ea1ca9e9b651f5fb0a31f15ea4e3218723e74764`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
 automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
@@ -10,10 +10,11 @@ automation must not change repository visibility. See [distribution](DISTRIBUTIO
 ## Current candidate — 2026-10-24
 
 The candidate imports verified maintained commit
-`56edf2640439c25d088ee844063f41faf6a99f70` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.0
-adds persistent goals, owner question cards/text fallback, exact native question
-routing and two editor commands. The stable namespace has 39 commands.
+`ea1ca9e9b651f5fb0a31f15ea4e3218723e74764` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.1
+repairs structured question redaction and semantic retries, and excludes
+diagnostic question cards from goal waits. Persistent goals and owner questions
+remain included. The stable namespace has 39 commands.
 The repository remains private for owner review; prior public verification was
 performed before the owner's visibility change and is historical evidence.
 

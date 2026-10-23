@@ -67,6 +67,13 @@ class GoalQuestionTests(unittest.TestCase):
         self.assertEqual(self.state.ingest(self.event(s,'Use a different benchmark','owner')),'accepted')
         item=self.state.claim('agent');self.assertEqual(item['text'],'Use a different benchmark')
 
+    def test_semantic_selection_retries_and_owner_pause_keep_the_original_owner_boundary(self):
+        s=self.conversation();self.state.ingest(self.event(s,'Optimize until the benchmark target passes','owner_goal'));item=self.state.claim('agent')
+        first=goals.start(self.state,s,'Verify the benchmark target',auto=True,tracker=self.tracker)
+        repeated=goals.start(self.state,s,'Verify the benchmark target',auto=True,tracker=self.tracker)
+        self.assertEqual(first['id'],repeated['id']);self.assertEqual(goals.owner_turn(self.state,s)['seq'],item['seq'])
+        goals.control(self.state,s,'pause');self.assertEqual(goals.current(self.state,s)['status'],'paused')
+
     def test_goal_pause_stop_and_restart_preserve_history_without_replay(self):
         s=self.conversation();relay=self.relay();goals.start(self.state,s,'Keep checking tests',tracker=self.tracker);goals.poll(relay)
         goals.control(self.state,s,'pause');count=self.state.db.execute('SELECT count(*) FROM events').fetchone()[0]
@@ -163,6 +170,9 @@ class GoalQuestionTests(unittest.TestCase):
         row=goals.start(self.state,s,'Benchmark passes with tests green',auto=True,tracker=self.tracker)
         self.assertEqual(goals.current(self.state,s)['source_seq'],item['seq'])
         self.assertEqual(self.state.db.execute('SELECT goal FROM goal_runs WHERE seq=?',(item['seq'],)).fetchone()[0],row['id'])
+        self.assertEqual(goals.owner_turn(self.state,s)['seq'],item['seq'])
+        relay=self.relay();self.assertEqual(relay.process_item(item,'agent'),'complete');goals.poll(relay)
+        self.assertIsNotNone(self.state.claim('agent'))
         with self.assertRaises(Invalid):goals.owner_turn(self.state,s)
         self.assertEqual(item['text'],'Keep optimizing until the benchmark passes')
 
@@ -274,6 +284,7 @@ class GoalQuestionTests(unittest.TestCase):
         questions.pump(relay)
         saved=self.state.db.execute('SELECT * FROM user_questions WHERE code=?',(row['code'],)).fetchone()
         self.assertEqual(saved['delivery_state'],'text_fallback');self.assertIn('Full evaluation',relay.api.messages[-1][1])
+        self.assertIn('/answer '+row['code']+' YOUR ANSWER',relay.api.messages[-1][1])
         questions.pump(relay);self.assertEqual(len(relay.api.messages),1)
 
     def test_ambiguous_card_and_fallback_failure_are_visible_without_automatic_duplicate(self):
@@ -292,6 +303,7 @@ class GoalQuestionTests(unittest.TestCase):
     def test_secret_fields_are_not_sent_to_a_feishu_input(self):
         s=self.conversation();row=questions.register(self.state,s,dict(threadId=s['thread_id'],turnId='secret-turn',questions=[dict(id='secret',header='Local',question='Supply the credential locally',isSecret=True)]),88)
         self.assertNotIn('form_submit',json.dumps(questions.card(row)))
+        self.assertNotIn('/answer ',json.dumps(questions.card(row)))
         with self.assertRaises(Invalid):questions.answer(self.state,s,row['code'],'a-private-value')
 
     def test_attached_client_question_helper_waits_for_exact_answers_without_terminal_keys(self):
@@ -334,36 +346,6 @@ class GoalQuestionTests(unittest.TestCase):
         self.assertNotIn(s['thread_id'],doc['data']);self.assertNotIn(row['code'],doc['data'])
         self.assertIn('Which dataset',self.raw(self.remote,'show','intern-management/test:.intern_workspace/features/question_decision/'+doc['key']+'.md'))
 
-    def test_configuration_placeholder_decision_remains_valid_json_and_publishes_once(self):
-        s=self.conversation();relay=self.relay();row=self.question(s)
-        values=json.loads(row['questions']);values[0]['question']='Choose api_key = PLACEHOLDER or environment configuration'
-        self.state.db.execute('UPDATE user_questions SET questions=? WHERE code=?',(json.dumps(values),row['code']))
-        answer='Use environment variable "API_KEY"\nKeep configuration outside Git. 配置'
-        questions.answer(self.state,s,row['code'],{'dataset':'api_key = PLACEHOLDER','split':answer})
-        self.state.db.execute("UPDATE user_questions SET state='submitted' WHERE code=?",(row['code'],))
-        questions.pump(relay);questions.pump(relay)
-        docs=self.state.db.execute("SELECT * FROM feature_documents WHERE kind='question_decision'").fetchall()
-        self.assertEqual(len(docs),1);data=json.loads(docs[0]['data']);questions.validate_decision(data)
-        self.assertEqual(data['questions'][0],{'question':'[redacted credential field]','answers':['[redacted credential field]']})
-        self.assertEqual(data['questions'][1]['answers'],[answer])
-        self.assertEqual(self.state.db.execute('SELECT decision_saved FROM user_questions WHERE code=?',(row['code'],)).fetchone()[0],1)
-        published=self.raw(self.remote,'show','intern-management/test:.intern_workspace/features/question_decision/'+docs[0]['key']+'.md')
-        self.assertIn('Keep configuration outside Git.',published);self.assertIn('[redacted credential field]',published)
-
-    def test_persisted_question_decision_redacts_known_secret_in_each_text_field(self):
-        s=self.conversation();relay=self.relay();row=self.question(s);secret=self.state.credentials()['app_secret']
-        values=json.loads(row['questions']);values[0]['question']='Which label contains "'+secret+'"?'
-        self.state.db.execute('UPDATE user_questions SET questions=? WHERE code=?',(json.dumps(values),row['code']))
-        questions.answer(self.state,s,row['code'],{'dataset':'Use "'+secret+'" only locally','split':'Dev'})
-        self.state.db.execute("UPDATE user_questions SET state='submitted' WHERE code=?",(row['code'],))
-        questions.pump(relay)
-        doc=self.state.db.execute("SELECT * FROM feature_documents WHERE kind='question_decision'").fetchone()
-        data=json.loads(doc['data']);questions.validate_decision(data)
-        self.assertEqual(data['questions'][0],{'question':'Which label contains "[redacted]"?','answers':['Use "[redacted]" only locally']})
-        published=self.raw(self.remote,'show','intern-management/test:.intern_workspace/features/question_decision/'+doc['key']+'.md')
-        self.assertNotIn(secret,doc['data']);self.assertNotIn(secret,published)
-        self.assertNotIn(row['code'],doc['data']);self.assertNotIn(s['thread_id'],doc['data'])
-
     def test_native_question_answer_never_types_into_an_unrecognized_prompt(self):
         from intern_personal import question_terminal
         s=self.conversation();row=self.question(s,source='tui');questions.answer(self.state,s,row['code'],{'dataset':'Small','split':'Dev'})
@@ -404,6 +386,62 @@ class GoalQuestionTests(unittest.TestCase):
         self.assertEqual(len(calls),1);self.assertEqual(calls[0][-1],'Enter')
         self.assertIn('uncertain',questions.describe(self.state,s))
         with self.assertRaises(Invalid):questions.answer(self.state,s,row['code'],'1')
+
+
+    def test_structured_card_and_decision_redaction_preserve_json_and_live_answer_code(self):
+        s=self.conversation();relay=self.relay();row=self.question(s);values=json.loads(row['questions'])
+        values[0]['question']='api_key = harmless-fixture-text'
+        self.state.db.execute('UPDATE user_questions SET questions=? WHERE code=?',(json.dumps(values),row['code']))
+        delivered=[]
+        relay.api.send_question=lambda chat,card,key:(delivered.append(card) or 'om_fixture_card')
+        questions.pump(relay)
+        self.assertEqual(self.state.db.execute('SELECT delivery_state FROM user_questions').fetchone()[0],'delivered')
+        body=json.dumps(delivered[0]);self.assertIn('[redacted credential field]',body);self.assertNotIn('harmless-fixture-text',body)
+        self.assertIn('/answer '+row['code'],body);self.assertEqual(delivered[0]['elements'][-2]['elements'][-1]['value']['intern_agent_question'],row['code'])
+        questions.answer(self.state,s,row['code'],{'dataset':'password = another-fixture-text','split':'Dev'})
+        self.state.db.execute("UPDATE user_questions SET state='submitted' WHERE code=?",(row['code'],));questions.pump(relay)
+        doc=self.state.db.execute("SELECT data FROM feature_documents WHERE kind='question_decision'").fetchone()[0]
+        saved=json.loads(doc);questions.validate_decision(saved)
+        self.assertEqual(saved['questions'][0],{'question':'[redacted credential field]','answers':['[redacted credential field]']})
+        self.assertEqual(saved['questions'][1]['answers'],['Dev']);self.assertNotIn(row['code'],doc)
+
+    def test_question_test_card_cannot_hold_real_goal_work(self):
+        s=self.conversation();relay=self.relay();questions.demo(self.state,s)
+        self.assertEqual(questions.pending(self.state,s),[])
+        goals.start(self.state,s,'Verify the next candidate',tracker=self.tracker);goals.poll(relay)
+        self.assertIsNotNone(self.state.claim('agent'))
+        self.assertEqual(self.state.db.execute("SELECT count(*) FROM user_questions WHERE source='demo' AND state='new'").fetchone()[0],1)
+
+
+    def test_configuration_placeholder_decision_remains_valid_json_and_publishes_once(self):
+        s=self.conversation();relay=self.relay();row=self.question(s)
+        values=json.loads(row['questions']);values[0]['question']='Choose api_key = PLACEHOLDER or environment configuration'
+        self.state.db.execute('UPDATE user_questions SET questions=? WHERE code=?',(json.dumps(values),row['code']))
+        answer='Use environment variable "API_KEY"\nKeep configuration outside Git. 配置'
+        questions.answer(self.state,s,row['code'],{'dataset':'api_key = PLACEHOLDER','split':answer})
+        self.state.db.execute("UPDATE user_questions SET state='submitted' WHERE code=?",(row['code'],))
+        questions.pump(relay);questions.pump(relay)
+        docs=self.state.db.execute("SELECT * FROM feature_documents WHERE kind='question_decision'").fetchall()
+        self.assertEqual(len(docs),1);data=json.loads(docs[0]['data']);questions.validate_decision(data)
+        self.assertEqual(data['questions'][0],{'question':'[redacted credential field]','answers':['[redacted credential field]']})
+        self.assertEqual(data['questions'][1]['answers'],[answer])
+        self.assertEqual(self.state.db.execute('SELECT decision_saved FROM user_questions WHERE code=?',(row['code'],)).fetchone()[0],1)
+        published=self.raw(self.remote,'show','intern-management/test:.intern_workspace/features/question_decision/'+docs[0]['key']+'.md')
+        self.assertIn('Keep configuration outside Git.',published);self.assertIn('[redacted credential field]',published)
+
+    def test_persisted_question_decision_redacts_known_secret_in_each_text_field(self):
+        s=self.conversation();relay=self.relay();row=self.question(s);secret=self.state.credentials()['app_secret']
+        values=json.loads(row['questions']);values[0]['question']='Which label contains "'+secret+'"?'
+        self.state.db.execute('UPDATE user_questions SET questions=? WHERE code=?',(json.dumps(values),row['code']))
+        questions.answer(self.state,s,row['code'],{'dataset':'Use "'+secret+'" only locally','split':'Dev'})
+        self.state.db.execute("UPDATE user_questions SET state='submitted' WHERE code=?",(row['code'],))
+        questions.pump(relay)
+        doc=self.state.db.execute("SELECT * FROM feature_documents WHERE kind='question_decision'").fetchone()
+        data=json.loads(doc['data']);questions.validate_decision(data)
+        self.assertEqual(data['questions'][0],{'question':'Which label contains "[redacted]"?','answers':['Use "[redacted]" only locally']})
+        published=self.raw(self.remote,'show','intern-management/test:.intern_workspace/features/question_decision/'+doc['key']+'.md')
+        self.assertNotIn(secret,doc['data']);self.assertNotIn(secret,published)
+        self.assertNotIn(row['code'],doc['data']);self.assertNotIn(s['thread_id'],doc['data'])
 
 
 if __name__=='__main__':unittest.main()

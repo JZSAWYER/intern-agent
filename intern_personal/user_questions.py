@@ -80,7 +80,16 @@ def register(state,session,params,request,source='rpc'):
 
 def pending(state,session,blocking=False):
     if not session:return []
-    return [dict(r) for r in state.db.execute("SELECT * FROM user_questions WHERE session=? AND state IN ('new','pending','answered','sending','delivery_failed','uncertain') AND expires_at>?"+(' AND blocking=1' if blocking else '')+' ORDER BY created_at',(session['id'],time.time()))]
+    return [dict(r) for r in state.db.execute("SELECT * FROM user_questions WHERE session=? AND source!='demo' AND state IN ('new','pending','answered','sending','delivery_failed','uncertain') AND expires_at>?"+(' AND blocking=1' if blocking else '')+' ORDER BY created_at',(session['id'],time.time()))]
+
+
+def clean_card(row,clean):
+    # Sanitize model-supplied text, preserving JSON and live answer controls.
+    qs=[]
+    for q in json.loads(row['questions']):
+        qs.append(dict(q,question=clean(q['question']),header=clean(q['header']),
+            options=[dict(label=clean(o['label']),description=clean(o['description'])) for o in q['options']]))
+    return card(dict(row,questions=json.dumps(qs,ensure_ascii=False)))
 
 
 def card(row):
@@ -99,7 +108,8 @@ def card(row):
     if not any(q['isSecret'] for q in questions):
         form.append(dict(tag='button',text=dict(tag='plain_text',content='Submit answers'),type='primary',action_type='form_submit',name='submit',value=dict(intern_agent_question=row['code'])))
         elements.append(dict(tag='form',name='answers',elements=form))
-    elements.append(dict(tag='note',elements=[dict(tag='plain_text',content='/answer '+row['code']+' YOUR ANSWER · /questions · /stop')]))
+    hint='Use secure local input · /questions · /stop' if any(q['isSecret'] for q in questions) else '/answer '+row['code']+' YOUR ANSWER · /questions · /stop'
+    elements.append(dict(tag='note',elements=[dict(tag='plain_text',content=hint)]))
     return dict(config=dict(wide_screen_mode=True),header=dict(title=dict(tag='plain_text',content='Codex needs your answer'),template='purple'),elements=elements)
 
 
@@ -200,17 +210,15 @@ def save_decision(relay,row):
     session=relay.state.session(row['session']);answers=json.loads(row['answers']);qs=json.loads(row['questions'])
     if row['source']=='demo' or not answers or any(q['isSecret'] for q in qs):return
     key='decision_'+hashlib.sha256((row['session']+row['code']).encode()).hexdigest()[:16]
-    # Line-based credential redaction must operate on text fields, never on
-    # serialized JSON whose enclosing structure could be removed with a field.
     clean=relay.tracker.clean
     data=dict(conversation=session['id'],task=row['task_id'],questions=[dict(question=clean(q['question']),
-        answers=[clean(answer) for answer in answers[q['id']]['answers']]) for q in qs],at=row['answered_at'] or row['created_at'])
-    validate_decision(data);body=json.dumps(data,sort_keys=True)
+        answers=[clean(a) for a in answers[q['id']]['answers']]) for q in qs],at=row['answered_at'] or row['created_at'])
+    validate_decision(data)
     state=relay.state;state.db.execute('BEGIN IMMEDIATE')
     try:
         if state.db.execute('UPDATE user_questions SET decision_saved=1 WHERE code=? AND decision_saved=0',(row['code'],)).rowcount:
             revision=state.ledger.revision(session['workspace'],'memory',key,'memory',conversation=session['id'],task=row['task_id'])
-            state.db.execute("INSERT OR IGNORE INTO feature_documents VALUES(?,'question_decision',?,?,?)",(session['workspace'],key,body,revision))
+            state.db.execute("INSERT OR IGNORE INTO feature_documents VALUES(?,'question_decision',?,?,?)",(session['workspace'],key,json.dumps(data,sort_keys=True),revision))
         state.db.execute('COMMIT')
     except BaseException:state.db.execute('ROLLBACK');raise
     relay.tracker.queue_record(session,phase='Ready')
@@ -290,13 +298,15 @@ def pump(relay):
         if not session or session['thread_id']!=row['thread']:state.db.execute("UPDATE user_questions SET state='cancelled' WHERE code=?",(row['code'],));continue
         if not state.db.execute("UPDATE user_questions SET state='pending',delivery_state='sending',delivery_attempts=delivery_attempts+1 WHERE code=? AND delivery_state='queued'",(row['code'],)).rowcount:continue
         try:
-            content=json.loads(relay.tracker.clean(json.dumps(card(row),ensure_ascii=False)))
+            content=clean_card(row,relay.tracker.clean)
             receipt=relay.api.send_question(session['chat_id'],content,'question:'+row['code'])
             state.db.execute("UPDATE user_questions SET receipt=?,error_type=NULL,delivery_state='delivered' WHERE code=?",(receipt,row['code']))
         except Exception as error:
-            text='Codex needs your answer:\n'+'\n'.join(q['question']+'\n'+'\n'.join(str(i+1)+'. '+o['label']+' — '+o['description'] for i,o in enumerate(q['options'])) for q in json.loads(row['questions']))+'\n/answer '+row['code']+' YOUR ANSWER'
+            qs=json.loads(row['questions'])
+            text=relay.tracker.clean('Codex needs your answer:\n'+'\n'.join(q['question']+'\n'+'\n'.join(str(i+1)+'. '+o['label']+' — '+o['description'] for i,o in enumerate(q['options'])) for q in qs))
+            text+='\nUse secure local input, not Feishu, for this secret request.' if any(q['isSecret'] for q in qs) else '\n/answer '+row['code']+' YOUR ANSWER'
             try:
-                receipt=relay.api.send(session['chat_id'],relay.tracker.clean(text),'question-fallback:'+row['code'])
+                receipt=relay.api.send(session['chat_id'],text,'question-fallback:'+row['code'])
                 state.db.execute("UPDATE user_questions SET receipt=?,error_type=?,delivery_state='text_fallback' WHERE code=?",(receipt,type(error).__name__,row['code']))
             except Exception as fallback:
                 known=type(getattr(fallback,'code',None)) is int and type(getattr(error,'code',None)) is int
