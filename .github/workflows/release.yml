@@ -1,0 +1,147 @@
+name: Verified Intern Agent release
+
+# This workflow runs only at the root of the clean public repository.
+# An updated version and a newly approved source-commit handoff are required.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'intern_personal/**'
+      - 'extension/**'
+      - 'docs/**'
+      - 'tests/**'
+      - 'tools/**'
+      - 'requirements/**'
+      - 'skills/**'
+      - 'templates/**'
+      - '.github/**'
+      - '*.json'
+      - '*.md'
+      - 'LICENSE'
+      - 'NOTICE'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intern-agent-public-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      github.repository == 'JZSAWYER/intern-agent' &&
+      github.event.repository.private == false &&
+      github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONNOUSERSITE: '1'
+    steps:
+      # Full SHAs verified against the corresponding official release pages.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, node24
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0, node24
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0, node24
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Require the final verified source handoff
+        run: python tools/build_release.py --check-only --ci --expected-export-commit "$GITHUB_SHA"
+      - name: Test using a separate hash-locked Python environment
+        run: |
+          python -m venv "$RUNNER_TEMP/release-venv"
+          LOCK_FILE="$(python -c 'import json; print(json.load(open("release-product.json"))["dependency_lock"])')"
+          "$RUNNER_TEMP/release-venv/bin/python" -m pip --isolated install --index-url https://pypi.org/simple --require-hashes --only-binary=:all: --no-deps --disable-pip-version-check -r "$LOCK_FILE"
+          "$RUNNER_TEMP/release-venv/bin/python" -m pip check
+          TMPDIR=/tmp env -u CODEX_THREAD_ID "$RUNNER_TEMP/release-venv/bin/python" -m unittest discover -s tests -q
+          node tests/extension.test.js
+          git diff --check
+      - name: Build source, VSIX and skills twice and verify reproducibility
+        run: |
+          python tools/build_release.py --ci --expected-export-commit "$GITHUB_SHA" --output-dir "$RUNNER_TEMP/release-assets"
+          python tools/build_release.py --ci --expected-export-commit "$GITHUB_SHA" --output-dir "$RUNNER_TEMP/release-rebuild"
+          python - <<'PY'
+          import pathlib
+          import os
+          a = pathlib.Path(os.environ['RUNNER_TEMP']) / 'release-assets'
+          b = pathlib.Path(os.environ['RUNNER_TEMP']) / 'release-rebuild'
+          assert {p.name: p.read_bytes() for p in a.iterdir()} == {p.name: p.read_bytes() for p in b.iterdir()}
+          PY
+      - name: Check public destination, exact main commit and unused release version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import urllib.error
+          import urllib.request
+          product = json.load(open('release-product.json'))
+          assets = pathlib.Path(os.environ['RUNNER_TEMP']) / 'release-assets'
+          provenance = json.loads((assets / 'release-provenance.json').read_text())
+          assert provenance['release_approved'] is True and provenance['preparation_only'] is False
+          assert provenance['license'] == 'MIT' and provenance['version'] == product['version']
+          assert provenance['maintained_source_commit'] == provenance['source_commit'] == product['final_handoff']['source_commit']
+          assert provenance['public_source_commit'] == provenance['export_commit'] == os.environ['GITHUB_SHA']
+          repository = product['repository']
+          assert repository == 'JZSAWYER/intern-agent' == os.environ['GITHUB_REPOSITORY']
+          assert provenance['repository'] == repository
+          def get(path, missing=False):
+              request = urllib.request.Request('https://api.github.com/repos/' + repository + path,
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                           'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'})
+              try:
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      return json.load(response)
+              except urllib.error.HTTPError as error:
+                  if missing and error.code == 404:
+                      return None
+                  raise SystemExit('Release API preflight failed') from None
+          repo = get('')
+          assert repo['full_name'] == repository and repo['private'] is False and repo['default_branch'] == 'main'
+          assert get('/git/ref/heads/main')['object']['sha'] == os.environ['GITHUB_SHA']
+          tag = 'v' + product['version']
+          assert get('/git/ref/tags/' + tag, missing=True) is None, 'Version tag already exists; choose a fresh version'
+          assert get('/releases/tags/' + tag, missing=True) is None, 'Release already exists; no replacement is allowed'
+          notes = ('Verified Intern Agent ' + tag + '\n\n'
+                   + 'Maintained-source commit: `' + provenance['maintained_source_commit'] + '`.\n\n'
+                   + 'Public-source commit: [' + provenance['public_source_commit'] + '](https://github.com/'
+                   + repository + '/tree/' + provenance['public_source_commit'] + ').\n\n'
+                   + 'MIT source, stable VSIX, recovery and file-transfer Codex skills, standalone skills installer, '
+                   + 'SHA-256 checksums and release provenance are attached. See the installation guide for the supported Linux profile.\n')
+          (pathlib.Path(os.environ['RUNNER_TEMP']) / 'release-notes.md').write_text(notes)
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('RELEASE_TAG=' + tag + '\n')
+          PY
+      - name: Upload a draft, verify every remote asset, then publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" -f "ref=refs/tags/$RELEASE_TAG" -f "sha=$GITHUB_SHA" > "$RUNNER_TEMP/release-tag.json"
+          gh release create "$RELEASE_TAG" "$RUNNER_TEMP/release-assets/"* --repo "$GITHUB_REPOSITORY" --verify-tag --title "Intern Agent $RELEASE_TAG" --notes-file "$RUNNER_TEMP/release-notes.md" --draft
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --dir "$RUNNER_TEMP/release-verify"
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import urllib.request
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          expected = {p.name: p.read_bytes() for p in (root / 'release-assets').iterdir()}
+          received = {p.name: p.read_bytes() for p in (root / 'release-verify').iterdir()}
+          assert received == expected, 'Downloaded release assets differ'
+          request = urllib.request.Request('https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/ref/tags/' + os.environ['RELEASE_TAG'],
+              headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+          with urllib.request.urlopen(request, timeout=30) as response:
+              tag = json.load(response)
+          assert tag['object']['type'] == 'commit' and tag['object']['sha'] == os.environ['GITHUB_SHA']
+          PY
+          gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false

@@ -1,0 +1,301 @@
+{
+  "name": "intern-agent",
+  "displayName": "Intern Agent",
+  "description": "Connect registered Linux workspaces and Codex conversations to dedicated Feishu chats.",
+  "version": "0.1.0",
+  "publisher": "intern-agent",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    },
+    "virtualWorkspaces": {
+      "supported": false
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "internAgentPublic.setup",
+        "title": "Intern Agent: Set Up Personal Relay"
+      },
+      {
+        "command": "internAgentPublic.credentials",
+        "title": "Intern Agent: Set Feishu Credentials"
+      },
+      {
+        "command": "internAgentPublic.start",
+        "title": "Intern Agent: Start Relay"
+      },
+      {
+        "command": "internAgentPublic.pair",
+        "title": "Intern Agent: Create Owner Pairing Code"
+      },
+      {
+        "command": "internAgentPublic.attach",
+        "title": "Intern Agent: Attach Workspace to GitHub"
+      },
+      {
+        "command": "internAgentPublic.initProject",
+        "title": "Intern Agent: Initialize New Private Project",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "internAgentPublic.initStatus",
+        "title": "Intern Agent: Show Project Initialization"
+      },
+      {
+        "command": "internAgentPublic.initApply",
+        "title": "Intern Agent: Apply Reviewed Initialization"
+      },
+      {
+        "command": "internAgentPublic.initOpenWorkspace",
+        "title": "Intern Agent: Open Initialized Bot Workspace"
+      },
+      {
+        "command": "internAgentPublic.open",
+        "title": "Intern Agent: Connect Workspace to Feishu"
+      },
+      {
+        "command": "internAgentPublic.newSession",
+        "title": "Intern Agent: New Workspace Conversation"
+      },
+      {
+        "command": "internAgentPublic.status",
+        "title": "Intern Agent: Show Status"
+      },
+      {
+        "command": "internAgentPublic.refresh",
+        "title": "Intern Agent: Refresh Dashboard"
+      },
+      {
+        "command": "internAgentPublic.doctor",
+        "title": "Intern Agent: Check Setup"
+      },
+      {
+        "command": "internAgentPublic.openChat",
+        "title": "Intern Agent: Open Feishu Chat"
+      },
+      {
+        "command": "internAgentPublic.stop",
+        "title": "Intern Agent: Stop Conversation"
+      },
+      {
+        "command": "internAgentPublic.pause",
+        "title": "Intern Agent: Pause Conversation"
+      },
+      {
+        "command": "internAgentPublic.resume",
+        "title": "Intern Agent: Resume Conversation"
+      },
+      {
+        "command": "internAgentPublic.compact",
+        "title": "Intern Agent: Compact Conversation"
+      },
+      {
+        "command": "internAgentPublic.usage",
+        "title": "Intern Agent: Show Usage"
+      },
+      {
+        "command": "internAgentPublic.restart",
+        "title": "Intern Agent: Restart Conversation Context"
+      },
+      {
+        "command": "internAgentPublic.archive",
+        "title": "Intern Agent: Archive Conversation"
+      },
+      {
+        "command": "internAgentPublic.task",
+        "title": "Intern Agent: Manage Task"
+      },
+      {
+        "command": "internAgentPublic.team",
+        "title": "Intern Agent: Manage Team"
+      },
+      {
+        "command": "internAgentPublic.repair",
+        "title": "Intern Agent: Review Setup Repairs"
+      },
+      {
+        "command": "internAgentPublic.trigger",
+        "title": "Intern Agent: Set Group Trigger"
+      },
+      {
+        "command": "internAgentPublic.progress",
+        "title": "Intern Agent: Set Progress Mode"
+      },
+      {
+        "command": "internAgentPublic.recovery",
+        "title": "Intern Agent: Automatic Recovery"
+      },
+      {
+        "command": "internAgentPublic.research",
+        "title": "Intern Agent: Manage Research Wake-ups"
+      },
+      {
+        "command": "internAgentPublic.mail",
+        "title": "Intern Agent: Bot Communication"
+      },
+      {
+        "command": "internAgentPublic.skills",
+        "title": "Intern Agent: Manage Pinned Skills"
+      },
+      {
+        "command": "internAgentPublic.githubCredentials",
+        "title": "Intern Agent: Set GitHub Authentication"
+      },
+      {
+        "command": "internAgentPublic.recoverRepository",
+        "title": "Intern Agent: Recover Workspace from GitHub"
+      },
+      {
+        "command": "internAgentPublic.reconnectRestored",
+        "title": "Intern Agent: Reconnect Restored Conversation"
+      },
+      {
+        "command": "internAgentPublic.recoveryStatus",
+        "title": "Intern Agent: Show Git Recovery Status"
+      },
+      {
+        "command": "internAgentPublic.installSkills",
+        "title": "Intern Agent: Install Bundled Codex Skills"
+      },
+      {
+        "command": "internAgentPublic.releaseStatus",
+        "title": "Intern Agent: Show Release Synchronization"
+      }
+    ],
+    "configuration": {
+      "title": "Intern Agent (Public)",
+      "properties": {
+        "internAgentPublic.stateDirectory": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "description": "Absolute private relay state directory on the Linux host, preferably on a data volume."
+        },
+        "internAgentPublic.pythonExecutable": {
+          "type": "string",
+          "default": "python3",
+          "scope": "machine",
+          "description": "Python executable on the Linux host with lark-oapi and websockets installed."
+        },
+        "internAgentPublic.autoConnect": {
+          "type": "boolean",
+          "default": false,
+          "scope": "machine",
+          "description": "Automatically connect trusted workspace folders after relay setup and pairing."
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "internAgentPublic.sessions",
+          "name": "Intern Agent (Public)"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "internAgentPublic.initProject",
+          "when": "view == internAgentPublic.sessions",
+          "group": "navigation"
+        },
+        {
+          "command": "internAgentPublic.refresh",
+          "when": "view == internAgentPublic.sessions",
+          "group": "navigation"
+        },
+        {
+          "command": "internAgentPublic.doctor",
+          "when": "view == internAgentPublic.sessions"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "internAgentPublic.initStatus",
+          "when": "view == internAgentPublic.sessions && (viewItem == internAgentPublicInitialization || viewItem == internAgentPublicInitializationComplete)",
+          "group": "review"
+        },
+        {
+          "command": "internAgentPublic.initOpenWorkspace",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicInitializationComplete",
+          "group": "navigation"
+        },
+        {
+          "command": "internAgentPublic.initApply",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicInitialization",
+          "group": "review"
+        },
+        {
+          "command": "internAgentPublic.openChat",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "inline"
+        },
+        {
+          "command": "internAgentPublic.stop",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "controls"
+        },
+        {
+          "command": "internAgentPublic.task",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "controls"
+        },
+        {
+          "command": "internAgentPublic.compact",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "controls"
+        },
+        {
+          "command": "internAgentPublic.usage",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "controls"
+        },
+        {
+          "command": "internAgentPublic.restart",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "controls"
+        },
+        {
+          "command": "internAgentPublic.archive",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "controls"
+        },
+        {
+          "command": "internAgentPublic.mail",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "controls"
+        },
+        {
+          "command": "internAgentPublic.research",
+          "when": "view == internAgentPublic.sessions && viewItem == internAgentPublicConversation",
+          "group": "controls"
+        }
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JZSAWYER/intern-agent.git"
+  },
+  "homepage": "https://github.com/JZSAWYER/intern-agent",
+  "bugs": {
+    "url": "https://github.com/JZSAWYER/intern-agent/issues"
+  }
+}

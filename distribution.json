@@ -1,0 +1,25 @@
+{
+  "schema": "intern-agent.distribution-files.v1",
+  "purpose": "Allowlisted backend inputs for the installable Intern Agent VSIX",
+  "include": [
+    "intern_personal/*.py",
+    "templates/*.json",
+    "README.md",
+    "docs/*.md",
+    "release-runtime.json",
+    "requirements/*.lock",
+    "requirements/*.json",
+    "tools/install_runtime.py",
+    "tools/check_release_runtime.py",
+    "skills/install-on-linux/references/*.md",
+    "templates/AGENTS.example.md",
+    "docs/DEPENDENCY_INVENTORY.json",
+    "docs/DEPENDENCY_ADVISORIES.json",
+    "distribution.json",
+    "release-product.json",
+    "tools/install_skill_bundle.py",
+    "LICENSE",
+    "NOTICE",
+    "skills/*/SKILL.md"
+  ]
+}

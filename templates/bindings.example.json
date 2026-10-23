@@ -1,0 +1,7 @@
+{
+  "app_id": "<feishu-app-id>",
+  "owner_open_id": "<owner-open-id-for-this-app>",
+  "chat_workspaces": {
+    "<feishu-chat-id>": "<registered-workspace-id>"
+  }
+}

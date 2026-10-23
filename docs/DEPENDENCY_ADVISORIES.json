@@ -1,0 +1,113 @@
+{
+  "checked": "2026-10-15",
+  "source": "https://api.osv.dev/v1/querybatch",
+  "results": [
+    {
+      "name": "anyio",
+      "version": "4.8.0",
+      "advisories": [
+        "GHSA-5p39-cfhj-2xmp",
+        "GHSA-82r6-8w77-94w6",
+        "PYSEC-2026-4024",
+        "PYSEC-2026-4025"
+      ]
+    },
+    {
+      "name": "certifi",
+      "version": "2025.1.31",
+      "advisories": []
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "2.0.4",
+      "advisories": []
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "advisories": []
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "advisories": []
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "advisories": []
+    },
+    {
+      "name": "idna",
+      "version": "3.7",
+      "advisories": [
+        "GHSA-65pc-fj4g-8rjx",
+        "PYSEC-2026-215"
+      ]
+    },
+    {
+      "name": "lark-oapi",
+      "version": "1.7.1",
+      "advisories": []
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "advisories": []
+    },
+    {
+      "name": "requests",
+      "version": "2.32.2",
+      "advisories": [
+        "GHSA-9hjg-9r4m-mvj7",
+        "GHSA-gc5v-m9x4-r6x2",
+        "PYSEC-2026-1872",
+        "PYSEC-2026-2275"
+      ]
+    },
+    {
+      "name": "requests-toolbelt",
+      "version": "1.0.0",
+      "advisories": []
+    },
+    {
+      "name": "sniffio",
+      "version": "1.3.1",
+      "advisories": []
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.12.2",
+      "advisories": []
+    },
+    {
+      "name": "urllib3",
+      "version": "2.2.2",
+      "advisories": [
+        "GHSA-2xpw-w6gg-jr37",
+        "GHSA-38jv-5279-wg99",
+        "GHSA-48p4-8xcf-vxj5",
+        "GHSA-8988-9cw3-xx77",
+        "GHSA-gm62-xv2j-4w53",
+        "GHSA-pq67-6m6q-mj2v",
+        "GHSA-qccp-gfcp-xxvc",
+        "GHSA-vxq7-64xx-v4gw",
+        "PYSEC-2026-141",
+        "PYSEC-2026-1994",
+        "PYSEC-2026-1996",
+        "PYSEC-2026-1997",
+        "PYSEC-2026-1998",
+        "PYSEC-2026-1999",
+        "PYSEC-2026-4175",
+        "PYSEC-2026-4177"
+      ]
+    },
+    {
+      "name": "websockets",
+      "version": "15.0.1",
+      "advisories": []
+    }
+  ],
+  "scope": "Observed deployed dependency profile, version lookup only; package-level advisories do not prove an exploit on this host",
+  "public_install_recommended": false
+}

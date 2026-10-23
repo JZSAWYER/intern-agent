@@ -1,0 +1,20 @@
+{
+  "schema": "intern-agent.personal.v1",
+  "github_owner": "<github-username>",
+  "provider": "github",
+  "feishu": {
+    "domain": "https://open.feishu.cn",
+    "transport": "websocket",
+    "events": ["im.message.receive_v1"],
+    "tenant_scopes": [
+      "im:message:send_as_bot",
+      "im:message.group_msg",
+      "im:chat:create",
+      "im:chat:read",
+      "im:chat:update",
+      "im:chat.members:read",
+      "im:chat.members:write_only"
+    ]
+  },
+  "execution": "offline_preparation"
+}

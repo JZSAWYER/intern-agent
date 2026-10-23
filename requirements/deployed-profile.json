@@ -1,0 +1,116 @@
+{
+  "schema": "intern-agent.dependency-profile.v1",
+  "platform": "linux-x86_64",
+  "python": "3.12",
+  "profile": "deployed-reference-only",
+  "public_install_recommended": false,
+  "lock_sha256": "0cd221631f5226ad2c2e009fc6afcdae86d23ba7e2efd14997269fb1d96f3c49",
+  "security_gate": "known_advisories_require_upgrade_and_acceptance",
+  "wheels": [
+    {
+      "name": "anyio",
+      "version": "4.8.0",
+      "wheel": "anyio-4.8.0-py3-none-any.whl",
+      "sha256": "b5011f270ab5eb0abf13385f851315585cc37ef330dd88e27ec3d34d651fd47a",
+      "metadata_source": "https://pypi.org/pypi/anyio/4.8.0/json"
+    },
+    {
+      "name": "certifi",
+      "version": "2025.1.31",
+      "wheel": "certifi-2025.1.31-py3-none-any.whl",
+      "sha256": "ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe",
+      "metadata_source": "https://pypi.org/pypi/certifi/2025.1.31/json"
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "2.0.4",
+      "wheel": "charset_normalizer-2.0.4-py3-none-any.whl",
+      "sha256": "0c8911edd15d19223366a194a513099a302055a962bca2cec0f54b8b63175d8b",
+      "metadata_source": "https://pypi.org/pypi/charset-normalizer/2.0.4/json"
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "wheel": "h11-0.16.0-py3-none-any.whl",
+      "sha256": "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86",
+      "metadata_source": "https://pypi.org/pypi/h11/0.16.0/json"
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "wheel": "httpcore-1.0.9-py3-none-any.whl",
+      "sha256": "2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55",
+      "metadata_source": "https://pypi.org/pypi/httpcore/1.0.9/json"
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "wheel": "httpx-0.28.1-py3-none-any.whl",
+      "sha256": "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad",
+      "metadata_source": "https://pypi.org/pypi/httpx/0.28.1/json"
+    },
+    {
+      "name": "idna",
+      "version": "3.7",
+      "wheel": "idna-3.7-py3-none-any.whl",
+      "sha256": "82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0",
+      "metadata_source": "https://pypi.org/pypi/idna/3.7/json"
+    },
+    {
+      "name": "lark-oapi",
+      "version": "1.7.1",
+      "wheel": "lark_oapi-1.7.1-py3-none-any.whl",
+      "sha256": "16945576a8c783a10e50911c00e421c1212fde3a76b2c2a6a4879b8606c1af8f",
+      "metadata_source": "https://pypi.org/pypi/lark-oapi/1.7.1/json"
+    },
+    {
+      "name": "pycryptodome",
+      "version": "3.23.0",
+      "wheel": "pycryptodome-3.23.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "sha256": "c8987bd3307a39bc03df5c8e0e3d8be0c4c3518b7f044b0f4c15d1aa78f52575",
+      "metadata_source": "https://pypi.org/pypi/pycryptodome/3.23.0/json"
+    },
+    {
+      "name": "requests",
+      "version": "2.32.2",
+      "wheel": "requests-2.32.2-py3-none-any.whl",
+      "sha256": "fc06670dd0ed212426dfeb94fc1b983d917c4f9847c863f313c9dfaaffb7c23c",
+      "metadata_source": "https://pypi.org/pypi/requests/2.32.2/json"
+    },
+    {
+      "name": "requests-toolbelt",
+      "version": "1.0.0",
+      "wheel": "requests_toolbelt-1.0.0-py2.py3-none-any.whl",
+      "sha256": "cccfdd665f0a24fcf4726e690f65639d272bb0637b9b92dfd91a5568ccf6bd06",
+      "metadata_source": "https://pypi.org/pypi/requests-toolbelt/1.0.0/json"
+    },
+    {
+      "name": "sniffio",
+      "version": "1.3.1",
+      "wheel": "sniffio-1.3.1-py3-none-any.whl",
+      "sha256": "2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2",
+      "metadata_source": "https://pypi.org/pypi/sniffio/1.3.1/json"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.12.2",
+      "wheel": "typing_extensions-4.12.2-py3-none-any.whl",
+      "sha256": "04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d",
+      "metadata_source": "https://pypi.org/pypi/typing_extensions/4.12.2/json"
+    },
+    {
+      "name": "urllib3",
+      "version": "2.2.2",
+      "wheel": "urllib3-2.2.2-py3-none-any.whl",
+      "sha256": "a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472",
+      "metadata_source": "https://pypi.org/pypi/urllib3/2.2.2/json"
+    },
+    {
+      "name": "websockets",
+      "version": "15.0.1",
+      "wheel": "websockets-15.0.1-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "sha256": "64dee438fed052b52e4f98f76c5790513235efaa1ef7f3f2192c392cd7c91b65",
+      "metadata_source": "https://pypi.org/pypi/websockets/15.0.1/json"
+    }
+  ]
+}

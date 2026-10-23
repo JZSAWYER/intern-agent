@@ -1,0 +1,15 @@
+Intern Agent 0.1.0
+
+Maintained-source release pin: c0aa1748223011e244080a7cd4ec58228988beff
+Public product: https://github.com/JZSAWYER/intern-agent
+First-party maintained source, frontend, guides, tests, templates and skills
+are distributed under the included MIT LICENSE by owner authorization.
+The clean public history excludes private tracking and enterprise snapshots.
+
+Python dependencies are downloaded separately as hash-verified upstream wheels;
+their binaries are not bundled in the source, VSIX or skills archives. Their
+own licenses and notices remain authoritative. Versioned wheel provenance,
+license metadata and notice-file hashes are in requirements/public-profile.json.
+The installer leaves those distributions' license files in its isolated venv.
+Codex, Python, tmux, Git, VS Code and Remote SSH are separately installed tools
+subject to their respective terms; this product does not redistribute them.
