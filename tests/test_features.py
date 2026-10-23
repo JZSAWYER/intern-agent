@@ -267,18 +267,19 @@ class FeaturesTests(unittest.TestCase):
         self.assertTrue(all(not s['thread_id'] and not s['chat_id'] for s in fresh.sessions()))
         self.assertIsNone(fresh.claim('agent'))
 
-    def test_goal_is_saved_paused_without_automatic_execution(self):
+    def test_goal_uses_a_paused_native_mirror_and_tracked_continuations(self):
         s=self.conversation();relay=self.relay();calls=[]
         class Connection:
-            def request(self,method,params):
+            def request(self,method,params,**kwargs):
                 calls.append((method,params));return dict(goal=dict(objective='Fix parser',status='paused',threadId='never-display',tokenBudget=4000))
             def close(self):pass
         relay.host.connect=lambda **kw:Connection();relay.host.thread_params=lambda s:{}
         result=json.loads(operations.goal(relay,s,['set','4000','Fix','parser']))
-        self.assertFalse(result['automatic_continuations']);self.assertNotIn('threadId',result['goal'])
+        self.assertTrue(result['automatic_continuations']);self.assertNotIn('threadId',result['goal'])
         self.assertEqual(calls[-1][1]['status'],'paused')
-        self.assertIn('Goal set',self.raw(self.remote,'show','intern-management/test:.intern_workspace/memory.md'))
-        with self.assertRaises(Invalid):operations.goal(relay,s,['resume'])
+        self.assertEqual(result['goal']['status'],'active')
+        self.assertIn('Goal paused',operations.goal(relay,s,['pause']))
+        self.assertIn('Goal resumed',operations.goal(relay,s,['resume']))
 
     def test_review_cannot_finish_a_different_selected_task(self):
         commands,t,lead,worker=self.team();task=self.task(worker)

@@ -110,7 +110,7 @@ def install(state, directory, branches, management=False, base_branch='main',com
         hashes[phase]=hashlib.sha256(path.read_bytes()).hexdigest()
     hashes['module']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     hashes['records']=hashlib.sha256((Path(__file__).parent/'records.py').read_bytes()).hexdigest()
-    for name in ['recovery','portable_settings','core','distribution','teams','archive_parts','record_storage','feature_state','skills','attachments','peer_mail','git_objects','git_guard_run']:
+    for name in ['recovery','portable_settings','goals','user_questions','core','distribution','teams','archive_parts','record_storage','feature_state','skills','attachments','peer_mail','git_objects','git_guard_run']:
         hashes[name]=hashlib.sha256((Path(__file__).parent/(name+'.py')).read_bytes()).hexdigest()
     if combined_records and (management or len(branches)!=1):raise Invalid('Combined records require exactly one bot branch')
     write_private(config,{'directory':directory,'branches':branches,'management':management,'combined_records':bool(combined_records),'base_branch':base_branch,'hashes':hashes,'source':str(source)})
@@ -129,7 +129,7 @@ def verified_path(config_path, directory):
     if config['directory']!=str(Path(directory).resolve()):raise Invalid('Git hook binding changed')
     if root.is_symlink() or root.stat().st_uid!=os.getuid() or root.stat().st_mode&0o077:raise Invalid('Git hook directory is not private')
     for name,digest in config['hashes'].items():
-        path=Path(__file__) if name=='module' else (Path(__file__).parent/(name+'.py') if name in {'records','recovery','portable_settings','core','distribution','teams','archive_parts','record_storage','feature_state','skills','attachments','peer_mail','git_objects','git_guard_run'} else root/name)
+        path=Path(__file__) if name=='module' else (Path(__file__).parent/(name+'.py') if name in {'records','recovery','portable_settings','goals','user_questions','core','distribution','teams','archive_parts','record_storage','feature_state','skills','attachments','peer_mail','git_objects','git_guard_run'} else root/name)
         if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest()!=digest:
             raise Invalid('Git hook definition changed; explicitly reinstall reviewed hooks')
     return root

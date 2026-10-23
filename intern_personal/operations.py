@@ -17,6 +17,8 @@ def dashboard(state):
     controller=state.controller_session()
     rows=[]
     for session in state.sessions():
+        from .goals import saved_status as goal_status
+        from .user_questions import pending as pending_questions
         intern=state.db.execute('SELECT * FROM tracked_interns WHERE session=?',(session['id'],)).fetchone()
         task=state.ledger.selection(session['id'])
         latest=state.db.execute('SELECT r.activity,r.sync,e.state,e.receipt,o.state AS delivery FROM turn_records r JOIN events e ON e.seq=r.seq LEFT JOIN reply_outbox o ON o.seq=e.seq WHERE e.session=? AND e.role=\'agent\' ORDER BY e.seq DESC LIMIT 1',(session['id'],)).fetchone()
@@ -27,7 +29,7 @@ def dashboard(state):
             task=dict(id=task['id'],name=task['name'],state=task['state']) if task else None,
             branch=intern['code_branch'] if intern else None,branch_layout=intern['metadata_mode'] if intern else None,sync=latest['sync'] if latest else 'synced',
             console=console(state,session),model=session.get('model'),chat_url=chat_link(session['chat_id']) if session['chat_id'] else None,
-            recovery=recovery_status(state,session['id']),research_watches=research_listing(state,session),reply_delivery=('delivered' if latest['receipt'] else latest['delivery'] or 'not ready') if latest else 'not ready',
+            recovery=recovery_status(state,session['id']),research_watches=research_listing(state,session),goal=goal_status(state,session),pending_questions=len(pending_questions(state,session)),reply_delivery=('delivered' if latest['receipt'] else latest['delivery'] or 'not ready') if latest else 'not ready',
             file_transfers=dict(state.db.execute('SELECT state,COUNT(*) FROM file_transfers WHERE session=? GROUP BY state',(session['id'],)).fetchall()),
             peer_messages=dict(state.db.execute('SELECT state,COUNT(*) FROM peer_mail WHERE sender=? OR recipient=? GROUP BY state',(session['id'],session['id'])).fetchall()),
             attached_terminal=bool(state.db.execute('SELECT 1 FROM terminal_attachments WHERE session=?',(session['id'],)).fetchone())))
@@ -82,6 +84,10 @@ def diagnose(state):
         releases=release_policy(state)
         add('release_sync',not releases or not releases['enabled'] or connected and h.get('release_worker_alive') and not h.get('release_error_type'),
             'Inspect the configured release operator and dashboard release jobs. A queued handoff does not prove that a VSIX was published.',False)
+        add('goal_continuations',connected and h.get('goal_worker_alive') and not h.get('goal_error_type'),
+            'Inspect /goal and its task, question, Git and delivery boundaries.',False)
+        add('question_delivery',connected and h.get('question_worker_alive') and not h.get('question_error_type'),
+            'Inspect /questions. Publish the card.action.trigger long-connection callback; use /answer for text fallback.',False)
         add('thinking_reaction',not h.get('typing_error_type') and bool(state.db.execute('SELECT 1 FROM message_reactions LIMIT 1').fetchone()),'Verify im:message.reactions:write_only and an observed reaction; app publication may be needed.',False)
     except (OSError,ValueError,Invalid,KeyError):add('receiver',False,'Start the relay and check status.')
     add('tracked_workspace',bool(state.db.execute('SELECT 1 FROM tracked_workspaces WHERE published=1').fetchone()),'Attach a clean GitHub workspace; each bot publishes its own branch.')
@@ -109,6 +115,8 @@ def session_command(relay,session,action):
     if not session:raise Invalid('Choose a workspace conversation')
     state=relay.state
     if state.ledger.busy(session['id']):raise Invalid('Stop or finish the active turn before changing the conversation')
+    from .user_questions import pending as pending_questions
+    if pending_questions(state,session):raise Invalid('Answer or /stop the pending question before changing the conversation')
     if state.db.execute("""SELECT 1 FROM events e WHERE session=? AND state IN ('queued','uncertain_execution','uncertain_delivery','record_blocked','sync_pending')
         AND NOT (e.role='control' AND e.state='uncertain_execution' AND EXISTS(SELECT 1 FROM fast_controls f WHERE f.seq=e.seq AND f.session=e.session AND f.phase='verified'))""",(session['id'],)).fetchone():
         raise Invalid('Resolve queued or uncertain work first')
@@ -176,25 +184,5 @@ def usage(relay,session):
 
 
 def goal(relay,session,tokens):
-    if not session:raise Invalid('Choose a workspace conversation')
-    if relay.terminal.binding(session):raise Invalid('Use /goal in the original terminal; its native goal is preserved')
-    if relay.state.ledger.busy(session['id']):raise Invalid('Finish or stop the current turn before editing its goal')
-    action=tokens[0] if tokens else 'show'
-    if action not in {'show','set','clear'}:raise Invalid('Use /goal, /goal set TOKEN_BUDGET OBJECTIVE, or /goal clear. Automatic goal execution is not enabled.')
-    if action=='set':
-        try:budget=int(tokens[1]);objective=' '.join(tokens[2:])
-        except (ValueError,IndexError):raise Invalid('Supply a positive token budget and objective') from None
-        if not 1<=budget<=1000000 or not 1<=len(objective)<=4000:raise Invalid('Goal requires 1–1,000,000 tokens and an objective of at most 4,000 characters')
-    relay.host.ensure_started(session)
-    connection=relay.host.connect(session=session)
-    try:
-        p=relay.host.thread_params(session);p.update(threadId=session['thread_id'],excludeTurns=True);connection.request('thread/resume',p)
-        if action=='set':data=connection.request('thread/goal/set',dict(threadId=session['thread_id'],objective=objective,tokenBudget=budget,status='paused'))
-        elif action=='clear':data=connection.request('thread/goal/clear',dict(threadId=session['thread_id']))
-        else:data=connection.request('thread/goal/get',dict(threadId=session['thread_id']))
-        visible={k:v for k,v in (data.get('goal') or {}).items() if k in {'objective','status','tokenBudget','tokensUsed','timeUsedSeconds'}}
-        if action!='show':
-            from .memory import remember
-            remember(relay.tracker,session,'note','Goal '+action+': '+json.dumps(visible,ensure_ascii=False))
-        return json.dumps(dict(goal=visible or None,automatic_continuations=False,note='Goals stay paused. Send explicit tracked messages to work toward the objective.'),ensure_ascii=False)
-    finally:connection.close()
+    from .goals import command
+    return command(relay,session,tokens)

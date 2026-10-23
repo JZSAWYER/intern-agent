@@ -91,15 +91,14 @@ windows. It does not invent monetary prices or quota remaining. Counts require
 app-server token notifications; the attached terminal does not claim token
 telemetry it has not observed.
 
-`/goal set TOKEN_BUDGET OBJECTIVE`, `/goal` and `/goal clear` manage a **paused**
-native Codex goal. Updates are recorded in workspace knowledge. Work proceeds
-through explicit tracked messages. Automatic goal continuation is deliberately
-unavailable until every generated turn can be observed, stopped and recorded.
-For long background experiments, the separate [research wake-up pipeline](AUTORESEARCH.md)
-now supports explicit persistent deadlines and bounded same-thread checks through
-normal observed/stoppable/recorded turns. It does not resume native goals or
-restore the original unbounded loop. Context and
-goal APIs follow the [official Codex App Server documentation](https://learn.chatgpt.com/docs/app-server).
+`/goal OBJECTIVE`, `/goal set [TOKEN_BUDGET] OBJECTIVE`, `/goal`,
+`/goal pause|resume|clear` and `/goal auto on|off` manage persistent goals.
+Semantic selection uses the current owner's actual request. Every continuation
+uses the normal observed/stoppable/recorded turn pipeline and waits for Git
+upload and reply delivery; the native objective is held paused as that gate.
+Long background experiments use the separate [research wake-up pipeline](AUTORESEARCH.md).
+See [goals and answer cards](GOALS_AND_QUESTIONS.md) for lifecycle, evidence,
+budgets, native compatibility and required Feishu callback configuration.
 
 ## Team workflow
 
@@ -225,4 +224,5 @@ but their fail-open exception handling and intrusive output checklists should
 not return. The current pipeline validates stored Markdown and Git deliveries;
 ordinary user prompts and natural final replies remain unchanged. Old Codeup
 defaults, credential backups, automatic merges, mandatory second branches and
-unbounded autonomous goal loops remain retired.
+untracked autonomous goal loops remain retired. Persistent goals now use the
+same Git and delivery boundary as ordinary work.

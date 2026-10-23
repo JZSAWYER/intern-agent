@@ -60,7 +60,7 @@ HELP = ("Intern Agent tutorial\n\n"
         "/clear or /restart — start fresh Codex context; Git history and the selected task stay saved\n"
         "/archive /unarchive — retire or restore a conversation without deleting its group or branches\n"
         "/usage or /cost — observed token counts and account limits; no inferred price\n"
-        "/goal /goal set TOKEN_BUDGET OBJECTIVE /goal clear — save a paused native goal; execution remains explicit\n"
+        "/goal OBJECTIVE /goal set [TOKENS] OBJECTIVE — pursue a persistent goal\n/goal pause|resume|clear /goal auto on|off — goal controls\n/questions /answer CODE TEXT — choices and custom answers; /help questions\n"
         "/progress summary|messages|off — one editable progress message, separate messages, or off; public prose only\n"
         "/queue TEXT — save a separate later task; ordinary owner text steers a running turn\n"
         "/trigger all|mentions — owner selects when group text starts Codex; controls always work\n"
@@ -141,6 +141,9 @@ class FeishuAPI:
         self._redact = credentials["app_secret"]
         self.client = (lark.Client.builder().app_id(self.app_id).app_secret(self._redact)
                        .domain(lark.FEISHU_DOMAIN).timeout(30).log_level(lark.LogLevel.ERROR).build())
+        self.question_client=(lark.Client.builder().app_id(self.app_id).app_secret(self._redact)
+                              .domain(lark.FEISHU_DOMAIN).timeout(10).log_level(lark.LogLevel.ERROR).build())
+        self.question_lock=threading.Lock()
         # SDK logs may contain signed connection URLs. Expose only our fixed status labels.
         lark.logger.disabled = True
         self.lock = threading.Lock()
@@ -195,6 +198,20 @@ class FeishuAPI:
 
     def progress(self,chat,text,key):
         return self.send(chat,text,key)
+
+    def send_question(self,chat,card,key):
+        from lark_oapi.api.im.v1 import CreateMessageRequest,CreateMessageRequestBody
+        content=json.dumps(card,ensure_ascii=False).replace(self._redact,'[redacted]')
+        body=CreateMessageRequestBody.builder().receive_id(chat).msg_type('interactive').content(content).uuid(hashlib.md5(key.encode()).hexdigest()).build()
+        with self.question_lock:response=self.question_client.im.v1.message.create(CreateMessageRequest.builder().receive_id_type('chat_id').request_body(body).build())
+        if not response.success() or not response.data or not response.data.message_id:raise FeishuError('send_question',response.code)
+        return response.data.message_id
+
+    def update_question(self,message,card):
+        from lark_oapi.api.im.v1 import PatchMessageRequest,PatchMessageRequestBody
+        body=PatchMessageRequestBody.builder().content(json.dumps(card,ensure_ascii=False).replace(self._redact,'[redacted]')).build()
+        with self.question_lock:response=self.question_client.im.v1.message.patch(PatchMessageRequest.builder().message_id(message).request_body(body).build())
+        if not response.success():raise FeishuError('update_question',response.code)
 
     def edit_progress(self,receipt,text):
         from lark_oapi.api.im.v1 import UpdateMessageRequest,UpdateMessageRequestBody
@@ -292,6 +309,7 @@ class Relay:
         self.state, self.api = state, api
         self.tracker=tracker or WorkspaceTracking(state)
         self.host = host or CodexHost(state, self.notify,tracker=self.tracker)
+        self.host.question_cards=hasattr(api,'send_question')
         self.terminal = TerminalBridge(state,self.tracker)
         self.stop = threading.Event()
         self.receiver = None
@@ -318,6 +336,11 @@ class Relay:
                 'The Control group has no bound Codex conversation yet. Attach a tracked Git workspace with the local attach-controller command; slash commands still work.',
                 'controller-unavailable:'+payload['header']['app_id']+':'+payload['event']['message']['message_id'])
         return result
+
+    def receive_card(self,payload):
+        from .user_questions import callback
+        try:return {'toast':{'type':'success','content':callback(self,payload)}}
+        except Invalid as error:return {'toast':{'type':'error','content':str(error)}}
 
     def attach_controller(self,workspace,session_id=None):
         self.tracker.require_workspace(workspace)
@@ -407,7 +430,7 @@ class Relay:
         controller=self.state.controller_session() if management else None
         local_commands={'model','models','reasoning','fast','compact','clear','restart','archive','unarchive',
             'cost','usage','goal','progress','trigger','skills','send-file','files','task','chat','memory',
-            'stop','cancel','pause','resume','console','recovery','mail','research'}
+            'stop','cancel','pause','resume','console','recovery','mail','research','questions'}
         if controller and item.get('session')==controller['id'] and command in local_commands:
             if not argument or not argument.startswith('s_'):management=False
         if command=='queue':
@@ -447,6 +470,12 @@ class Relay:
                 if argument.lower().lstrip('/') in {'research','watch'}:
                     from .research import HELP as RESEARCH_HELP
                     return RESEARCH_HELP
+                if argument.lower().lstrip('/') in {'goal','goals'}:
+                    from .goals import HELP as GOAL_HELP
+                    return GOAL_HELP
+                if argument.lower().lstrip('/') in {'question','questions','answer'}:
+                    from .user_questions import HELP as QUESTION_HELP
+                    return QUESTION_HELP
                 raise Invalid("Unknown tutorial topic. Use /help, /help model or /help files.")
             context = "You are in the management group." if management else "You are in a workspace chat."
             extra=''
@@ -478,10 +507,19 @@ class Relay:
             from .operations import diagnose
             return json.dumps(diagnose(self.state),ensure_ascii=False)
         if command=='goal':
+            if item['sender']!=self.state.identity()['owner']:raise Invalid('Only the owner can manage goals')
             from .operations import goal
             tokens=item['text'].split()[1:]
             session=self.state.session(tokens.pop(0) if management and tokens else item['session'])
             return goal(self,session,tokens)
+        if command=='questions':
+            from .user_questions import describe,demo
+            tokens=item['text'].split()[1:]
+            session=self.state.session(tokens.pop(0) if management and tokens and tokens[0].startswith('s_') else item['session'])
+            if tokens==['test']:
+                if item['sender']!=self.state.identity()['owner']:raise Invalid('Only the owner can send a question test')
+                return demo(self.state,session)
+            return describe(self.state,session)
         if command=='progress':
             session=self.state.session(argument if management else item['session'])
             mode=parts[2] if management and len(parts)>2 else argument if not management else None
@@ -562,6 +600,13 @@ class Relay:
         if command in {"approve", "deny", "answer"}:
             if not argument:
                 raise Invalid("Supply the request code")
+            if command=='answer':
+                if item['sender']!=self.state.identity()['owner']:raise Invalid('Only the owner can answer Codex questions')
+                from .user_questions import answer
+                row=self.state.db.execute('SELECT session FROM user_questions WHERE code=?',(argument,)).fetchone()
+                if not row:raise Invalid('Question unavailable; use /questions')
+                if not management and row['session']!=item['session']:raise Invalid('This question belongs to another conversation')
+                return answer(self.state,self.state.session(row['session']),argument,parts[2] if len(parts)>2 else '')
             self.host.decide(argument, command, None if management else item["session"],
                              parts[2] if len(parts) > 2 else None)
             return "Decision sent to Codex."
@@ -573,10 +618,15 @@ class Relay:
             if not session or session["state"] not in {"ready", "paused"}:
                 raise Invalid("Unknown or unfinished session")
             if command == "cancel":
+                from .goals import current,control as goal_control
+                saved_goal=current(self.state,session);goal_paused=bool(saved_goal and saved_goal['status'] not in {'paused','complete'})
+                if saved_goal:goal_control(self.state,session,'pause')
+                from .user_questions import cancel as cancel_questions
+                cancelled_questions=cancel_questions(self.state,session)
                 from .auto_recovery import cancel as cancel_recovery
                 cancelled_recovery=cancel_recovery(self.state,session['id'])
                 from .research import cancel_session
-                affected=self.state.ledger.stop(session)+cancelled_recovery+cancel_session(self.state,session)
+                affected=self.state.ledger.stop(session)+cancelled_recovery+cancel_session(self.state,session)+cancelled_questions+int(goal_paused)
                 try:
                     if self.terminal.binding(session):self.terminal.interrupt(session)
                     else:self.host.interrupt(target)
@@ -587,6 +637,8 @@ class Relay:
                 return "Cancellation requested. Queued turns cancelled; the current turn is being interrupted. The session and named task remain available."
             if command == "resume":self.tracker.code_directory(session)
             if command=='pause':
+                from .goals import current,control as goal_control
+                if current(self.state,session):goal_control(self.state,session,'pause')
                 from .auto_recovery import cancel as cancel_recovery
                 cancel_recovery(self.state,session['id'])
                 from .research import cancel_session
@@ -876,11 +928,19 @@ class Relay:
                     research_guard(self,item)
                     from .release_sync import guard as release_guard
                     release_guard(self,item)
+                    from .goals import guard as goal_guard
+                    goal_guard(self,item)
                     if hasattr(self.tracker,'begin_turn'):self.tracker.begin_turn(session,item)
                     if isinstance(self.tracker,WorkspaceTracking):
                         self.state.ledger.update(item,'running',activity='running')
                     else:self.tracker.record(session,item,'Running')
                 except Exception as error:
+                    from .goals import Deferred as GoalDeferred
+                    if isinstance(error,GoalDeferred):
+                        self.state.db.execute("UPDATE events SET state='queued' WHERE seq=? AND state='running'",(item['seq'],))
+                        self.state.db.execute('UPDATE dispatch_attempts SET retry_at=? WHERE seq=? AND stage=\'preflight\'',(error.due,item['seq']))
+                        self.state.ledger.update(item,'waiting',activity='waiting')
+                        return 'deferred'
                     from .research import Deferred
                     if isinstance(error,Deferred):
                         watch=self.state.db.execute('SELECT w.state FROM research_event_scope r JOIN research_watches w ON w.id=r.watch WHERE r.seq=?',(item['seq'],)).fetchone()
@@ -1085,6 +1145,10 @@ class Relay:
                 "peer_health": getattr(self,'peer_health',None),
                 "release_worker_alive": bool(getattr(self,'release_thread',None) and self.release_thread.is_alive()),
                 "release_error_type": getattr(self,'release_error_type',None),
+                "goal_worker_alive": bool(getattr(self,'goal_thread',None) and self.goal_thread.is_alive()),
+                "goal_error_type": getattr(self,'goal_error_type',None),
+                "question_worker_alive": bool(getattr(self,'question_thread',None) and self.question_thread.is_alive()),
+                "question_error_type": getattr(self,'question_error_type',None),
                 "typing_error_type": self.typing_error,
                 "context_refresh": self.context_refresh,
                 "steering_worker_alive": bool(getattr(self,'steering_thread',None) and self.steering_thread.is_alive())})
@@ -1120,6 +1184,12 @@ class Relay:
             from .release_sync import loop as release_loop
             releases=threading.Thread(target=release_loop,args=(self,),daemon=True);self.release_thread=releases
             releases.start();self.threads.append(releases)
+            from .goals import loop as goal_loop
+            goals=threading.Thread(target=goal_loop,args=(self,),daemon=True);self.goal_thread=goals
+            goals.start();self.threads.append(goals)
+            from .user_questions import loop as question_loop
+            questions=threading.Thread(target=question_loop,args=(self,),daemon=True);self.question_thread=questions
+            questions.start();self.threads.append(questions)
             from .delivery import loop as delivery_loop
             courier=threading.Thread(target=delivery_loop,args=(self,),daemon=True)
             courier.start();self.threads.append(courier)
@@ -1151,7 +1221,10 @@ class Relay:
                     self.last_error = type(error).__name__
                     # Queue persistence failures propagate: do not acknowledge durable acceptance.
                     raise
-            handler = lark.EventDispatcherHandler.builder("", "").register_p2_im_message_receive_v1(callback).build()
+            def card_callback(data):
+                from lark_oapi.event.callback.model.p2_card_action_trigger import P2CardActionTriggerResponse
+                return P2CardActionTriggerResponse(self.receive_card(json.loads(lark.JSON.marshal(data))))
+            handler = lark.EventDispatcherHandler.builder("", "").register_p2_im_message_receive_v1(callback).register_p2_card_action_trigger(card_callback).build()
             self.receiver = lark.ws.Client(credentials["app_id"], credentials["app_secret"],
                                             domain=lark.FEISHU_DOMAIN, event_handler=handler, log_level=lark.LogLevel.ERROR)
             # Public SDK hooks expose connection state without logging signed URLs.
@@ -1215,6 +1288,12 @@ def main(argv=None):
     file_status.add_argument('--context',required=True);file_status.add_argument('transfer',nargs='?')
     file_permissions=commands.add_parser('file-permissions',help='Read the current app file permission status; never changes scopes')
     file_permissions.add_argument('--context',required=True)
+    goal_tool=commands.add_parser('goal-tool',help='Context-bound semantic goal selection and evidence checkpoints')
+    goal_tool.add_argument('action',choices=['start','progress','complete','blocked','wait','pause','status'])
+    goal_tool.add_argument('--context',required=True);goal_tool.add_argument('--objective');goal_tool.add_argument('--budget',type=int)
+    goal_tool.add_argument('--note',default='');goal_tool.add_argument('--next',dest='next_action',default='');goal_tool.add_argument('--after')
+    ask_tool=commands.add_parser('ask',help='Read structured questions from JSON stdin and wait for their exact Feishu answers')
+    ask_tool.add_argument('--context',required=True);ask_tool.add_argument('--key')
     peer=commands.add_parser('peer',help='Context-bound durable bot communication')
     peer.add_argument('--context',required=True)
     peer.add_argument('action',choices=['list','ask','note','reply','status','read','ack','cancel'])
@@ -1330,6 +1409,39 @@ def main(argv=None):
         elif args.command in {'dashboard','doctor'}:
             from .operations import dashboard,diagnose
             print(json.dumps(dashboard(state) if args.command=='dashboard' else diagnose(state),indent=2))
+        elif args.command=='ask':
+            from .research import actor
+            from .user_questions import ask
+            raw=sys.stdin.read(65537)
+            if len(raw)>65536:raise Invalid('Question input exceeds 64 KiB')
+            value=json.loads(raw)
+            if not isinstance(value,dict) or set(value)!={'questions'}:raise Invalid('Supply a questions array through JSON stdin')
+            print(json.dumps(ask(state,actor(state,args.context),value['questions'],key=args.key),ensure_ascii=False))
+        elif args.command=='goal-tool':
+            from .research import actor
+            from . import goals
+            session=actor(state,args.context)
+            if args.action=='start':
+                result=goals.start(state,session,args.objective or '',budget=args.budget,auto=True)
+            elif args.action=='status':result=goals.visible(goals.current(state,session))
+            elif args.action=='pause':
+                goals.owner_turn(state,session);result=goals.control(state,session,'pause')
+            else:
+                source=state.db.execute("SELECT seq FROM events WHERE session=? AND role='agent' AND state IN ('running','awaiting_terminal') ORDER BY seq DESC LIMIT 1",(session['id'],)).fetchone()
+                if source:
+                    from .peer_mail import binding as mail_binding
+                    if mail_binding(state,source[0])[1] or state.db.execute('SELECT 1 FROM release_jobs WHERE event_seq=?',(source[0],)).fetchone():raise Invalid('Peer and release work cannot change this goal')
+                else:goals.owner_turn(state,session)
+                result=goals.checkpoint(state,session,args.action,note=args.note,next_action=args.next_action,after=args.after)
+            if args.action in {'start','complete'}:
+                from types import SimpleNamespace
+                tracker=WorkspaceTracking(state)
+                relay=SimpleNamespace(state=state,tracker=tracker,host=CodexHost(state,tracker=tracker),terminal=TerminalBridge(state,tracker))
+                try:goals.sync_native(relay,session)
+                except Invalid as error:
+                    state.db.execute("UPDATE goal_plans SET status='yielded',note=? WHERE id=?",(str(error),goals.current(state,session)['id']));goals.persist(state,session)
+                except Exception:pass
+            print(json.dumps(result,ensure_ascii=False))
         elif args.command=='research':
             from .research import actor,execute
             session=actor(state,args.context) if args.context else state.session(args.session)

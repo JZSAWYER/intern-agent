@@ -1,5 +1,45 @@
 # Feature and fix record
 
+## 0.2.0 — Goals, questions and private release synchronization
+
+Imports maintained commit 56edf2640439c25d088ee844063f41faf6a99f70: durable
+goal continuation, owner question/answer forms, exact terminal question routing,
+portable goal records and two editor commands. Preserve source/VSIX/skills parity.
+A reproduced question-history persistence bug is fixed locally: sanitize the
+individual question/answer strings before JSON serialization, preserving valid
+structured records while redacting secrets. Regression checks cover placeholders,
+known-secret exclusion and actual Git decision persistence.
+
+The product remains MIT with its stable extension identity. Release tooling now
+pins the private channel and owner public-visibility hold, records the clean
+product commit, and verifies private asset downloads. Routine synchronization
+cannot change repository visibility. Fresh versions preserve earlier assets.
+
+Verification distinguishes offline backend/editor/recovery checks, isolated
+installation and authenticated remote artifact verification from real account
+card callbacks, Remote SSH activation and production service acceptance.
+
+
+## 2026-10-24 — Recorded goal continuations and Feishu answer forms
+
+Replaced the paused-only goal pilot with durable, owner-controlled goal plans.
+Semantic selection runs inside the existing Codex turn, through separate hook
+context and a context-bound tool. Continuations reuse normal workspace/task,
+Git and delivery boundaries, with owner-message priority, question waits,
+pause/stop, explicit budgets and no-progress suppression. Goal evidence,
+remaining work and semantic preferences survive validated Git recovery; cold
+recovery requires explicit reconnection/resume. Native goals are compatibility
+mirrors held at the publication gate, not independent dispatchers.
+
+Questions now preserve options, descriptions, individual question IDs and custom
+answers. Native/RPC duplicate observations share a durable request, multi-question
+responses are mapped separately, and full-access execution never answers them.
+Feishu forms use the long-connection card callback, with text fallback, delivery
+states, owner/chat/message checks and stale/uncertain submission protection.
+The ordinary-mode question tool is enabled for managed Codex threads. Native
+answers use only the verified existing question console, never a replacement.
+Editor controls and GOALS_AND_QUESTIONS.md document the feature and account setup.
+
 ## 0.1.0 — Clean MIT product release
 
 **Source:** maintained commit c0aa1748223011e244080a7cd4ec58228988beff, exported

@@ -1,8 +1,13 @@
 # Intern Agent feature tutorial
 
-## Installable public product 0.1.0
+## Installable product 0.2.0
 
-Install the versioned public VSIX with its matching isolated runtime and verify
+This update includes durable goal continuation and owner question forms. Decision
+history redacts individual text fields before serialization, preserving valid
+JSON and excluding secret answers from published decision records.
+
+The product repository and releases stay private until the owner explicitly asks
+for public visibility. Install the versioned product VSIX with its matching isolated runtime and verify
 SHA256SUMS/provenance first. The public identity/namespace is independent of
 the development preview. Source and complete recovery/file/install/contributor
 skills are attached alongside the VSIX. Use [installation](INSTALL.md),
@@ -24,6 +29,23 @@ a stable extension identity, licensed clean source and versioned VSIX/skills
 artifacts; see [the release workflow](PUBLISHED_RELEASE.md). “Implemented” does
 not imply every account permission, editor installation or live operation has
 been accepted.
+
+## Persistent goals and questions
+
+**Purpose:** continue a verified owner objective across turns, and answer real
+Codex choices in Feishu instead of losing them in a terminal.
+
+**Use:** `/goal OBJECTIVE`, `/goal`, `/goal pause|resume|clear` and
+`/goal auto on|off`. Semantic selection uses the current owner request without
+rewriting it. Codex records evidence and remaining work; each continuation waits
+for the prior Git upload and Feishu reply. `/stop` also pauses the goal.
+
+Question cards include options, descriptions and custom text, preserving each
+question independently. Use `/questions` or `/answer CODE TEXT` as a fallback.
+The app needs the published `card.action.trigger` long-connection callback.
+VS Code adds **Manage Persistent Goal** and **Show Pending Codex Questions**.
+See [the goal and question tutorial](GOALS_AND_QUESTIONS.md) for budgets,
+native compatibility, recovery boundaries and account setup.
 
 ## Reconnect or recover on another computer
 
@@ -115,8 +137,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.1.0 uses
-maintained source c0aa1748223011e244080a7cd4ec58228988beff and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.0 uses
+maintained source 56edf2640439c25d088ee844063f41faf6a99f70 and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace

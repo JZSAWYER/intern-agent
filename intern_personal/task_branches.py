@@ -18,6 +18,8 @@ def check_bot_task(tracker,session,task):
 def command(tracker, session, action, argument=''):
     if not session:raise Invalid('Choose a workspace conversation')
     state=tracker.state
+    from .user_questions import pending as pending_questions
+    if action in {'start','use','finish','pause','cancel','chat'} and pending_questions(state,session):raise Invalid('Answer or /stop the pending question before changing its task')
     if state.ledger.busy(session['id']) and action not in {'status','list'}:
         raise Invalid('Stop or finish the current agent turn before changing its task')
     if action in {'brief','report'}:

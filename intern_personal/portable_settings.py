@@ -35,7 +35,7 @@ def snapshot(state,workspace,conversations=None):
         lifecycle=prior['prior_state'] if session['state']=='restored' and prior else session['state']
         rows.append(dict(conversation=sid,role=role(state,sid),lifecycle=lifecycle,model=one('session_settings','model,effort'),
             fast=one('session_service_tiers','tier'),progress=one('progress_settings','enabled,presentation'),
-            trigger=one('trigger_settings','mode'),automatic_recovery=recovery))
+            trigger=one('trigger_settings','mode'),automatic_recovery=recovery,goal_selection=one('goal_settings','automatic')))
     return dict(schema=SCHEMA,conversations=rows)
 
 
@@ -43,7 +43,7 @@ def validate(data,conversations):
     if not isinstance(data,dict) or set(data)!={'schema','conversations'} or data['schema']!=SCHEMA or not isinstance(data['conversations'],list):raise Invalid('Invalid portable conversation settings')
     seen=set()
     for row in data['conversations']:
-        if (not isinstance(row,dict) or set(row)!={'conversation','role','lifecycle','model','fast','progress','trigger','automatic_recovery'}
+        if (not isinstance(row,dict) or set(row)-{'goal_selection'}!={'conversation','role','lifecycle','model','fast','progress','trigger','automatic_recovery'}
                 or not isinstance(row['role'],str) or row['role'] not in {'agent','native','controller','recovery_operator'}
                 or not isinstance(row['lifecycle'],str) or row['lifecycle'] not in {'ready','paused','archived','creating','restored'}
                 or not isinstance(row['conversation'],str) or row['conversation'] not in conversations or row['conversation'] in seen):raise Invalid('Portable settings cross conversation identities')
@@ -57,6 +57,8 @@ def validate(data,conversations):
             item=row[kind]
             if item is not None and (not isinstance(item,dict) or set(item)!={key} or not isinstance(item[key],(str,int)) or item[key] not in values):raise Invalid('Invalid portable '+kind+' preference')
         progress=row['progress']
+        goal=row.get('goal_selection')
+        if goal is not None and (not isinstance(goal,dict) or set(goal)!={'automatic'} or type(goal['automatic']) is not int or goal['automatic'] not in {0,1}):raise Invalid('Invalid portable semantic goal preference')
         if progress is not None and (not isinstance(progress,dict) or set(progress)!={'enabled','presentation'} or type(progress['enabled']) is not int
                 or progress['enabled'] not in {0,1} or progress['presentation'] not in {'editable','messages'}):raise Invalid('Invalid portable progress preference')
     return data
@@ -86,6 +88,7 @@ def apply(state,data):
         if row['progress']:state.db.execute('INSERT INTO progress_settings VALUES(?,?,?)',(sid,row['progress']['enabled'],row['progress']['presentation']))
         if row['trigger']:state.db.execute('INSERT INTO trigger_settings VALUES(?,?)',(sid,row['trigger']['mode']))
         if row['automatic_recovery']:state.db.execute('INSERT INTO recovery_session_settings VALUES(?,?)',(sid,row['automatic_recovery']['enabled']))
+        if row.get('goal_selection'):state.db.execute('INSERT OR REPLACE INTO goal_settings VALUES(?,?)',(sid,row['goal_selection']['automatic']))
 
 
 def activate_role(state,session):

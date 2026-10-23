@@ -58,6 +58,24 @@ class TerminalTests(unittest.TestCase):
         self.event('task_started',turn_id='prior');self.attach()
         self.event('task_complete',turn_id='prior',last_agent_message='prior response');self.bridge.poll(self.session)
 
+    def test_async_question_shape_and_ack_do_not_lose_the_owner_question(self):
+        self.idle_attachment();self.event('task_started',turn_id='new-question');self.message('Choose a dataset')
+        with self.rollout.open('a') as stream:
+            stream.write(json.dumps(dict(type='response_item',payload=dict(type='function_call',name='functions.request_user_input_async',call_id='question-call',arguments=json.dumps({'questions':[{'title':'Which dataset?', 'options':['Small','Full']}]}))))+'\n')
+            stream.write(json.dumps(dict(type='response_item',payload=dict(type='function_call_output',call_id='question-call',output='The question was presented; no answer yet.')))+'\n')
+        self.bridge.poll(self.session);self.bridge.poll(self.session)
+        row=self.state.db.execute('SELECT * FROM user_questions').fetchone()
+        self.assertEqual(row['source'],'native_async');self.assertEqual(row['state'],'new');self.assertEqual(row['blocking'],0)
+        self.assertEqual(json.loads(row['questions'])[0]['options'][1]['label'],'Full')
+
+    def test_malformed_native_question_does_not_stall_later_completion(self):
+        self.idle_attachment();self.event('task_started',turn_id='invalid-question');self.message('Owner request')
+        with self.rollout.open('a') as stream:
+            stream.write(json.dumps(dict(type='response_item',payload=dict(type='function_call',name='functions.request_user_input',call_id='bad-question',arguments='{"questions":[{"title":"No required ID"}]}')))+'\n')
+        self.event('task_complete',turn_id='invalid-question',last_agent_message='Still observed')
+        self.bridge.poll(self.session)
+        self.assertEqual(self.state.db.execute("SELECT result FROM terminal_turns WHERE turn_id='invalid-question'").fetchone()[0],'Still observed')
+
     def test_generated_environment_update_before_prompt_does_not_block_completion(self):
         self.idle_attachment();self.pending('Original owner words')
         self.event('task_started',turn_id='incoming');self.environment();self.message('Original owner words')

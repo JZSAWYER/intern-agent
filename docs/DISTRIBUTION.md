@@ -1,113 +1,111 @@
 # Intern Agent product and release workflow
 
-The product is **Intern Agent**, first stable version **0.1.0**, at
-`https://github.com/JZSAWYER/intern-agent`. This is a new, clean public destination;
-the private tracking repository and its operational history stay private. The owner authorized this clean public release under MIT from maintained commit
-`c0aa1748223011e244080a7cd4ec58228988beff`. The release operator verifies the
-clean public commit and uploaded artifact hashes; no private repository history
-or Marketplace publication is included.
+Intern Agent 0.2.0 uses MIT and maintained source
+`56edf2640439c25d088ee844063f41faf6a99f70`. Its separate product repository is
+`https://github.com/JZSAWYER/intern-agent`. The owner has explicitly placed this
+repository under a **private visibility hold** until a later explicit request to
+go public. Feature synchronization and inherited public-release wording do not
+lift that hold. No release tool changes repository visibility.
 
 ## Product inputs and identity
 
-`release-product.json` records the destination, fresh stable version, extension
-identity, complete selected skills and dependency profile. Its approved handoff and release gates identify the reviewed release inputs. The reviewed source inventory remains
-`source-distribution.json`; the independent VSIX backend allowlist is
-`distribution.json`. Neither includes Git objects/history, `.intern_workspace`,
-enterprise references, private configuration, queues, credentials or transcripts.
+`source-distribution.json` inventories exact reviewed source files, original hashes
+and local product deltas. `distribution.json` independently selects VSIX backend
+inputs. Git history from private tracking, `.intern_workspace`, enterprise snapshots,
+credentials, account/chat/native identifiers and machine state are excluded.
 
-The public extension ID is `intern-agent.intern-agent`; commands, views, context
-values and machine settings use `internAgentPublic`. The preview remains
-`intern-agent-local.intern-agent-personal` with `internAgent` settings. The build
-changes both the manifest and JavaScript consistently, preserving separate
-settings and output channels. It does not migrate preview bindings or start a
-receiver. Stable VSIX metadata sets PreRelease=false and includes content types
-for every member. The package's generated frontend hashes and their source hashes
-are recorded explicitly, rather than compared against unchanged preview bytes. VS Code adds its own
-`__metadata` object when installing a VSIX. The installed-backend check accepts
-only that reserved metadata through an additional canonical manifest fingerprint;
-identity, commands/settings and all other manifest content stay pinned, as do
-script bytes. Source and VSIX archive comparisons still require exact bytes.
+The stable identity is `intern-agent.intern-agent`, version 0.2.0, with 39 commands
+and settings/views under `internAgentPublic`. This namespace remains stable across
+repository visibility changes and is distinct from the development preview's
+`intern-agent-local.intern-agent-personal` / `internAgent`. It does not migrate
+preview bindings or start a receiver. Source/VSIX byte checks and a separate
+canonical installed-manifest hash accept only VS Code's reserved `__metadata`;
+functional manifest fields and script content remain pinned.
 
-The clean public source and stable package declare MIT and include LICENSE and
-NOTICE. Final builds require approved source inventory and locked handoff. The
-optional --prepare mode remains an unlicensed, unpublished tooling exercise; its
-output cannot be installed as an approved skills release.
+`release-product.json` locks version, skills, public dependency profile and the
+verified maintained-source handoff. `release_channel=private`,
+`public_visibility_hold=true` and `final_handoff.channel=private` pin this release.
+The public channel is rejected while the hold is true. Switching to public needs
+the owner's explicit new request and a reviewed policy change; it is never an
+API side effect of publishing a release. MIT licensing is independent of whether
+the repository is currently visible publicly.
 
-## Build and reproduce release assets
+## Reproduce versioned assets
 
-From a clean checkout of the public product source root:
+From a clean product checkout with the exact credential-free origin:
 
 ```bash
-PUBLIC_COMMIT="$(git rev-parse HEAD)"
-python3 tools/build_release.py --check-only --expected-export-commit "$PUBLIC_COMMIT"
-python3 tools/build_release.py --expected-export-commit "$PUBLIC_COMMIT" \
-  --output-dir /path/outside/source/release-0.1.0
+PRODUCT_COMMIT="$(git rev-parse HEAD)"
+python3 tools/build_release.py --check-only --expected-export-commit "$PRODUCT_COMMIT"
+python3 tools/build_release.py --expected-export-commit "$PRODUCT_COMMIT" \
+  --output-dir /path/outside/source/release-0.2.0
 ```
 
-The destination must be new and outside the source tree. The deterministic assets
-are a VSIX, exact source ZIP, complete Codex skills ZIP, standalone skill installer,
-release-provenance.json and SHA256SUMS. Versioned filenames share one version.
-The source ZIP uses the exact source manifest, not git archive or a repository
-copy. The skills ZIP includes selected entrypoints **and referenced resources**;
-it contains no automatically executed installer. The separate installer is
-byte-identical to reviewed tools/install_skill_bundle.py.
+The destination must be new and outside source. The six files are the stable
+VSIX, exact source ZIP, complete skills ZIP, standalone skill installer,
+release-provenance.json and SHA256SUMS. Fixed ZIP modes, order and timestamps
+make two builds byte-identical. No existing output, tag or asset is overwritten.
+The optional --prepare mode creates unlicensed, unpublished tooling exercises;
+it is not a way to bypass final release approval.
 
-ZIP timestamps, ordering and file modes are fixed. Receipts include the maintained
-source commit, source inventory, dependency lock/profile hashes, package overlays
-and each asset's SHA-256. Temporary paths, build-host identities and private Git
-history are excluded. Building twice from identical inputs must yield identical
-bytes. Existing outputs, tags and release assets are never overwritten.
+Provenance records maintained_source_commit, product_source_commit, compatibility
+export_commit, channel, hold, inventories, dependency hashes and asset SHA-256.
+For a private release public_source_commit is null. The product Git commit is
+supplied externally to avoid a self-referential tracked hash. The builder makes
+no network changes; its published=false means publication is a separate step.
 
-## Final handoff and source updates
+The four selected skills are recover-intern-agent, feishu-file-transfer,
+install-on-linux and collaborate-on-source. Their entrypoints and inert references
+ship together with MIT notice. The separate installer is byte-identical to its
+reviewed source and requires an explicit destination/checksum/apply; it preserves
+modified user files. The bundled installer also retains full resources/notices
+and rejects linked ancestors. Skill installation starts no relay or agent.
 
-This release imports the committed cold recovery, SSH profile discovery, portable
-settings/roles and durable release-handoff features from the pinned source. Local
-product changes include the separate frontend identity, patched install profile,
-complete resource-preserving skill installation and reproducible release tooling.
-The source inventory records original and exported hashes for review. For a future
-handoff, import only verified committed changes; update FEATURE_GUIDE and CHANGELOG
-alongside implemented behavior.
+## Synchronize committed feature updates
 
-Set final_handoff.source_commit to that verified pin, with matching repository,
-version and explicit approval. Source and runtime manifests must pin the same
-commit. Ownership, MIT/license, dependency security and clean installation gates
-require actual reviewed evidence. Keep the export commit outside tracked handoff
-metadata to avoid a self-referential hash; CI supplies GITHUB_SHA separately.
+The maintained development checkout stays read-only to the release operator.
+Import only the verified source pin, reconcile local product/installation tooling,
+review per-file provenance and update FEATURE_GUIDE/CHANGELOG. Goals/questions in
+this version retain their owner, task, native publication and cold-recovery gates;
+release jobs cannot authorize goals. See [goals and questions](GOALS_AND_QUESTIONS.md).
 
-Use a history-free source import to establish the new public repository. Later
-updates copy only audited source changes into that public history. A Debug source
-feature must produce a durable verified release handoff, a fresh version and an
-updated clean export. Never mirror private refs or publish unverified drafts to
-force synchronization. Increment patch versions for fixes and minor versions for
-new compatible feature sets; all artifacts for one handoff use the same version.
+The product history begins with an audited source-only export. Later product
+commits extend that clean history; never merge private operational refs. Every
+feature handoff uses a fresh immutable version and consistent source/runtime pins,
+rights/license, dependency and installation gates. Keep all earlier versions.
 
-## GitHub automation
+The existing relay release worker can queue handoffs from its explicitly selected
+source conversation. A queued or completed operator event is not proof of upload.
+Receipts require exact remote source and downloaded asset hashes. The visibility
+hold remains authoritative regardless of an automatic handoff's inherited prose.
 
-The prepared `.github/workflows/release.yml` belongs at the **root** of the clean
-public repository. The private tracking wrapper keeps a copy under a source subtree; it is
-inert there. It accepts pushes to main only in the exact public destination, requires
-an approved source handoff and clean checkout/origin, then tests in an isolated,
-hash-locked Python environment and builds every asset twice. It covers code,
-frontend, tools, requirements, skills/resources, docs, manifests, workflow and
-license changes. A stale handoff fails; source updates do not approve themselves.
+## GitHub workflow and publication
 
-Before external mutation it checks public visibility, exact main commit and
-absence of the proposed tag/release. It creates a fresh immutable tag, uploads a
-draft, downloads and compares every asset byte and checks the tag commit before
-publishing. A failed upload leaves that new draft/tag for review; automation does
-not replace an existing version. The initial owner-driven local release uses a [skip ci] export commit to avoid
-a competing publisher. Subsequent versioned source updates use this workflow; its
-remote runner acceptance is separate from local verification. Main review policy and repository settings are separate owner
-operations; writing workflow files does not configure account permissions.
+The root `.github/workflows/release.yml` tests and builds versioned main updates
+only for the exact product repository. It requires an approved channel/handoff,
+clean tracked inventory and source commit. Event/API visibility must match the
+chosen channel; private source updates cannot publish publicly under the hold.
+No workflow creates a repository, changes visibility, invites a person or changes
+account permissions.
 
-## Installation and remaining acceptance
+Before mutation, verify the current main commit and unused tag/release version.
+Upload a new draft, download every asset with repository-scoped authentication
+and verify exact bytes/digests before completing the release. The private channel
+uses authenticated downloads after completion as well. Credentials stay in memory
+and are not forwarded to redirected CDN hosts. A partial draft/tag remains for
+review; never replace its assets blindly. Recheck repository visibility before
+upload and completion. The first local publisher for a version uses [skip ci]
+to avoid a competing workflow; later approved updates can use CI directly.
 
-[Installation](INSTALL.md) uses the patched public profile; the old deployment
-lock is explicit reproduction only. Real account login, Feishu pairing/scopes,
-Remote SSH/editor activation and receiver upgrade/rollback remain separate live
-acceptance. Installing a VSIX does not prove that the receiver switched runtime.
-No Marketplace publication, relay/research activation or existing-repository
-visibility change is part of this preparation.
+## Installation and acceptance limits
 
-Official references: [VS Code packaging and VSIX installation](https://code.visualstudio.com/api/working-with-extensions/publishing-extension),
-[extension manifest and host identity](https://code.visualstudio.com/api/references/extension-manifest).
+[Installation](INSTALL.md) uses the patched Linux x86_64 CPython 3.12 hash lock.
+The older dependency reference is reproduction-only, with dated advisories.
+No third-party wheels or tools are bundled. [Portable recovery](PORTABLE_RECOVERY.md)
+explains same-host discovery and cold GitHub recovery with independent accounts.
+
+Offline tests, mocked editor checks, isolated sideload/venv installation and remote
+asset verification are distinct from real Feishu/Codex accounts, card callbacks,
+Remote SSH activation and receiver upgrade/rollback/uninstall acceptance. This
+release does not change a production receiver or research job. No PR, merge,
+Marketplace publication or existing-repository visibility change is performed.

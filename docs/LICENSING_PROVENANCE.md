@@ -1,15 +1,23 @@
 # Licensing and dependency provenance review
 
+Current release channel: **private**, version **0.2.0**, maintained source
+`56edf2640439c25d088ee844063f41faf6a99f70`. The owner's private-visibility hold
+supersedes earlier public-release prose. Only an explicit later owner request
+can authorize going public. Source updates may upload new private releases;
+automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
+
 ## Approved MIT source release
 
-The owner explicitly authorized the separate clean public Intern Agent product
+The owner explicitly authorized the separate clean Intern Agent product
 at `JZSAWYER/intern-agent`, using MIT for maintained source commit
-`c0aa1748223011e244080a7cd4ec58228988beff`. [LICENSE](../LICENSE) covers the exported
+`56edf2640439c25d088ee844063f41faf6a99f70`. [LICENSE](../LICENSE) covers the exported
 first-party Python, frontend, guides, tests, templates and skills, including local
 release/install improvements. [NOTICE](../NOTICE) records scope and external tools.
 The source inventory records every reviewed input, its original hash where
 applicable, local changes and approved distribution rights. Enterprise snapshots
 and private history are excluded, rather than relicensed.
+
+Repository privacy does not change the license grant.
 
 The stable source manifest and VSIX declare MIT with the separate identity
 `intern-agent.intern-agent`. This is a sideloadable extension identity, not a
@@ -81,3 +89,7 @@ Installed wheel notices remain with their distributions. The separate skills
 installer retains the approved product notice beside its private receipt. The final source handoff is approved; clean-host/editor/live acceptance has the
 separate limits documented in INSTALL.md. The old
 reference lock and its recorded advisories remain explicitly historical.
+
+The same 15 selected versions were queried again on 2026-10-24 with no version
+advisories returned. This release reuses the exact wheel-hashed lock and repeats
+application/SDK installation checks against its own maintained-source pin.

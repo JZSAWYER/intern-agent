@@ -20,7 +20,7 @@ class ReleasePipelineTests(unittest.TestCase):
         self.source_commit = 'a' * 40
         self.config = {
             'schema': 'intern-agent.release-product.v1', 'repository': release.REPOSITORY,
-            'version': '0.1.0',
+            'version': '0.2.0', 'release_channel': 'private', 'public_visibility_hold': True,
             'extension': {'publisher': 'intern-agent', 'name': 'intern-agent',
                           'namespace': 'internAgentPublic', 'license': 'MIT', 'displayName': 'Intern Agent'},
             'skills': ['example-skill', 'recover-intern-agent', 'feishu-file-transfer'],
@@ -29,7 +29,7 @@ class ReleasePipelineTests(unittest.TestCase):
             'gates': {name: True for name in ['ownership_approved', 'license_approved',
                                             'dependency_security_approved', 'clean_install_approved']},
             'final_handoff': {'approved': True, 'source_commit': self.source_commit,
-                              'repository': release.REPOSITORY, 'version': '0.1.0'}}
+                              'repository': release.REPOSITORY, 'version': '0.2.0', 'channel': 'private'}}
         self.files = {
             'release-product.json': release.encoded(self.config), 'LICENSE': b'MIT synthetic test notice\n',
             'extension/package.json': release.encoded({'license': 'MIT'}),
@@ -91,17 +91,20 @@ class ReleasePipelineTests(unittest.TestCase):
         self.assertEqual(result['license'], 'UNLICENSED')
         self.assertIsNone(result['export_commit'])
         self.assertIsNone(result['public_source_commit'])
+        self.assertIsNone(result['product_source_commit'])
+        self.assertEqual(result['release_channel'], 'private')
+        self.assertTrue(result['public_visibility_hold'])
         self.assertEqual(result['maintained_source_commit'], self.source_commit)
         self.assertNotIn('artifact', result['vsix_build'])
-        self.assertEqual((first / 'intern-agent-0.1.0-install-skills.py').read_bytes(),
+        self.assertEqual((first / 'intern-agent-0.2.0-install-skills.py').read_bytes(),
                          self.files['tools/install_skill_bundle.py'])
         self.assertEqual({f.name: f.read_bytes() for f in first.iterdir()},
                          {f.name: f.read_bytes() for f in second.iterdir()})
         expected = self.files.keys() | {'source-distribution.json'}
-        with zipfile.ZipFile(first / 'intern-agent-0.1.0-source.zip') as archive:
+        with zipfile.ZipFile(first / 'intern-agent-0.2.0-source.zip') as archive:
             self.assertEqual(set(archive.namelist()), expected)
             self.assertFalse(any('.git' in Path(name).parts for name in archive.namelist()))
-        with zipfile.ZipFile(first / 'intern-agent-0.1.0-skills.zip') as archive:
+        with zipfile.ZipFile(first / 'intern-agent-0.2.0-skills.zip') as archive:
             self.assertEqual(set(archive.namelist()), {
                 'skills-manifest.json', 'skills/example-skill/SKILL.md',
                 'skills/example-skill/references/lifecycle.md',
@@ -119,10 +122,13 @@ class ReleasePipelineTests(unittest.TestCase):
         result = self.build(output, prepare=False)
         self.assertTrue(result['release_approved'])
         self.assertEqual(result['export_commit'], 'c' * 40)
-        self.assertEqual(result['public_source_commit'], 'c' * 40)
+        self.assertIsNone(result['public_source_commit'])
+        self.assertEqual(result['product_source_commit'], 'c' * 40)
+        self.assertEqual(result['release_channel'], 'private')
+        self.assertTrue(result['public_visibility_hold'])
         self.assertEqual(result['maintained_source_commit'], self.source_commit)
         self.assertFalse(result['published'])
-        with zipfile.ZipFile(output / 'intern-agent-0.1.0-skills.zip') as archive:
+        with zipfile.ZipFile(output / 'intern-agent-0.2.0-skills.zip') as archive:
             manifest = json.loads(archive.read('skills-manifest.json'))
             self.assertEqual(archive.read('LICENSE'), self.files['LICENSE'])
             self.assertEqual(manifest['license_file'], {'path': 'LICENSE', 'sha256': release.digest(self.files['LICENSE'])})
@@ -130,7 +136,8 @@ class ReleasePipelineTests(unittest.TestCase):
     def test_pending_or_different_handoff_never_creates_output(self):
         scenarios = [({'approved': False}, 'final_source_handoff_pending'),
                      ({'source_commit': 'd' * 40}, 'verified_source_commit_differs'),
-                     ({'version': '0.2.0'}, 'handoff_identity_or_version_differs'),
+                     ({'version': '0.3.0'}, 'handoff_identity_or_version_differs'),
+                     ({'channel': 'public'}, 'handoff_release_channel_differs'),
                      ({'repository': 'other/example'}, 'handoff_identity_or_version_differs')]
         for changes, error in scenarios:
             with self.subTest(error=error):
@@ -141,6 +148,70 @@ class ReleasePipelineTests(unittest.TestCase):
                     release.build(self.root, self.base / 'blocked')
                 self.assertFalse((self.base / 'blocked').exists())
                 self.config['final_handoff'] = old
+
+    def test_public_release_requires_lifted_hold_and_approved_public_channel(self):
+        self.config['release_channel'] = 'public'
+        self.write_fixture()
+        with self.assertRaisesRegex(release.ReleaseError, 'public_visibility_hold_blocks_release'):
+            self.build(self.base / 'blocked-public', prepare=False)
+        self.assertFalse((self.base / 'blocked-public').exists())
+        self.config['public_visibility_hold'] = False
+        self.write_fixture()
+        with self.assertRaisesRegex(release.ReleaseError, 'handoff_release_channel_differs'):
+            self.build(self.base / 'unapproved-public', prepare=False)
+        self.config['final_handoff']['channel'] = 'public'
+        self.write_fixture()
+        result = self.build(self.base / 'approved-public', prepare=False)
+        self.assertEqual(result['release_channel'], 'public')
+        self.assertFalse(result['public_visibility_hold'])
+        self.assertEqual(result['public_source_commit'], 'c' * 40)
+        self.assertEqual(result['product_source_commit'], 'c' * 40)
+
+    def test_missing_or_invalid_visibility_policy_never_defaults_to_public(self):
+        for key, invalid in [('release_channel', None), ('release_channel', 'automatic'), ('release_channel', []),
+                             ('public_visibility_hold', None), ('public_visibility_hold', 'false')]:
+            with self.subTest(key=key, invalid=invalid):
+                config = dict(self.config)
+                if invalid is None:
+                    config.pop(key)
+                else:
+                    config[key] = invalid
+                with self.assertRaises(release.ReleaseError):
+                    release.release_policy(config)
+
+    def test_expected_channel_cannot_override_private_hold(self):
+        with self.assertRaisesRegex(release.ReleaseError, 'release_channel_differs'):
+            release.prepare_inputs(self.root, prepare=True, expected_channel='public')
+        self.assertEqual(release.release_policy(self.config, 'private'), 'private')
+
+    def test_repository_api_visibility_must_match_the_reviewed_channel(self):
+        metadata = {'full_name': release.REPOSITORY, 'private': True}
+        self.assertEqual(release.check_repository_visibility(self.config, metadata), 'private')
+        for value in [False, None, 0, 'true']:
+            with self.subTest(private=value):
+                with self.assertRaisesRegex(release.ReleaseError, 'repository_visibility_differs'):
+                    release.check_repository_visibility(self.config, dict(metadata, private=value))
+        with self.assertRaisesRegex(release.ReleaseError, 'unexpected_release_repository'):
+            release.check_repository_visibility(self.config, dict(metadata, full_name='other/project'))
+        public = dict(self.config, release_channel='public', public_visibility_hold=False)
+        self.assertEqual(release.check_repository_visibility(public, dict(metadata, private=False)), 'public')
+        with self.assertRaisesRegex(release.ReleaseError, 'repository_visibility_differs'):
+            release.check_repository_visibility(public, metadata)
+
+    def test_ci_event_visibility_is_checked_before_building_artifacts(self):
+        event = self.base / 'event.json'
+        event.write_bytes(release.encoded({'repository': {'full_name': release.REPOSITORY, 'private': True}}))
+        with patch.dict(os.environ, {'GITHUB_EVENT_PATH': str(event)}):
+            release.check_event_visibility(self.config)
+            event.write_bytes(release.encoded({'repository': {'full_name': release.REPOSITORY, 'private': False}}))
+            with self.assertRaisesRegex(release.ReleaseError, 'repository_visibility_differs'):
+                release.prepare_inputs(self.root, ci=True)
+            event.write_text('[]')
+            with self.assertRaisesRegex(release.ReleaseError, 'invalid_release_event'):
+                release.check_event_visibility(self.config)
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(release.ReleaseError, 'release_event_required'):
+                release.check_event_visibility(self.config)
 
     def test_each_owner_install_and_security_gate_is_required(self):
         manifest = {'source_commit': self.source_commit}

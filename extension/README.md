@@ -64,9 +64,12 @@ Non-GitHub remotes are rejected. Credentials and private runtime stay outside Gi
 Use `/list`, `/new NAME`, `/new-session NAME`, `/status`, `/pause SESSION`,
 `/resume SESSION`, `/cancel SESSION`, `/approve CODE`, `/deny CODE` and
 `/resolve TASK cancel|deliver` in the management group. Send ordinary text in a
-workspace group to talk to its Codex session. The extension returns final text;
-one editable public-prose progress message accompanies final text. Richer cards
-and approval/question UI remain future work. Use **Set Group Trigger**, **Set
+workspace group to talk to its Codex session. One editable public-prose progress
+message accompanies final text. **Manage Persistent Goal** and **Show Pending
+Codex Questions** expose tracked goal continuation and owner question cards.
+Questions accept choices and custom text; card clicks need the published
+`card.action.trigger` long-connection callback. `/answer` is the text fallback.
+See [goals and questions](../docs/GOALS_AND_QUESTIONS.md). Use **Set Group Trigger**, **Set
 Progress Mode**, **Manage Pinned Skills** and **Review Setup Repairs** for the
 restored controls. Task and team commands also support structured briefs and
 attributed verification reports; see the bundled `docs/RESTORED_FEATURES.md`.

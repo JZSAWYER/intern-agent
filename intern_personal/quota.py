@@ -133,7 +133,9 @@ def reply(state, item):
     line = freeze(state, item['seq'], snapshot(state, session))
     from .throughput import line as speed_line
     speed = speed_line(state, item)
+    from .goals import footer as goal_footer
+    goal=goal_footer(state,item)
     # An older receiver may have attempted this UUID before footers existed.
     # Keep that original body byte for byte when its delivery is reconciled.
-    footers = [text for text in [speed, line] if text]
+    footers = [text for text in [goal,speed,line] if text]
     return item['result'].rstrip() + '\n\n' + '\n'.join(footers) if footers else item['result']

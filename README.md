@@ -3,8 +3,12 @@
 **Intern Agent** connects GitHub workspaces and persistent Codex conversations to
 Feishu. The MIT-licensed public product includes maintained source, an installable
 VSIX and Codex skills, with independent private state for each installation.
+The product repository is currently **private for review**. It stays private until
+the owner explicitly requests public visibility; routine feature-release handoffs
+do not lift that hold. Repository access is managed separately.
+
 Start with [installation](docs/INSTALL.md),
-[the 0.1.0 release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.1.0),
+[the 0.2.0 release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.0),
 [portable recovery](docs/PORTABLE_RECOVERY.md) and
 [contributor onboarding](docs/CONTRIBUTING.md).
 
@@ -35,6 +39,8 @@ Start with the [feature tutorial](docs/FEATURE_GUIDE.md) for commands and expect
 results. The [change record](docs/CHANGELOG.md) tracks features and fixes; the
 [development workflow](docs/DEVELOPMENT_WORKFLOW.md) keeps those guides current
 in the explicitly selected Debug Bot and Control conversations.
+Use [persistent goals and Feishu questions](docs/GOALS_AND_QUESTIONS.md) for
+multi-iteration work, selectable answers and custom input.
 
 The offline commands need only Python 3.10+ on Linux and `/usr/bin/git` for
 repository inspection. The live relay additionally needs tmux, an authenticated
@@ -42,14 +48,14 @@ Codex CLI, lark-oapi and websockets; setup does not silently install packages.
 
 ## Release source and scope
 
-Version 0.1.0 imports verified maintained source
-`c0aa1748223011e244080a7cd4ec58228988beff`. It includes file/PDF batches, independent
+Version 0.2.0 imports verified maintained source
+`56edf2640439c25d088ee844063f41faf6a99f70`. It includes file/PDF batches, independent
 consoles and live follow-ups, peer/recovery/research workflows, model/Fast settings,
 quota/throughput, Git-confirmed completion, reusable records, cold GitHub recovery,
 shared SSH host profiles and portable preferences/roles. Packaging adds a distinct
 public extension identity, a patched hash-locked dependency profile and safe
 complete-resource skills installation. Provenance records both the maintained
-source commit and the clean public commit, with every artifact's SHA-256.
+source commit and the clean product commit, with every artifact's SHA-256.
 
 Installation is verified in isolated Linux/editor directories. Fresh real account,
 Remote SSH activation and upgrade/rollback acceptance remain separate; this

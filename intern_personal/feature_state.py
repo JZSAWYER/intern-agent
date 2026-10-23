@@ -50,6 +50,12 @@ def validate_data(kind,data):
     elif kind=='skill_catalog':
         from .skills import validate_catalog
         validate_catalog(data)
+    elif kind=='goal_plan':
+        from .goals import validate_record
+        validate_record(data)
+    elif kind=='question_decision':
+        from .user_questions import validate_decision
+        validate_decision(data)
     else:raise Invalid('Unknown feature document')
 
 
@@ -65,6 +71,10 @@ def validate(rows,workspace,conversations,tasks):
             if r['key'] not in tasks or any(p['conversation'] not in conversations for p in r['data']['reports']):raise Invalid('Task brief crosses workspace references')
         elif r['kind']=='research_watch':
             if r['key']!=r['data']['watch'] or r['data']['conversation'] not in conversations:raise Invalid('Research history crosses workspace references')
+        elif r['kind']=='goal_plan':
+            if r['key']!=r['data']['id'] or r['data']['conversation'] not in conversations or r['data']['task_id'] is not None and r['data']['task_id'] not in tasks:raise Invalid('Goal history crosses workspace references')
+        elif r['kind']=='question_decision':
+            if r['data']['conversation'] not in conversations or r['data']['task'] is not None and r['data']['task'] not in tasks:raise Invalid('Recorded decision crosses workspace references')
         elif r['key']!='catalog' or any(s not in conversations for s in r['data']['enabled']):raise Invalid('Skill catalog crosses workspace references')
     return rows
 
@@ -77,4 +87,9 @@ def project(tracker,binding):
         if row['kind']=='task_brief':
             sections=[(field.title(),quote(body)) for field,body in data['fields'].items()]+[
                 ('Verification reports','\n\n'.join(quote('Command: '+r['command']+'\nResult: '+r['result']+'\nLimitations: '+r['limits']+'\nReported by conversation: '+r['conversation']) for r in data['reports']) or '(none)'),sections[-1]]
+        elif row['kind']=='goal_plan':
+            sections=[('Objective',quote(data['objective'])),('Progress',quote(data['status']+'; iterations: '+str(data['iterations']))),
+                      ('Evidence and limitations',quote(data['note'] or '(none recorded)')),('Remaining work',quote(data['next_action'] or '(none recorded)'))]+sections
+        elif row['kind']=='question_decision':
+            sections=[('Owner input', '\n\n'.join(quote(q['question']+'\nAnswer: '+'; '.join(q['answers'])) for q in data['questions']))]+sections
         tracker.write(binding,'.intern_workspace/features/'+row['kind']+'/'+row['key']+'.md',render('Intern Agent '+row['kind'],dict(kind='feature',workspace=row['workspace'],revision=row['revision'],feature=row),sections))

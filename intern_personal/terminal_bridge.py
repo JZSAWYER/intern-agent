@@ -154,7 +154,9 @@ class TerminalBridge:
             from .quota import normalize, snapshot as quota_snapshot
             quota = quota_snapshot(self.state, session)
             quota_updates = []
-            cursor=binding['cursor'];completed=[];commentary=[];starts=[]
+            cursor=binding['cursor'];completed=[];commentary=[];starts=[];questions=[];question_ends=[];goal_tokens=[];goal_tools=[];goal_end_totals={}
+            prior_goal_total=self.state.db.execute('SELECT total FROM goal_usage WHERE session=?',(session['id'],)).fetchone()
+            last_goal_total=prior_goal_total[0] if prior_goal_total else None
             with path.open('rb') as stream:
                 stream.seek(cursor)
                 for _ in range(2000):
@@ -166,6 +168,10 @@ class TerminalBridge:
                     metric=throughput.native(telemetry,value)
                     if value.get('type')=='event_msg':
                         if kind == 'token_count':
+                            usage=(payload.get('info') or {}).get('total_token_usage') or {}
+                            total=usage.get('total_tokens')
+                            if total is None and type(usage.get('input_tokens')) is int and type(usage.get('output_tokens')) is int:total=usage['input_tokens']+usage['output_tokens']
+                            if type(total) is int:goal_tokens.append(total);last_goal_total=total
                             limits = normalize(payload)
                             if limits is not None:
                                 from .speed import observation_time
@@ -201,6 +207,7 @@ class TerminalBridge:
                             if len(result.encode())>1048576:raise Invalid('Terminal reply is too large')
                             from .speed import observation_time
                             completed.append((turn,snapshot.get('event_seq'),snapshot.get('request',''),result,kind,quota,payload.get('error'),observation_time(value.get('timestamp')) or time.time(),metric))
+                            goal_end_totals[turn]=last_goal_total
                             snapshot.update(active=None,request='',event_seq=None)
                     elif value.get('type')=='response_item' and kind=='message' and payload.get('role')=='user':
                         text='\n'.join(x.get('text','') for x in payload.get('content',[]) if x.get('type')=='input_text')
@@ -231,6 +238,19 @@ class TerminalBridge:
                     # Observe public prose independently of tool hooks. Only the
                     # canonical response_item is used, not its agent_message echo.
                     from .progress import native_text
+                    if value.get('type')=='response_item' and snapshot.get('active'):
+                        if kind=='function_call':
+                            name=payload.get('name','').split('.')[-1]
+                            if name in {'request_user_input','request_user_input_async'}:
+                                try:
+                                    args=json.loads(payload.get('arguments','{}'))
+                                    from .user_questions import native_params
+                                    asynchronous=name=='request_user_input_async';args=native_params(args,asynchronous)
+                                    questions.append((dict(args,threadId=session['thread_id'],turnId=snapshot['active'],itemId=payload.get('call_id',''),isBlocking=not asynchronous),payload.get('call_id'),'native_async' if asynchronous else 'tui'))
+                                except (ValueError,TypeError,Invalid):pass
+                            if name not in {'get_goal','update_goal','create_goal'}:goal_tools.append(snapshot.get('event_seq'))
+                        elif kind=='custom_tool_call':goal_tools.append(snapshot.get('event_seq'))
+                        elif kind=='function_call_output':question_ends.append(payload.get('call_id'))
                     text=native_text(value)
                     if text and snapshot.get('active') and cursor>=snapshot.get('progress_after',0) and not (self.table=='console_views' and snapshot.get('event_seq') is not None):
                         commentary.append((snapshot['active'],snapshot.get('event_seq'),payload.get('id') or str(cursor),text))
@@ -242,6 +262,16 @@ class TerminalBridge:
                 for payload, at in quota_updates:
                     observe(self.state, session, payload, observed_at=at)
                 from .progress import enqueue,finish
+                from .user_questions import register as register_question,resolved as resolve_question
+                for params,request,source in questions:
+                    if request:
+                        try:register_question(self.state,session,params,request,source=source)
+                        except Invalid:pass  # A malformed optional question cannot stall terminal observation.
+                for request in question_ends:
+                    if request:resolve_question(self.state,session,request)
+                from .goals import usage as goal_usage,tool as goal_tool
+                for total in goal_tokens:goal_usage(self.state,session,total)
+                for seq in goal_tools:goal_tool(self.state,seq)
                 for turn,seq,item_id,text in commentary:
                     try:enqueue(self.state,session,turn,item_id,text,source='native',event_seq=seq)
                     except Exception:pass
@@ -263,6 +293,8 @@ class TerminalBridge:
                         self.state.ledger.bind_turn(item)
                     self.state.db.execute('INSERT INTO terminal_turns(session,turn_id,event_seq,result,status) VALUES(?,?,?,?,?)',
                                           (session['id'],turn,seq,result,kind))
+                    from .goals import ended as goal_ended
+                    goal_ended(self.state,session,seq,goal_end_totals.get(turn))
                     if kind=='task_failed':
                         self.state.db.execute("INSERT OR REPLACE INTO event_failures VALUES(?,'execution_failed',?)",(seq,time.time()))
                     observe_outcome(self.state,session,turn,{'task_complete':'completed','task_failed':'failed','turn_aborted':'interrupted'}[kind],error,seq,at=at)

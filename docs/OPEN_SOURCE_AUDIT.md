@@ -1,41 +1,32 @@
 # Source and release readiness audit
 
-## Current candidate — 2026-10-23
+Current release channel: **private**, version **0.2.0**, maintained source
+`56edf2640439c25d088ee844063f41faf6a99f70`. The owner's private-visibility hold
+supersedes earlier public-release prose. Only an explicit later owner request
+can authorize going public. Source updates may upload new private releases;
+automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
 
-The owner authorized the separate MIT Intern Agent 0.1.0 product from maintained
-commit `c0aa1748223011e244080a7cd4ec58228988beff`. The local public candidate now
-contains that committed implementation and separately attributed distribution
-work. The public extension identity is `intern-agent.intern-agent`; its 37 commands
-use `internAgentPublic`. The maintained 0.8.0 development preview is a separate
-extension. Public upload and release publication are established by independently verified
-GitHub URLs and asset hashes, rather than by this local audit alone.
 
-The existing private tracking repository and source history are unsuitable public
-history inputs. Publication uses a fresh allowlisted export, preserving the private
-repositories and their refs. Source tests and release tooling are reviewed separately
-from the smaller VSIX backend allowlist. Enterprise reference material, credentials,
-private records, queue databases, transcripts, native/chat/account identifiers and
-machine-specific configuration are excluded. See [source policy](SOURCE_MANIFEST.md).
+## Current candidate — 2026-10-24
 
-The committed feature import includes repository-name cold recovery, shared-host
-profile discovery, portable settings/roles, safe Codex skill installation and durable
-feature-to-release handoffs. Existing file/PDF batching and returns, independent
-consoles, live follow-ups, peer/recovery/research, model/Fast controls, throughput,
-Git completion and recovery storage remain in the reviewed feature inventory.
-[Feature guide](FEATURE_GUIDE.md), [session guide](SESSION_FEATURES.md) and
-[changelog](CHANGELOG.md) describe behavior; they do not substitute for verification.
+The candidate imports verified maintained commit
+`56edf2640439c25d088ee844063f41faf6a99f70` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.0
+adds persistent goals, owner question cards/text fallback, exact native question
+routing and two editor commands. The stable namespace has 39 commands.
+The repository remains private for owner review; prior public verification was
+performed before the owner's visibility change and is historical evidence.
+
+Private tracking history, credentials, runtime bindings, queues/transcripts,
+machine/account/chat/native identifiers and enterprise snapshots are excluded.
+Source and VSIX use independent reviewed allowlists. Public disclosure is blocked
+by the owner hold, not inferred from a feature synchronization request.
 
 ## Release evidence requirements
 
-The complete offline corpus passed: 885 discovered test cases, zero failures,
-errors or skips, with the combined test-ID multiset verified across four workers.
-Source review covers 206 files, 113 runtime inputs and 255 local Markdown links.
-The stable MIT VSIX installed into isolated VS Code 1.143.0 directories; its
-bundled installer created a fresh isolated runtime with hash-locked wheels,
-pip check, imports and one deduplicated fake event/reply. Complete skills/resources
-and notices passed isolated installation and idempotence checks. Final artifact
-hashes and repeated-build comparison are recorded in release provenance and the
-independent publication receipt. Live acceptance remains separate.
+Run complete discovery, editor/recovery/packaging checks and isolated installation
+against this new pin; earlier 0.1.0 results do not certify this import. Record
+exact final artifacts and authenticated private remote verification in the receipt.
 
 | Evidence class | Required check | What it can establish |
 | --- | --- | --- |
@@ -49,7 +40,7 @@ independent publication receipt. Live acceptance remains separate.
 | Live acceptance | Explicit real-account, Remote SSH, activation, upgrade/rollback and uninstall/reinstall pilot | Not established by this release audit |
 
 The public profile contains 14 runtime distributions plus a hash-locked pip
-bootstrap tool. Version-specific OSV queries dated 2026-10-23 returned no findings
+bootstrap tool. Version-specific OSV queries repeated on 2026-10-24 returned no findings
 for those 15 selected versions; upstream wheel and notice hashes are recorded in
 `requirements/public-profile.json`. This is dated dependency evidence, not a claim
 against future vulnerabilities. The older deployed reference lock retains its

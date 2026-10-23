@@ -251,6 +251,7 @@ class CodexHost:
                     "PATH": "/usr/local/bin:/usr/bin:/bin", "HOME": str(home),
                     "XDG_CONFIG_HOME": str(home / ".config"), "TMPDIR":str(self.hosts.spec(session)['tmp']), "LANG": "C.UTF-8"}},
                     "model_reasoning_effort": selected["effort"]}}
+        params['config']['features.default_mode_request_user_input']=True
         from .speed import saved
         tier = saved(self.state, session)
         if tier is not None:
@@ -385,9 +386,14 @@ class CodexHost:
 
     def _approval(self, session, connection, message):
         method = message["method"]
+        if method=='tool/requestUserInput':
+            message=dict(message,method='item/tool/requestUserInput');method=message['method']
         supported = {"item/commandExecution/requestApproval", "item/fileChange/requestApproval", "item/tool/requestUserInput"}
         if method not in supported:
             connection.send({"id": message["id"], "error": {"code": -32601, "message": "Unsupported request; action is not approved"}})
+            return
+        if message.get('params',{}).get('threadId') not in {None,session['thread_id']}:
+            connection.send({'id':message['id'],'error':{'code':-32600,'message':'Request belongs to another conversation'}})
             return
         from .execution_policy import yolo
         if method!='item/tool/requestUserInput' and yolo(self.state.config()):
@@ -404,9 +410,25 @@ class CodexHost:
             self.approvals[code] = (session["id"], connection, message, time.monotonic() + 600)
         self.record_activity(session['id'],'awaiting_approval')
         if method == "item/tool/requestUserInput":
-            questions = params.get("questions", [])
-            preview = "\n".join(str(q.get("question", q.get("header", "Question"))) for q in questions)
-            text = "Codex needs your answer:\n" + preview[:2500] + "\n/answer " + code + " your answer"
+            from .user_questions import register
+            try:row=register(self.state,session,params,message['id'])
+            except Invalid:
+                with self.lock:self.approvals.pop(code,None)
+                connection.send({'id':message['id'],'error':{'code':-32602,'message':'Invalid structured question; reissue it with question IDs and bounded choices'}})
+                return
+            if not row['blocking']:self.record_activity(session['id'],'running')
+            with self.lock:
+                self.approvals.pop(code,None);code=row['code']
+                self.approvals[code]=(session['id'],connection,message,time.monotonic()+6*3600)
+            questions=json.loads(row['questions'])
+            preview='\n'.join(q['question']+'\n'+'\n'.join(str(i+1)+'. '+o['label']+' — '+o['description'] for i,o in enumerate(q['options'])) for q in questions)
+            text='Codex needs your answer:\n'+preview[:6000]+'\n/answer '+code+' your answer'
+            # The durable question worker sends the card. Keep the established
+            # notify callback observable for adapters without card support.
+            if not getattr(self,'question_cards',False):
+                self.notify(session,text)
+                self.state.db.execute("UPDATE user_questions SET state='pending' WHERE code=? AND state='new'",(code,))
+            return
         else:
             command = params.get("command", params.get("reason", "File changes require approval"))
             text = "Codex requests approval:\n" + str(command)[:2500] + "\n/approve " + code + "\n/deny " + code
@@ -422,21 +444,64 @@ class CodexHost:
             if message["method"] == "item/tool/requestUserInput":
                 if action != "answer" or not answer:
                     raise Invalid("Use /answer for this request")
-                questions = message.get("params", {}).get("questions", [])
-                if len(questions) != 1:
-                    raise Invalid("This pilot supports one question per answer request; answer in a terminal for multiple questions")
-                result = {"answers": {questions[0]["id"]: {"answers": [answer]}}}
+                from .user_questions import answer as save_answer,validate_answers
+                row=self.state.db.execute('SELECT * FROM user_questions WHERE code=?',(code,)).fetchone()
+                if row:
+                    saved=save_answer(self.state,self.state.session(entry[0]),code,answer)
+                    row=self.state.db.execute('SELECT * FROM user_questions WHERE code=?',(code,)).fetchone()
+                    if row['state']!='answered':return saved
+                    result={'answers':validate_answers(row,json.loads(row['answers']),partial=False)}
+                    self.state.db.execute("UPDATE user_questions SET state='sending' WHERE code=? AND state='answered'",(code,))
+                else:raise Invalid('The saved question request is unavailable')
             else:
                 if action not in {"approve", "deny"}:
                     raise Invalid("Use /approve or /deny for this request")
                 result = {"decision": "accept" if action == "approve" else "decline"}
-            connection.send({"id": message["id"], "result": result})
+            try:connection.send({"id": message["id"], "result": result})
+            except Exception:
+                if message['method']=='item/tool/requestUserInput':self.state.db.execute("UPDATE user_questions SET state='uncertain',error_type='AnswerSendUnconfirmed' WHERE code=?",(code,))
+                raise
+            if message['method']=='item/tool/requestUserInput':self.state.db.execute("UPDATE user_questions SET state='submitted',error_type=NULL WHERE code=?",(code,))
             del self.approvals[code]
         self.record_activity(entry[0],'running')
 
     def record_activity(self,session,activity):
         row=self.state.db.execute("SELECT * FROM events WHERE session=? AND role='agent' AND state='running' ORDER BY seq DESC LIMIT 1",(session,)).fetchone()
         if row:self.state.ledger.update(dict(row),activity=activity)
+
+    def question_resolved(self,session,request):
+        from .user_questions import resolved
+        resolved(self.state,session,request)
+        with self.lock:
+            for code,entry in list(self.approvals.items()):
+                if entry[0]==session['id'] and entry[2]['id']==request:self.approvals.pop(code,None)
+
+    def retain_question_connection(self,session,connection):
+        with self.lock:
+            retain=any(e[0]==session['id'] and e[1] is connection and e[2]['method']=='item/tool/requestUserInput' for e in self.approvals.values())
+        if not retain:return False
+        def listen():
+            try:
+                while True:
+                    with self.lock:
+                        entries=[(k,e) for k,e in self.approvals.items() if e[1] is connection]
+                    if not entries:break
+                    if all(e[3]<time.monotonic() for _,e in entries):break
+                    try:event=connection.notification(2)
+                    except TimeoutError:continue
+                    if event.get('method')=='serverRequest/resolved' and event.get('params',{}).get('threadId')==session['thread_id']:
+                        self.question_resolved(session,event['params'].get('requestId'))
+            except Exception:
+                # A lost request channel is never proof of an answer. The
+                # durable broker can use only the exact remaining TUI question.
+                pass
+            finally:
+                with self.lock:
+                    for code,entry in list(self.approvals.items()):
+                        if entry[1] is connection:self.approvals.pop(code,None)
+                connection.close();self.state.close()
+        threading.Thread(target=listen,daemon=True,name='intern-agent-question-channel').start()
+        return True
 
     def interrupt(self, session_id):
         # Do not wait for startup/model/approval work holding the host lock.
@@ -481,6 +546,9 @@ class CodexHost:
             self.ensure_terminal(session)
             event = self.state.db.execute("SELECT seq FROM events WHERE session=? AND role='agent' AND state='running' ORDER BY seq DESC LIMIT 1",(session['id'],)).fetchone()
             seq = event['seq'] if event else None
+            if seq is not None:
+                from .goals import adopt_turn
+                adopt_turn(self.state,session,seq)
             if seq is not None and self.observer.binding(session):self.observer.prepare(session,text,seq)
             # The submit hook supplies fresh references through a separate context
             # channel. Never rewrite the owner's text, including resumed threads.
@@ -517,7 +585,7 @@ class CodexHost:
             if self.observer.binding(session):
                 try:self.observer.poll(session)
                 except Exception:pass
-            connection.close()
+            if not self.retain_question_connection(session,connection):connection.close()
 
     def _turn(self, connection, session, thread, text,inputs=None,context=None,dispatch=None):
         turn=None
@@ -573,6 +641,8 @@ class CodexHost:
                 if params.get("threadId") not in {None, thread} or params.get("turnId") not in {None, turn}:
                     continue
                 method = notification["method"]
+                if method=='serverRequest/resolved' and params.get('threadId')==thread:
+                    self.question_resolved(session,params.get('requestId'))
                 if method == 'account/rateLimits/updated':
                     from .quota import observe
                     observe(self.state, session, params)
@@ -583,6 +653,11 @@ class CodexHost:
                         throughput.cache(self.state,session,telemetry['previous'],time.time())
                     usage={k:v for k,v in usage.items() if k in {'totalTokens','inputTokens','outputTokens','cachedInputTokens'} and type(v) is int and v>=0}
                     self.state.db.execute('INSERT OR REPLACE INTO conversation_usage VALUES(?,?)',(session['id'],json.dumps(usage)))
+                    from .goals import usage as goal_usage
+                    goal_usage(self.state,session,usage.get('totalTokens'))
+                if method=='item/started' and params.get('item',{}).get('type') in {'commandExecution','fileChange','mcpToolCall','dynamicToolCall','collabAgentToolCall','webSearch','imageView','imageGeneration'}:
+                    from .goals import tool
+                    tool(self.state,metric_seq)
                 if method == "item/completed":
                     item = params.get("item", {})
                     if item.get('type')=='agentMessage' and item.get('phase')=='commentary':
@@ -593,6 +668,8 @@ class CodexHost:
                     if item.get("type") == "agentMessage" and item.get("phase") in {None, "final_answer"}:
                         messages[item.get("id", str(len(messages)))] = item.get("text", "")
                 elif method == "turn/completed" and params.get("turn", {}).get("id") == turn:
+                    from .goals import ended as goal_ended
+                    goal_ended(self.state,session,metric_seq)
                     status = params["turn"].get("status")
                     elapsed=params['turn'].get('durationMs')
                     if not throughput.number(elapsed) or elapsed<=0:elapsed=(time.monotonic()-metric_clock)*1000

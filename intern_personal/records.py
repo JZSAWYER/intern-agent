@@ -111,7 +111,7 @@ def validate_document(name,text):
         if required-value.keys():raise Invalid('Turn is missing required fields')
         if value['phase'] not in PHASES or value['activity'] not in ACTIVITIES or value['sync'] not in SYNC_STATES:
             raise Invalid('Unknown turn state')
-        if value['source'] not in {'feishu','terminal','local','legacy'}:raise Invalid('Unknown turn source')
+        if value['source'] not in {'feishu','terminal','local','legacy','goal'}:raise Invalid('Unknown turn source')
         if value['source']!='legacy' and value['received_at'] is None:raise Invalid('New turn requires a receive timestamp')
         if value['phase']=='complete' and value['completed_at'] is None and value['source']!='legacy':raise Invalid('Completed turn requires timestamp')
         if not isinstance(value['evidence'],list):raise Invalid('Invalid evidence list')
@@ -201,6 +201,11 @@ def validate_evolution(before,after):
         if a['kind']=='research_watch':
             if any(a['data'][k]!=b['data'][k] for k in ['conversation','watch','goal','evidence','created_at','expires_at','max_checks','interval_seconds']):raise Invalid('Research plan and budgets are immutable')
             if b['data']['checks']<a['data']['checks'] or b['data']['history'][:len(a['data']['history'])]!=a['data']['history']:raise Invalid('Research history is append-only')
+        if a['kind']=='goal_plan':
+            if any(a['data'][k]!=b['data'][k] for k in ['conversation','id','objective','task_id','branch','token_budget']):raise Invalid('Goal objective, task scope and declared budget are immutable; start another goal')
+            if any(b['data'][k]<a['data'][k] for k in ['tokens_used','iterations']):raise Invalid('Goal accounting cannot decrease')
+            if a['data']['status'] in {'complete','cleared'} and b['data']['status'] not in {a['data']['status'],'cleared'}:raise Invalid('Completed goals require a new objective identity')
+        if a['kind']=='question_decision' and a['data']!=b['data']:raise Invalid('Recorded owner decisions are immutable; add a correction')
     if old['kind']=='handoff':
         for key in ['id','team','sender','recipient','task','body','created_at']:
             if old['mail'].get(key)!=new['mail'].get(key):raise Invalid('Handoff identity and content are immutable')

@@ -374,7 +374,7 @@ function activate(context) {
           const item = new vscode.TreeItem((s.name || s.id) + (s.attached_terminal ? ' (attached terminal)' : ''), vscode.TreeItemCollapsibleState.Collapsed);
           item.session = s;
           item.contextValue = 'internAgentPublicConversation';
-          item.description = [s.mode, s.activity, s.sync].join(' · ');
+          item.description = [s.mode, s.activity, s.sync, ...(s.goal ? ['goal ' + s.goal.status] : []), ...(s.pending_questions ? [s.pending_questions + ' question(s)'] : [])].join(' · ');
           item.tooltip = 'Branch: ' + (s.branch || '(unbound)') + '\nTask: ' + (s.task?.name || '(idle conversation)');
           item.children = ['Task: ' + (s.task?.name || '(none)'), 'Branch: ' + (s.branch || '(none)'), 'State: ' + s.state,
             'Git: ' + s.sync, 'Model: ' + (s.model || 'configured default'),
@@ -491,6 +491,19 @@ function activate(context) {
     const s = await selectSession(node); if (!s) return;
     const text = await input('Research wake-ups', '/research status, start 10h "Check existing experiment" --every 1h --checks 12 --for 48h, pause ID, resume ID, finish ID, or cancel ID');
     if (text && /^\/research(\s|$)/i.test(text)) await control(text,s.id);
+  });
+  command('internAgentPublic.goal', async node => {
+    const s = await selectSession(node); if (!s) return;
+    const action = await vscode.window.showQuickPick(['status','start','pause','resume','clear','auto on','auto off'], { title: 'Persistent goal' });
+    if (!action) return;
+    if (action === 'start') {
+      const objective = await input('Goal objective', 'Outcome, verification and constraints. The goal continues after each Git upload.');
+      if (objective) await control('/goal ' + objective,s.id);
+    } else await control('/goal' + (action === 'status' ? '' : ' ' + action),s.id);
+  });
+  command('internAgentPublic.questions', async node => {
+    const s = await selectSession(node); if (!s) return;
+    await control('/questions',s.id);
   });
   for (const [name, text] of [['stop','/stop'], ['pause','/pause'], ['resume','/resume'], ['compact','/compact'], ['usage','/usage']]) {
     command('internAgentPublic.' + name, async node => { const s = await selectSession(node); if (s) await control(text,s.id); });

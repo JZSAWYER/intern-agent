@@ -55,6 +55,11 @@ the same relay. It does not need another receiver, clone or pairing.
    Git upload and a new message round-trip. Re-enable research schedules, peer
    actions or native terminal attachments only after checking their current
    evidence and host bindings. Archived jobs and requests are not a work queue.
+   Read `/goal` for a restored persistent objective and its evidence/remaining
+   work. Reconnect its saved task/branch first and use `/goal resume` only under
+   the owner's recovery instruction. A restored goal never executes by import.
+   Pending live question sockets are not Git recovery data; use `/questions`
+   to inspect actual remaining requests, not to replay old answers.
 
 Report the recovered Git commit and remaining account/setup requirements.
 Git recovers the last successfully uploaded checkpoint. RAM, unpushed changes,

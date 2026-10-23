@@ -183,6 +183,10 @@ class LiveState:
         trigger_schema(self.db)
         from .feature_state import schema as feature_schema
         feature_schema(self.db)
+        from .goals import schema as goal_schema
+        goal_schema(self.db)
+        from .user_questions import schema as question_schema
+        question_schema(self.db)
         from .access import schema as access_schema
         access_schema(self.db)
         from .project_init import schema as initialization_schema
@@ -195,6 +199,8 @@ class LiveState:
         file_schema(self.db)
         from .research import schema as research_schema
         research_schema(self.db)
+        from .goals import background_scope
+        background_scope(self.db)
         from .dispatch import schema as dispatch_schema
         dispatch_schema(self.db)
         from .steering import schema as steering_schema
@@ -547,6 +553,13 @@ class LiveState:
             if not management and not session:
                 return "rejected_chat"
             role = "control" if command.startswith("/") else "agent"
+            if role=='agent' and not resources and session and owner==identity['owner']:
+                from .user_questions import pending
+                from .attachment_batches import pending as pending_files
+                questions=pending(self,session,blocking=True)
+                waiting_files=any(f['thread_id']==session['thread_id'] for f in pending_files(self,session,owner))
+                if len(questions)==1 and not waiting_files:
+                    role='control';text='/answer '+questions[0]['code']+' '+text;command=text
             if command.split()[0].lower() in {'/stop','/cancel'}:
                 role = 'urgent'
             if role != 'agent':text=command
@@ -666,7 +679,8 @@ class LiveState:
                 OR (b.seq<e.seq AND b.state IN ('queued','result_ready')
                     AND NOT ((b.seq IN (SELECT seq FROM background_event_scope) AND e.seq NOT IN (SELECT seq FROM background_event_scope))
                         OR (b.seq IN (SELECT seq FROM research_event_scope) AND e.seq IN (SELECT seq FROM peer_event_scope))))))
-                ORDER BY CASE WHEN e.seq IN (SELECT seq FROM research_event_scope) THEN 2
+                ORDER BY CASE WHEN e.seq IN (SELECT seq FROM goal_runs WHERE predecessor>=0) THEN 3
+                    WHEN e.seq IN (SELECT seq FROM research_event_scope) THEN 2
                     WHEN e.seq IN (SELECT seq FROM peer_event_scope) THEN 1 ELSE 0 END,e.seq LIMIT 1''', (role,session_id,session_id,time.time(),time.time())).fetchone()
             if row:
                 # Bind at dispatch, after earlier /task commands have executed.

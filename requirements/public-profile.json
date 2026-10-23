@@ -21,10 +21,10 @@
   },
   "security_review": {
     "source": "https://api.osv.dev/v1/querybatch",
-    "queried_at": "2026-10-23",
+    "queried_at": "2026-10-24",
     "ecosystem": "PyPI",
     "result": "no_known_version_advisories",
-    "result_sha256": "85213d694c3cc9829fbe77505519141a8e51ebf3e57a2e90fefd0332c4da6747",
+    "result_sha256": "5cc954cdb47ca7101b9cb09316257f2981d314a740743ec8691da5824f303930",
     "packages": [
       {
         "name": "lark-oapi",
@@ -125,9 +125,9 @@
     "installed_pip_version": "26.2.2",
     "runtime_distribution_count": 14,
     "bootstrap_distribution_count": 1,
-    "tested_at": "2026-10-23",
+    "tested_at": "2026-10-24",
     "test_platform": "Linux x86_64 CPython 3.12.4",
-    "application_source_commit": "c0aa1748223011e244080a7cd4ec58228988beff",
+    "application_source_commit": "56edf2640439c25d088ee844063f41faf6a99f70",
     "installed_baseline_verified": true,
     "sdk_model_imports_and_client_builder": true,
     "crypto_native_aes": true,

@@ -1,7 +1,7 @@
 # Frontend readiness and acceptance backlog
 
-Refreshed 2026-10-23 for the owner-authorized MIT Intern Agent 0.1.0 candidate.
-Its installable identity is `intern-agent.intern-agent`, with 37 commands in the
+Refreshed 2026-10-24 for the owner-authorized MIT Intern Agent 0.2.0 candidate.
+Its installable identity is `intern-agent.intern-agent`, with 39 commands in the
 `internAgentPublic` namespace. The maintained 0.8.0 preview is separate. Editable
 frontend source is `extension/extension.js`, using Node/VS Code builtins without
 npm runtime dependencies. No compiled enterprise reference snapshot is included.
@@ -24,6 +24,7 @@ collaboration; P2 is later interface polish.
 | Uninstall | Extension removal and private runtime lifecycle are separate; no managed cleanup UI. | P0 | Extension removal preserves projects, private state and user skills. Explain reviewed service stop/cleanup separately; verify reinstall reuses the chosen state in an isolated pilot. |
 | Project initialization | Reviewed preview/apply/status/open-workspace flow and durable stages exist. | P0 | Cancel creates no repository/chat/thread; apply only the reviewed plan, safely repeat confirmed stages and inspect uncertain remote creation. Verify the resulting permanent branch on the selected remote host. |
 | Codex skills | Bundled-skill installation and pinned reference-skill management actions exist. Standalone release installer validates the complete inert bundle. | P0 | Explicit destination, ownership/link/conflict checks and per-file receipts; preserve user modifications, referenced resources and notices. Skill installation neither executes instructions nor starts a receiver. |
+| Goals and questions | Manage Persistent Goal, Show Pending Codex Questions and dashboard status; durable owner cards with text fallback. | P0 | Preserve task/branch scope, pause/native publication gate and exact question correlation; publish callback configuration per account and verify real card answers separately. |
 | Models and portable settings | Dashboard model and Feishu model/effort/Fast controls; per-session preferences and roles are recoverable. No editor model picker. | P1 | Discover supported options, preserve exact session/role targeting, show pending changes and acknowledgement, and keep busy/native draft restrictions visible. |
 | Tasks and teams | Task/team visibility and command dialogs use structured backend briefs and permanent branches. | P1 | Add clearer assignment, criteria, blocker, handoff and acceptance forms. Accept verified uploaded work; workers require explicit assignment/run and no automatic merge. |
 | Terminal and follow-ups | Dedicated consoles, native attachment and active-turn follow-ups exist; no direct exact-console editor action. | P1 | Open the registered remote console without duplicate agent/thread creation. Show busy/draft/unreachable reasons and distinguish interim answers/file returns from Git-confirmed final completion. |
@@ -33,7 +34,7 @@ collaboration; P2 is later interface polish.
 
 Stable packaging keeps manifest and JavaScript namespaces consistent, records
 frontend overlays and uses fixed archive metadata and complete content-type
-mapping. Final tests must validate the 37-command artifact rather than inherit
+mapping. Final tests must validate the 39-command artifact rather than inherit
 results from an earlier preparation VSIX. Installation into isolated extension,
 user-data and server-data directories is useful package evidence; it does not
 start an extension host or receiver.

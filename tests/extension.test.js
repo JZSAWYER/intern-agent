@@ -100,7 +100,7 @@ Module._load = function (name, ...rest) {
     }
     if(args.includes('dashboard')) {
       const payload={initializations:initVisible?[initPlan]:[],workspaces:[{id:'registered-project',repo:'https://github.com/example-owner/project.git'}],
-        conversations:[{id:'controller-fixture',name:'Intern Agent Control',workspace:'registered-project',state:'ready',mode:'idle',activity:'waiting',sync:'synced'}]};
+        conversations:[{id:'controller-fixture',name:'Intern Agent Control',workspace:'registered-project',state:'ready',mode:'idle',activity:'waiting',sync:'synced',goal:{status:'active'},pending_questions:2}]};
       setImmediate(()=>callback(null,JSON.stringify(payload)));return;
     }
     if (args.includes('launch')) receiverConnected = true;
@@ -180,6 +180,32 @@ async function main() {
   assert(calls[0].args.includes('/research start 10h "Check existing experiment" --checks 3'));
   assert(calls[0].args.includes('--session'));
   calls.length=0;
+  await commands.get(namespace + '.goal')({session:{id:'session'}});
+  assert(calls[0].args.includes('/goal'));assert(calls[0].args.includes('--session'));
+  assert.equal(calls[0].args[calls[0].args.indexOf('--session')+1],'session');
+  const previousPick=vscode.window.showQuickPick;
+  vscode.window.showQuickPick=async ()=>'start';
+  calls.length=0;inputs=['Reduce p95;$(not-a-shell-command)'];
+  await commands.get(namespace + '.goal')({session:{id:'session'}});
+  assert(calls[0].args.includes('/goal Reduce p95;$(not-a-shell-command)'));
+  assert.equal(calls[0].options.shell,undefined);
+  for(const action of ['pause','resume','clear','auto on','auto off']) {
+    vscode.window.showQuickPick=async ()=>action;calls.length=0;
+    await commands.get(namespace + '.goal')({session:{id:'session'}});
+    assert(calls[0].args.includes('/goal '+action));
+    assert.equal(calls[0].args[calls[0].args.indexOf('--session')+1],'session');
+  }
+  vscode.window.showQuickPick=async ()=>undefined;calls.length=0;
+  await commands.get(namespace + '.goal')({session:{id:'session'}});
+  assert.equal(calls.length,0);
+  vscode.window.showQuickPick=async ()=>'start';inputs=[undefined];
+  await commands.get(namespace + '.goal')({session:{id:'session'}});
+  assert.equal(calls.length,0);vscode.window.showQuickPick=previousPick;
+  calls.length=0;
+  await commands.get(namespace + '.questions')({session:{id:'session'}});
+  assert(calls[0].args.includes('/questions'));assert(calls[0].args.includes('--session'));
+  assert.equal(calls[0].args[calls[0].args.indexOf('--session')+1],'session');
+  calls.length=0;
   await commands.get(namespace + '.repair')();
   assert.equal(repairPrompts,1);assert.equal(calls.length,1);assert(calls[0].args.includes('preview'));
   repairApproved=true;calls.length=0;
@@ -198,6 +224,8 @@ async function main() {
   assert(calls[1].args.includes(initPlan.plan_id));assert.equal(calls[1].options.shell,undefined);
   const roots=await runtime.provider.getChildren();
   assert.equal(roots[0].children[0].label,'Intern Agent Control');
+  assert(roots[0].children[0].description.includes('goal active'));
+  assert(roots[0].children[0].description.includes('2 question(s)'));
   assert(roots.some(root=>root.label==='Project initialization'));
   const job=roots.find(root=>root.label==='Project initialization').children[0];
   assert.equal(job.initialization.workspace,'new-project');assert.equal(job.description,'preview');
@@ -272,9 +300,11 @@ async function main() {
   await assert.rejects(commands.get(namespace + '.githubCredentials')(),/Trust/);
   await assert.rejects(commands.get(namespace + '.recoverRepository')(),/Trust/);
   await assert.rejects(commands.get(namespace + '.installSkills')(),/Trust/);
+  await assert.rejects(commands.get(namespace + '.goal')({session:{id:'session'}}),/Trust/);
+  await assert.rejects(commands.get(namespace + '.questions')({session:{id:'session'}}),/Trust/);
   assert.equal(calls.length,0);vscode.workspace.isTrusted=true;
   config.stateDirectory = '<unconfigured>';
   assert.throws(() => runtime.backend(['status']), /absolute private/);
-  console.log('Extension tests passed: isolated namespace, routing, literal argv, reviewed init/recovery, exact-console reconnect, private PAT/bootstrap, host-profile reuse and release/skill commands.');
+  console.log('Extension tests passed: isolated namespace, routing, literal argv, reviewed init/recovery, exact-console reconnect, private PAT/bootstrap, shared-host reuse, goal/question controls and release/skill commands.');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

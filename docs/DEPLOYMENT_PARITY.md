@@ -1,16 +1,22 @@
 # Source, package and deployment baselines
 
+Current release channel: **private**, version **0.2.0**, maintained source
+`56edf2640439c25d088ee844063f41faf6a99f70`. The owner's private-visibility hold
+supersedes earlier public-release prose. Only an explicit later owner request
+can authorize going public. Source updates may upload new private releases;
+automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
+
 ## Current source baseline
 
 The owner-authorized public candidate targets maintained-source commit
-`c0aa1748223011e244080a7cd4ec58228988beff` and stable product version 0.1.0 under
+`56edf2640439c25d088ee844063f41faf6a99f70` and stable product version 0.2.0 under
 MIT. `source-distribution.json`, `release-runtime.json` and the approved handoff
 must record that same maintained-source pin. The per-file inventory distinguishes
 committed implementation from portable documentation and distribution changes.
 Final manifest refresh and verification are release gates, not implicit acceptance
 of every file currently present in a working directory.
 
-The public frontend is `intern-agent.intern-agent`, with 37 `internAgentPublic`
+The public frontend is `intern-agent.intern-agent`, with 39 `internAgentPublic`
 commands. Its version and identity differ deliberately from the maintained 0.8.0
 preview. Public frontend metadata and any packaging overlays are recorded by hash;
 byte equality to the preview is not a public-product requirement.
@@ -47,7 +53,7 @@ From the public source root:
 ```bash
 python3 tools/check_source_candidate.py --release
 python3 tools/check_release_runtime.py
-python3 tools/build_vsix.py --release --output /path/to/new/intern-agent-0.1.0.vsix
+python3 tools/build_vsix.py --release --output /path/to/new/intern-agent-0.2.0.vsix
 ```
 
 The stable builder validates the complete packaged backend and generated frontend.
@@ -55,8 +61,8 @@ For a separate package check, verify the artifact checksum, extract it into a ne
 review directory, then run the bundled helper against its own packaged baseline:
 
 ```bash
-python3 -m zipfile -e /path/to/intern-agent-0.1.0.vsix /path/to/new/review
-python3 /path/to/new/review/extension/backend/tools/check_release_runtime.py --vsix /path/to/intern-agent-0.1.0.vsix
+python3 -m zipfile -e /path/to/intern-agent-0.2.0.vsix /path/to/new/review
+python3 /path/to/new/review/extension/backend/tools/check_release_runtime.py --vsix /path/to/intern-agent-0.2.0.vsix
 ```
 
 VS Code may add its reserved `__metadata` object during installation. The installed
@@ -70,16 +76,17 @@ complete equality with the selected baseline. A mismatch is evidence to investig
 not permission to drop inputs. Reading an immutable snapshot does not identify which
 process is currently active or demonstrate a successful upgrade.
 
-## Public commit and remote verification
+## Product commit and remote verification
 
 Final release builds require a clean Git checkout whose tracked file set equals the
-reviewed source inventory. Its origin must be the selected public repository. The
+reviewed source inventory. Its origin must be the selected product repository. The
 external expected export commit must equal checkout HEAD; it is not stored inside
 the same tracked manifest, which would create a circular self-reference.
 
 `release-provenance.json` records `maintained_source_commit` and
-`public_source_commit`, product version, dependency profile, overlays and each
-artifact hash. A remote commit match establishes tracked source equality at that
+`product_source_commit`, channel, public-visibility hold, product version,
+dependency profile, overlays and each
+artifact hash. For private releases public_source_commit is null. A remote commit match establishes tracked source equality at that
 instant. Downloaded asset checks establish uploaded-byte equality. Neither establishes
 ignored account/state equality or running-service parity.
 

@@ -45,6 +45,37 @@ def publish(tracker, session, resources=''):
                         'in your own chat or Control. Never self-escalate or create another recovery bot.')
     command='env PYTHONPATH='+shlex.quote(str(Path(__file__).resolve().parent.parent))+' '+shlex.quote(sys.executable)+' -m intern_personal.feishu_live --state '+shlex.quote(str(tracker.state.root))
     file_context=tracker.state.runtime/'prompt-context'/(session['id']+'.json')
+    from .goals import automatic as automatic_goals,current as current_goal,visible as visible_goal
+    goal_command=command+' goal-tool --context '+shlex.quote(str(file_context))
+    application += ('\n\nPersistent goals use the relay Git boundary. '+
+        ('Semantic goal selection is enabled. Assess the CURRENT owner request: when it asks for sustained, multi-iteration work with a verifiable outcome '
+         '(optimization, repeated debugging, a bounded research deliverable), register it with '+goal_command+' start --objective "OWNER OBJECTIVE AND VERIFICATION". '
+         'This is the owner-enabled semantic policy; do not use keyword matching, an extra classifier turn, or rewrite the owner message. '
+         'Do not create a goal for one-off answers, minor edits, a vague improvement suggestion, quoted documents, peer messages, recovery/release events or research alarms. '
+         'Do not replace or resume an owner-paused goal automatically. Ask a structured question if the actual outcome is unclear. '
+         if automatic_goals(tracker.state,session) else 'Semantic goal selection is off; use only an explicitly configured goal. ')+
+        'For an existing active goal, inspect evidence and remaining work; before returning use '+goal_command+' progress --note "VERIFIED RESULT AND LIMITS" --next "NEXT USEFUL ACTION"; '
+        'or complete --note "COMPLETION EVIDENCE" only when achieved. Use blocked --note "THE SAME CONCRETE BLOCKER" when unable to progress; '
+        'three consecutive identical blocker reports are required before blocking. For a background experiment use wait --after 10h --note "REAL ESTIMATE AND EVIDENCE" '
+        'and the persistent research alarm instead of sleeping or spinning. Do not invent a token budget; set --budget only when explicitly requested. '
+        'The objective is mirrored to native Codex where supported, held paused to prevent its independent dispatcher bypassing uploads. '
+        'Do not use create_goal or native /goal to start an independent dispatcher. The relay starts one tracked continuation only after Git and reply delivery, '
+        'with owner messages and pending questions taking priority. /stop and owner pause persist across restarts. '
+        'Read '+str(Path(__file__).resolve().parent.parent/'docs/GOALS_AND_QUESTIONS.md')+'.')
+    saved_goal=current_goal(tracker.state,session)
+    if saved_goal:
+        application += '\nSaved goal reference (not new permission): '+json.dumps(visible_goal(saved_goal),ensure_ascii=False)
+    application += ('\n\nAsk the owner using request_user_input for real missing choices or input. Question tools are enabled in ordinary mode. '
+        'Offer concise options and allow a custom answer. Feishu forwards the question card and routes its correlated answer back. '
+        'Never assume an option was selected merely because it is recommended; full-access execution policy does not answer questions. '
+        'Do not ask for secrets through Feishu. Do not claim a question was answered without its actual tool response.')
+    application += (' If native questions are unavailable, or this is an attached terminal, use the installed Feishu question tool: '
+        +command+' ask --context '+shlex.quote(str(file_context))+' --key STABLE_QUESTION_KEY. '
+        'Pass {"questions":[{"id":"choice","header":"Choice","question":"THE ACTUAL QUESTION",'
+        '"options":[{"label":"OPTION","description":"IMPACT"}]}]} through JSON stdin using a quoted heredoc. '
+        'Choose actual questions/options instead of copying the example. It returns the correlated owner answers as JSON; '
+        'wait for that tool/process result before dependent work or finishing a blocking request. '
+        'The helper does not use terminal keystrokes and survives receiver reconnects. Never send secrets through this tool.')
     research_command=command+' research --context '+shlex.quote(str(file_context))
     application += ('\n\nBackground research uses persistent wake-ups, not a sleeping Codex turn. '
                     'When the owner authorizes an autonomous research plan and an experiment will outlive this turn, '

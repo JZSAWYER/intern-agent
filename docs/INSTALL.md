@@ -4,10 +4,12 @@ Each user installs independent accounts, private state and projects. No access t
 the original operator's machine is needed. Source development uses
 [contributor onboarding](CONTRIBUTING.md).
 
-Intern Agent 0.1.0 is the separate MIT-licensed product at
-[the public repository](https://github.com/JZSAWYER/intern-agent).
-Select its [versioned release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.1.0)
+Intern Agent 0.2.0 is the separate MIT-licensed product at
+[the product repository](https://github.com/JZSAWYER/intern-agent).
+Select its [versioned release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.0)
 and verify checksums/provenance, rather than using a private operational branch.
+The repository and release are private until the owner explicitly requests
+public visibility. Authorized access is required to fetch them.
 See [distribution](DISTRIBUTION.md) for reproducible packaging and release guards.
 
 ## Supported profile and artifact verification
@@ -135,9 +137,9 @@ Choose the installing user's Codex skills directory explicitly. Inspect the plan
 then apply only an approved released bundle, with its external SHA-256:
 
 ```bash
-python3 tools/install_skill_bundle.py /path/to/intern-agent-0.1.0-skills.zip \
+python3 tools/install_skill_bundle.py /path/to/intern-agent-0.2.0-skills.zip \
   --destination /path/to/your/codex/skills
-python3 tools/install_skill_bundle.py /path/to/intern-agent-0.1.0-skills.zip \
+python3 tools/install_skill_bundle.py /path/to/intern-agent-0.2.0-skills.zip \
   --destination /path/to/your/codex/skills --sha256 "${IA_BUNDLE_SHA256:?Set the verified skills ZIP hash}" --apply
 ```
 
@@ -148,6 +150,15 @@ conflicting skills are preserved and reported; identical reapplication changes
 nothing. It keeps per-file provenance and the validated MIT notice beside its
 private per-version receipt. It executes no downloaded script and performs no
 network calls. Do not point it at the build bot's own Codex home.
+
+## Persistent goals and owner questions
+
+Version 0.2.0 adds tracked goal continuation and owner question cards. Use
+[goals and questions](GOALS_AND_QUESTIONS.md) for controls, pause/recovery
+boundaries, callback setup and /answer fallback. A release job or attachment
+cannot authorize a new persistent goal. Real card interaction requires the app's
+published card.action.trigger long-connection callback; no callback/account
+configuration is changed by installing this release.
 
 ## Acceptance, upgrade and uninstall
 

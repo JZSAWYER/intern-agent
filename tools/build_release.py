@@ -35,12 +35,47 @@ def digest(value):
     return hashlib.sha256(value).hexdigest()
 
 
+def release_policy(config, expected_channel=None):
+    channel = config.get('release_channel')
+    if not isinstance(channel, str) or channel not in {'private', 'public'}:
+        raise ReleaseError('explicit_release_channel_required')
+    hold = config.get('public_visibility_hold')
+    if type(hold) is not bool:
+        raise ReleaseError('explicit_visibility_hold_required')
+    if channel == 'public' and hold:
+        raise ReleaseError('public_visibility_hold_blocks_release')
+    if expected_channel is not None and channel != expected_channel:
+        raise ReleaseError('release_channel_differs')
+    return channel
+
+
+def check_repository_visibility(config, repository):
+    channel = release_policy(config)
+    if not isinstance(repository, dict) or repository.get('full_name') != config['repository']:
+        raise ReleaseError('unexpected_release_repository')
+    if (type(repository.get('private')) is not bool
+            or repository['private'] != (channel == 'private')):
+        raise ReleaseError('repository_visibility_differs')
+    return channel
+
+
+def check_event_visibility(config):
+    event_file = os.environ.get('GITHUB_EVENT_PATH')
+    if not event_file:
+        raise ReleaseError('release_event_required')
+    event = json.loads(Path(event_file).read_bytes())
+    if not isinstance(event, dict):
+        raise ReleaseError('invalid_release_event')
+    check_repository_visibility(config, event.get('repository'))
+
+
 def product_config(root):
     config = json.loads(safe_file(root, PRODUCT).read_bytes())
     if config.get('schema') != 'intern-agent.release-product.v1':
         raise ReleaseError('invalid_product_schema')
     if config.get('repository') != REPOSITORY:
         raise ReleaseError('unexpected_public_destination')
+    release_policy(config)
     if (not isinstance(config.get('version'), str) or not SEMVER.fullmatch(config['version'])
             or config['version'] == '0.0.0'):
         raise ReleaseError('fresh_stable_version_required')
@@ -66,6 +101,8 @@ def check_handoff(config, manifest, prepare=False):
     if (handoff.get('repository') != config['repository']
             or handoff.get('version') != config['version']):
         raise ReleaseError('handoff_identity_or_version_differs')
+    if handoff.get('channel') != release_policy(config):
+        raise ReleaseError('handoff_release_channel_differs')
     pin = handoff.get('source_commit')
     if not isinstance(pin, str) or not COMMIT.fullmatch(pin) or pin != manifest.get('source_commit'):
         raise ReleaseError('verified_source_commit_differs')
@@ -177,9 +214,12 @@ def validate_vsix(path, config, prepare):
     return extension['publisher'] + '.' + extension['name']
 
 
-def prepare_inputs(root, prepare=False, expected_export_commit=None, ci=False):
+def prepare_inputs(root, prepare=False, expected_export_commit=None, ci=False, expected_channel=None):
     root = Path(root).resolve()
     config = product_config(root)
+    release_policy(config, expected_channel)
+    if ci:
+        check_event_visibility(config)
     # Handoff errors are useful before a source manifest has been re-signed for release.
     manifest = json.loads(safe_file(root, 'source-distribution.json').read_bytes())
     ready = check_handoff(config, manifest, prepare)
@@ -202,10 +242,11 @@ def prepare_inputs(root, prepare=False, expected_export_commit=None, ci=False):
     return config, manifest, payload, skills, dependencies, ready
 
 
-def build(root, output_dir, *, prepare=False, expected_export_commit=None, ci=False):
+def build(root, output_dir, *, prepare=False, expected_export_commit=None, ci=False, expected_channel=None):
     root = Path(root).resolve()
     config, manifest, payload, skills, dependencies, ready = prepare_inputs(
-        root, prepare, expected_export_commit, ci)
+        root, prepare, expected_export_commit, ci, expected_channel)
+    channel = release_policy(config, expected_channel)
     output = Path(output_dir).resolve()
     if output.is_relative_to(root):
         raise ReleaseError('release_output_must_be_outside_source')
@@ -234,11 +275,13 @@ def build(root, output_dir, *, prepare=False, expected_export_commit=None, ci=Fa
                  for path in (source, skill_zip, vsix, skill_installer)]
     provenance = {'schema': 'intern-agent.release-provenance.v1', 'product': 'intern-agent',
                   'repository': config['repository'], 'version': config['version'],
+                  'release_channel': channel, 'public_visibility_hold': config['public_visibility_hold'],
                   'source_commit': manifest['source_commit'],
                   'maintained_source_commit': manifest['source_commit'],
                   'runtime_snapshot_sha256': json.loads(payload['release-runtime.json'])['snapshot_sha256'],
                   'export_commit': expected_export_commit if not prepare else None,
-                  'public_source_commit': expected_export_commit if not prepare else None,
+                  'product_source_commit': expected_export_commit if not prepare else None,
+                  'public_source_commit': expected_export_commit if not prepare and channel == 'public' else None,
                   'source_manifest_sha256': digest(payload['source-distribution.json']),
                   'product_config_sha256': digest(payload[PRODUCT]),
                   'source_files': len(payload), 'skills_files': len(skills),
@@ -265,17 +308,23 @@ def main(argv=None):
     parser.add_argument('--prepare', action='store_true', help='Unpublished, unlicensed local preparation only')
     parser.add_argument('--check-only', action='store_true')
     parser.add_argument('--expected-export-commit')
+    parser.add_argument('--expected-channel', choices=['private', 'public'],
+                        help='Require the reviewed release channel; cannot override the visibility hold')
     parser.add_argument('--ci', action='store_true')
     args = parser.parse_args(argv)
     try:
         if args.check_only:
-            config, _, _, _, _, ready = prepare_inputs(ROOT, args.prepare, args.expected_export_commit, args.ci)
-            result = {'ok': True, 'version': config['version'], 'release_approved': ready, 'published': False}
+            config, _, _, _, _, ready = prepare_inputs(
+                ROOT, args.prepare, args.expected_export_commit, args.ci, args.expected_channel)
+            result = {'ok': True, 'version': config['version'], 'release_approved': ready,
+                      'release_channel': config['release_channel'],
+                      'public_visibility_hold': config['public_visibility_hold'], 'published': False}
         else:
             if args.output_dir is None:
                 raise ReleaseError('release_output_directory_required')
             result = build(ROOT, args.output_dir, prepare=args.prepare,
-                           expected_export_commit=args.expected_export_commit, ci=args.ci)
+                           expected_export_commit=args.expected_export_commit, ci=args.ci,
+                           expected_channel=args.expected_channel)
         print(json.dumps(result, sort_keys=True))
         return 0
     except (ValueError, OSError, KeyError, TypeError, SyntaxError, subprocess.SubprocessError, zipfile.BadZipFile) as error:

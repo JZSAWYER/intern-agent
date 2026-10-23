@@ -1,7 +1,8 @@
 name: Verified Intern Agent release
 
-# This workflow runs only at the root of the clean public repository.
-# An updated version and a newly approved source-commit handoff are required.
+# This workflow runs only in the clean product repository. A reviewed release
+# channel, visibility hold and newly approved source-commit handoff are required.
+# It never changes repository visibility.
 on:
   push:
     branches: [main]
@@ -24,14 +25,13 @@ permissions:
   contents: read
 
 concurrency:
-  group: intern-agent-public-release
+  group: intern-agent-release
   cancel-in-progress: false
 
 jobs:
   release:
     if: >-
       github.repository == 'JZSAWYER/intern-agent' &&
-      github.event.repository.private == false &&
       github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
@@ -53,7 +53,7 @@ jobs:
         with:
           node-version: '24'
           package-manager-cache: false
-      - name: Require the final verified source handoff
+      - name: Require the final handoff and policy-matching event visibility
         run: python tools/build_release.py --check-only --ci --expected-export-commit "$GITHUB_SHA"
       - name: Test using a separate hash-locked Python environment
         run: |
@@ -75,7 +75,7 @@ jobs:
           b = pathlib.Path(os.environ['RUNNER_TEMP']) / 'release-rebuild'
           assert {p.name: p.read_bytes() for p in a.iterdir()} == {p.name: p.read_bytes() for p in b.iterdir()}
           PY
-      - name: Check public destination, exact main commit and unused release version
+      - name: Check destination visibility, exact main commit and unused release version
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -85,13 +85,18 @@ jobs:
           import pathlib
           import urllib.error
           import urllib.request
+          from tools.build_release import check_repository_visibility, release_policy
           product = json.load(open('release-product.json'))
+          channel = release_policy(product)
           assets = pathlib.Path(os.environ['RUNNER_TEMP']) / 'release-assets'
           provenance = json.loads((assets / 'release-provenance.json').read_text())
           assert provenance['release_approved'] is True and provenance['preparation_only'] is False
           assert provenance['license'] == 'MIT' and provenance['version'] == product['version']
+          assert provenance['release_channel'] == channel
+          assert provenance['public_visibility_hold'] is product['public_visibility_hold']
           assert provenance['maintained_source_commit'] == provenance['source_commit'] == product['final_handoff']['source_commit']
-          assert provenance['public_source_commit'] == provenance['export_commit'] == os.environ['GITHUB_SHA']
+          assert provenance['product_source_commit'] == provenance['export_commit'] == os.environ['GITHUB_SHA']
+          assert provenance['public_source_commit'] == (os.environ['GITHUB_SHA'] if channel == 'public' else None)
           repository = product['repository']
           assert repository == 'JZSAWYER/intern-agent' == os.environ['GITHUB_REPOSITORY']
           assert provenance['repository'] == repository
@@ -107,15 +112,17 @@ jobs:
                       return None
                   raise SystemExit('Release API preflight failed') from None
           repo = get('')
-          assert repo['full_name'] == repository and repo['private'] is False and repo['default_branch'] == 'main'
+          check_repository_visibility(product, repo)
+          assert repo['default_branch'] == 'main'
           assert get('/git/ref/heads/main')['object']['sha'] == os.environ['GITHUB_SHA']
           tag = 'v' + product['version']
           assert get('/git/ref/tags/' + tag, missing=True) is None, 'Version tag already exists; choose a fresh version'
           assert get('/releases/tags/' + tag, missing=True) is None, 'Release already exists; no replacement is allowed'
           notes = ('Verified Intern Agent ' + tag + '\n\n'
+                   + 'Distribution channel: ' + channel + '.\n\n'
                    + 'Maintained-source commit: `' + provenance['maintained_source_commit'] + '`.\n\n'
-                   + 'Public-source commit: [' + provenance['public_source_commit'] + '](https://github.com/'
-                   + repository + '/tree/' + provenance['public_source_commit'] + ').\n\n'
+                   + 'Product-source commit: [' + provenance['product_source_commit'] + '](https://github.com/'
+                   + repository + '/tree/' + provenance['product_source_commit'] + ').\n\n'
                    + 'MIT source, stable VSIX, recovery and file-transfer Codex skills, standalone skills installer, '
                    + 'SHA-256 checksums and release provenance are attached. See the installation guide for the supported Linux profile.\n')
           (pathlib.Path(os.environ['RUNNER_TEMP']) / 'release-notes.md').write_text(notes)
@@ -134,6 +141,7 @@ jobs:
           import os
           import pathlib
           import urllib.request
+          from tools.build_release import check_repository_visibility
           root = pathlib.Path(os.environ['RUNNER_TEMP'])
           expected = {p.name: p.read_bytes() for p in (root / 'release-assets').iterdir()}
           received = {p.name: p.read_bytes() for p in (root / 'release-verify').iterdir()}
@@ -143,5 +151,25 @@ jobs:
           with urllib.request.urlopen(request, timeout=30) as response:
               tag = json.load(response)
           assert tag['object']['type'] == 'commit' and tag['object']['sha'] == os.environ['GITHUB_SHA']
+          request = urllib.request.Request('https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'],
+              headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+          with urllib.request.urlopen(request, timeout=30) as response:
+              repository = json.load(response)
+          check_repository_visibility(json.load(open('release-product.json')), repository)
           PY
           gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+          from tools.build_release import check_repository_visibility
+          base = 'https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY']
+          def get(path):
+              request = urllib.request.Request(base + path,
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+          check_repository_visibility(json.load(open('release-product.json')), get(''))
+          release = get('/releases/tags/' + os.environ['RELEASE_TAG'])
+          assert release['draft'] is False and release['tag_name'] == os.environ['RELEASE_TAG']
+          PY
