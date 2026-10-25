@@ -436,7 +436,8 @@ class WorkspaceTracking:
                 baseline=json.loads(record['baseline']);now=self.dirty(directory)
                 changes={name for name,digest in baseline['dirty'].items() if now.get(name)!=digest
                     and not (binding.get('metadata_mode')=='bot_branch' and name.startswith('.intern_workspace/'))}
-                from .draft_baselines import check,review
+                from .draft_baselines import check,review,publication_changes
+                changes=publication_changes(self,directory,changes,names)
                 check(self,session,item,baseline,changes)
                 if any(baseline['staged']):raise Invalid('Pre-existing staged work requires explicit review before recording code')
                 reviewed=review(self,session,item,baseline)

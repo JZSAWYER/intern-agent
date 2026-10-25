@@ -25,6 +25,14 @@ unexecuted request only after verifying that the current published tree differs
 from the recorded head solely in management records. Changed committed code
 requires its own reconciliation.
 
+If a formerly visible untracked journal is now explicitly ignored, its local
+bytes are not a proposed Git upload. The draft checker uses Git's actual ignore
+rules for those existing regular files, without changing the original baseline
+or forcing large raw data into the repository. Tracked files matching an ignore
+pattern, deleted drafts, linked replacements and staged owner work retain their
+reviews. Publish useful bounded archives/summaries under the project's declared
+artifact policy; this rule does not waive size or credential checks.
+
 ## Completed replies
 
 After execution is observed completed, the relay saves the result and publishes
@@ -121,7 +129,8 @@ Tests cover withholding the official final reply before confirmed Git upload,
 stable saved results across failed publication, interim follow-up answers,
 simultaneous sender/publisher claims, restarts during sends, frozen payload
 reconciliation, unknown and active turns, independent later terminal work,
-repeated historical Git reviews, fresh preflight checks, waiting diagnostics,
+repeated historical Git reviews, ignored raw journals and retained draft
+protections, fresh preflight checks, waiting diagnostics,
 Recovery Sentinel replies, quiet healthy work and suppression of legacy
 heartbeats without losing actual fault notices. Offline checks do not establish
 a live account's connectivity, permissions or message delivery.

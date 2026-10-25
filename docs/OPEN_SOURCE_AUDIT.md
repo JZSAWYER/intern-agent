@@ -1,20 +1,21 @@
 # Source and release readiness audit
 
-Current release channel: **private**, version **0.2.1**, maintained source
-`ea1ca9e9b651f5fb0a31f15ea4e3218723e74764`. The owner's private-visibility hold
+Current release channel: **private**, version **0.2.2**, maintained source
+`efa10678221efe96e47047eda9f2cd42c489263b`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
 automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
 
 
-## Current candidate — 2026-10-24
+## Current candidate — 2026-10-25
 
 The candidate imports verified maintained commit
-`ea1ca9e9b651f5fb0a31f15ea4e3218723e74764` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.1
-repairs structured question redaction and semantic retries, and excludes
-diagnostic question cards from goal waits. Persistent goals and owner questions
-remain included. The stable namespace has 39 commands.
+`efa10678221efe96e47047eda9f2cd42c489263b` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.2
+respects Git's explicit ignore rules for local raw journals while preserving
+tracked/staged/deleted/linked and genuinely uncaptured draft reviews. Saved
+responses and baselines remain intact; retries do not replay executed prompts.
+The stable namespace retains 39 commands.
 The repository remains private for owner review; prior public verification was
 performed before the owner's visibility change and is historical evidence.
 
@@ -41,7 +42,7 @@ exact final artifacts and authenticated private remote verification in the recei
 | Live acceptance | Explicit real-account, Remote SSH, activation, upgrade/rollback and uninstall/reinstall pilot | Not established by this release audit |
 
 The public profile contains 14 runtime distributions plus a hash-locked pip
-bootstrap tool. Version-specific OSV queries repeated on 2026-10-24 returned no findings
+bootstrap tool. Version-specific OSV queries repeated on 2026-10-25 returned no findings
 for those 15 selected versions; upstream wheel and notice hashes are recorded in
 `requirements/public-profile.json`. This is dated dependency evidence, not a claim
 against future vulnerabilities. The older deployed reference lock retains its

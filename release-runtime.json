@@ -1,8 +1,8 @@
 {
   "schema": "intern-agent.runtime-baseline.v1",
-  "observed": "2026-10-24",
-  "snapshot_sha256": "4825f28009889935a5362b0b5a10be50f80223ebcf04daf9ffc9d7cf5d32b60b",
-  "source_commit": "ea1ca9e9b651f5fb0a31f15ea4e3218723e74764",
+  "observed": "2026-10-25",
+  "snapshot_sha256": "929117b5f90f28e6b6abe4611d903876700f2f7294f798806414e63c8d4ae950",
+  "source_commit": "efa10678221efe96e47047eda9f2cd42c489263b",
   "runtime_files": [
     {
       "path": "intern_personal/__init__.py",
@@ -70,7 +70,7 @@
     },
     {
       "path": "intern_personal/draft_baselines.py",
-      "sha256": "6f33ac15a5fa0d2d7042d096b31c9a7fdbf3d3caeb1ddb8dd0a628f4e0740389"
+      "sha256": "9a964a1a8cb8ea5622ac49760f4def10888a860d0641f21d1a4baa6fbdab2b4a"
     },
     {
       "path": "intern_personal/execution_policy.py",
@@ -302,7 +302,7 @@
     },
     {
       "path": "intern_personal/workspace_tracking.py",
-      "sha256": "860856ed2c3c15dab4c98f56538a56b48bd8fcbc56c94f1b01c9541fd93b61b1"
+      "sha256": "0e527140c4774ce627927d440ecfa355906f1eb6a751d1650e0eb98f2b36bb56"
     },
     {
       "path": "skills/feishu-file-transfer/SKILL.md",
@@ -326,7 +326,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "00368569a4d18020c895a3d0c7975bb17d1cccfaf091e09f885bf9bb2e130569"
+      "sha256": "6ec3f381bba0763eaf8562cfecf5a55ed15b99931a1bed4ae7b21d487ab6599e"
     },
     {
       "path": "docs/CONTRIBUTING.md",
@@ -342,7 +342,7 @@
     },
     {
       "path": "docs/DEPLOYMENT_PARITY.md",
-      "sha256": "93fbdd2988bf03eec0d89363562244146ea28b0fbe774c103f8669a7093aab2d"
+      "sha256": "b7ca492923fe5b9c8929a6b85f49d6ce889916b7f96e7b66c2f019bd59870141"
     },
     {
       "path": "docs/DEVELOPMENT_WORKFLOW.md",
@@ -350,7 +350,7 @@
     },
     {
       "path": "docs/DISTRIBUTION.md",
-      "sha256": "13a4da741eee3fd7b8c1981b712d4d994905fce44b635e65182407c8ba02e1ac"
+      "sha256": "c487f80b2369dbb95d9b613c012d8ec5f79268850f4737d23c052d5d38467dc9"
     },
     {
       "path": "docs/EDITOR_TEAMS.md",
@@ -362,7 +362,7 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "6773a594782ae303a7b1fb448cfa81ff3338fff2e9939ce427fe194d25240bf0"
+      "sha256": "3e4744debc0b7a3a12a949871bafa62002464fc8f1d366a5cb80efd1e4e8ce71"
     },
     {
       "path": "docs/FILE_TRANSFER.md",
@@ -374,7 +374,7 @@
     },
     {
       "path": "docs/FRONTEND_READINESS.md",
-      "sha256": "ef7197aea42b631706db2fe0943912a1ca07d1cee471a7c475e1cc932c0ec06c"
+      "sha256": "bb367878e9ff02f4cb1a7dd562a1bd604170bc1f4713f2d73c85556bee085dc5"
     },
     {
       "path": "docs/GIT_COMPLETION.md",
@@ -386,11 +386,11 @@
     },
     {
       "path": "docs/INSTALL.md",
-      "sha256": "35a7c402325bf52888a638f899a5c278d8024cb9545b3b20c7bb969559a9e8a2"
+      "sha256": "c6143648d1ce2d63eb8c30bdf7d6612a14874829d132d6bee2c5d54fb237900e"
     },
     {
       "path": "docs/LICENSING_PROVENANCE.md",
-      "sha256": "01224deb167a1b7fec67c465b55bb2dc22ce5eeeb76ad6f4b401d868249d4027"
+      "sha256": "2854b994e480d2f26811b2b3d88de8947dc8b827880a46f7cbdf9072dff2c339"
     },
     {
       "path": "docs/LIVE.md",
@@ -398,11 +398,11 @@
     },
     {
       "path": "docs/OPEN_SOURCE_AUDIT.md",
-      "sha256": "b465603dc1275421b9832eecf26204a4a7eae17c4266cfdef393c0b285796389"
+      "sha256": "b7d2ddb9dc78f2d849ee0759801f552fd546fa41985905f3ce75eaa3969f70e3"
     },
     {
       "path": "docs/OPEN_SOURCE_HANDOFF.md",
-      "sha256": "d832079577f0efa663e6983733d3e31818f43d87203e5fbcfa98704e04258b78"
+      "sha256": "5c8f8e6c9e35faf322ece03104bbcc29811daa365534589663c28de28df969c4"
     },
     {
       "path": "docs/PERMISSIONS.md",
@@ -446,7 +446,7 @@
     },
     {
       "path": "docs/REPLY_DELIVERY.md",
-      "sha256": "13f6b2ad8ac712328d6c60d3a28035e26700e322507984a005738a916a6d6f2b"
+      "sha256": "09d3e6c91014bc33596d9dc5790aa1f54a0971b5d43a9e38d2e0f0041fe87dbd"
     },
     {
       "path": "docs/RESTORED_FEATURES.md",
@@ -462,7 +462,7 @@
     },
     {
       "path": "docs/SOURCE_MANIFEST.md",
-      "sha256": "bb1362558f95b5a4c59115dbf4621f5697a53f62114632c2bcb2e3c9e5d94fed"
+      "sha256": "cec582f32219cec8e85bba25a4632c2cb4b9c31c0365df5856c42099f7b737ca"
     },
     {
       "path": "docs/TERMINAL.md",
@@ -478,8 +478,8 @@
     "files": [
       {
         "path": "extension/package.json",
-        "sha256": "40f612e28d19c00e2e960acefb99697e5f5cb9211f766fa64982d8e60ce47b89",
-        "canonical_sha256": "dff640237c8d0d7026c31286ec2522bc235ab34f1816472d3bb48544125200c9"
+        "sha256": "245917026ee038d8c01f948f886c23b45eab091d72104741c8bc5048412abaf6",
+        "canonical_sha256": "c68a013d87aa928f26aaf669dfcaa39c5ee05110af1e1ea318eefa353cbda073"
       },
       {
         "path": "extension/extension.js",

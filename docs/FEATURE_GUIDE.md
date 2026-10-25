@@ -1,11 +1,12 @@
 # Intern Agent feature tutorial
 
-## Installable product 0.2.1
+## Installable product 0.2.2
 
-This update preserves structured question cards and live answer controls during
-text redaction. Secret prompts use secure local input; diagnostic cards do not
-hold real goal work. Semantic retries preserve the original owner boundary.
-Decision history remains valid JSON with secret values redacted.
+This update respects Git's explicit ignore rules for local-only raw journals,
+including journals visible when a turn started. Tracked edits, deleted drafts,
+linked replacements, staged owner work and publishable uncaptured files retain
+their existing review requirements. Final replies still wait for confirmed Git
+publication; a retry preserves the saved result without replaying Codex.
 
 The product repository and releases stay private until the owner explicitly asks
 for public visibility. Install the versioned product VSIX with its matching isolated runtime and verify
@@ -48,6 +49,25 @@ The app needs the published `card.action.trigger` long-connection callback.
 VS Code adds **Manage Persistent Goal** and **Show Pending Codex Questions**.
 See [the goal and question tutorial](GOALS_AND_QUESTIONS.md) for budgets,
 native compatibility, recovery boundaries and account setup.
+
+## Git uploads and local research output
+
+**Purpose:** publish code, useful research artifacts and validated history while
+keeping declared local-only raw journals out of Git.
+
+**Use:** keep large raw output local through the project's explicit ignore rules,
+and version a bounded archive or a useful summary with hashes as appropriate.
+The relay honors those rules even when the raw file was visible at the start of
+the turn. It does not delete the journal or rewrite the saved starting baseline.
+Tracked changes, staged owner work, linked replacements and unreviewed large
+publishable files still require their normal checks.
+
+**Expected result:** excluded raw journals do not create a false missing-draft
+review. Final replies and turn completion wait for confirmed Git publication;
+`/status` shows model activity, Git status and delivery separately. A retry uses
+the saved result and never reruns an executed prompt. Once upload and delivery
+finish, the original queued owner message proceeds through fresh preflight.
+See [reply and Git recovery](REPLY_DELIVERY.md) for genuine review/network errors.
 
 ## Reconnect or recover on another computer
 
@@ -139,8 +159,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.1 uses
-maintained source ea1ca9e9b651f5fb0a31f15ea4e3218723e74764 and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.2 uses
+maintained source efa10678221efe96e47047eda9f2cd42c489263b and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace

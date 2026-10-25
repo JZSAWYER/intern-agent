@@ -141,6 +141,26 @@ def review(tracker,session,item,baseline):
     return data
 
 
+def publication_changes(tracker,directory,changes,candidates):
+    """Excluded untracked files are not draft changes proposed for Git upload."""
+    outside=sorted(changes-set(candidates))
+    if not outside:return changes
+    ignored=set()
+    for offset in range(0,len(outside),128):
+        names=tracker.git(directory,'--literal-pathspecs','ls-files','--others','--ignored',
+            '--exclude-standard','-z','--',*outside[offset:offset+128])
+        ignored.update(filter(None,names.split('\0')))
+    excluded=set()
+    for name in ignored.intersection(outside):
+        try:path=file_path(directory,name)
+        except Invalid:continue
+        # Deletions, linked replacements and tracked edits retain their review.
+        # Raw journals remain byte-for-byte local; only Git's declared ignore
+        # policy can exclude an existing untracked regular file from publication.
+        if path.is_file():excluded.add(name)
+    return changes-excluded
+
+
 def check(tracker,session,item,baseline,changes):
     if not changes:return
     approved=review(tracker,session,item,baseline)

@@ -50,6 +50,47 @@ class DraftTests(unittest.TestCase):
         file.write_text('After\n')
         with self.assertRaisesRegex(Invalid,'local review, not a network'):self.tracker.publish_code(s,item,push=False)
 
+    def ignored_journal(self,changed):
+        s=self.bot();directory=Path(self.tracker.code_directory(s));journal=directory/'runs'/'trace[1].jsonl';journal.parent.mkdir()
+        journal.write_bytes(b'old journal\n'*300);draft=directory/'draft.py';draft.write_text('value = 1\n')
+        self.state.ingest(self.event(s,'Publish a bounded summary',mid='om_journal_'+str(int(changed))));item=self.state.claim('agent')
+        with patch.object(drafts,'MAX_FILE',1024):self.tracker.begin_turn(s,item)
+        original=self.state.db.execute('SELECT baseline FROM turn_records WHERE seq=?',(item['seq'],)).fetchone()[0]
+        manifest=json.loads(Path(self.state.db.execute('SELECT manifest FROM draft_baselines WHERE seq=?',(item['seq'],)).fetchone()[0]).read_text())
+        self.assertNotIn('runs/trace[1].jsonl',manifest['files'])
+        if changed:journal.write_bytes(b'new journal\n'*400)
+        private_bytes=journal.read_bytes();(directory/'.gitignore').write_text('runs/*.jsonl\n');draft.write_text('value = 2\n')
+        (directory/'summary.json').write_text('{"result":"verified"}\n')
+        self.tracker.publish_code(s,item,push=False)
+        self.assertEqual(journal.read_bytes(),private_bytes)
+        self.assertEqual(self.raw(directory,'show','HEAD:draft.py'),'value = 2')
+        self.assertEqual(self.raw(directory,'show','HEAD:summary.json'),'{"result":"verified"}')
+        self.assertNotIn('runs/trace[1].jsonl',self.raw(directory,'ls-tree','-r','--name-only','HEAD'))
+        self.assertEqual(self.state.db.execute('SELECT baseline FROM turn_records WHERE seq=?',(item['seq'],)).fetchone()[0],original)
+
+    def test_newly_ignored_unchanged_journal_does_not_require_a_before_image(self):self.ignored_journal(False)
+
+    def test_newly_ignored_growing_journal_does_not_require_a_before_image(self):self.ignored_journal(True)
+
+    def test_ignore_rule_cannot_hide_a_tracked_draft_review(self):
+        s=self.bot();directory=Path(self.tracker.code_directory(s));file=directory/'README.md';file.write_text('Before\n')
+        with patch.object(drafts,'MAX_FILES',0):item=self.request(s)
+        file.write_text('After\n');(directory/'.gitignore').write_text('README.md\n')
+        with self.assertRaisesRegex(Invalid,'local review, not a network'):self.tracker.publish_code(s,item,push=False)
+
+    def test_ignore_rule_cannot_hide_a_deleted_untracked_draft(self):
+        s=self.bot();directory=Path(self.tracker.code_directory(s));file=directory/'owner.txt';file.write_text('Before\n')
+        with patch.object(drafts,'MAX_FILES',0):item=self.request(s)
+        file.unlink();(directory/'.gitignore').write_text('owner.txt\n')
+        with self.assertRaisesRegex(Invalid,'local review, not a network'):self.tracker.publish_code(s,item,push=False)
+
+    def test_ignore_rule_cannot_hide_a_linked_draft_replacement(self):
+        s=self.bot();directory=Path(self.tracker.code_directory(s));file=directory/'owner.txt';file.write_text('Before\n')
+        with patch.object(drafts,'MAX_FILES',0):item=self.request(s)
+        target=self.root/'outside.txt';target.write_text('Outside\n');file.unlink();file.symlink_to(target)
+        (directory/'.gitignore').write_text('owner.txt\n')
+        with self.assertRaisesRegex(Invalid,'local review, not a network'):self.tracker.publish_code(s,item,push=False)
+
     def test_staged_owner_work_is_rejected_before_codex_and_preserved(self):
         s=self.bot();directory=Path(self.tracker.code_directory(s));file=directory/'draft.txt';file.write_text('Staged by owner\n');self.raw(directory,'add','draft.txt')
         self.state.ingest(self.event(s,'Work after my staged change'));item=self.state.claim('agent')

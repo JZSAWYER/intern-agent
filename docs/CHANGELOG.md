@@ -1,5 +1,34 @@
 # Feature and fix record
 
+## 0.2.2 — Publish bounded artifacts while retaining local journals
+
+Imports maintained commit efa10678221efe96e47047eda9f2cd42c489263b. Git
+publication excludes only existing regular untracked files that Git itself
+ignores, using literal paths. Raw journals stay local even when visible in the
+starting snapshot. Tracked changes, deletions, linked replacements, staged owner
+work and publishable uncaptured drafts keep their reviews. The immutable baseline
+and saved response are preserved; upload retries never replay executed prompts.
+
+The stable MIT source, VSIX and complete skills use a new immutable version.
+Offline backend/editor/packaging, isolated installation and authenticated upload
+verification remain separate from live account and production acceptance.
+The repository stays private under the owner's visibility hold.
+
+## 2026-10-25 — Respect local-only journals during Git publication
+
+Fixed an upload review that could strand a completed research answer and the
+next owner message. A raw journal present in the starting dirty snapshot may
+later be deliberately ignored while a bounded archive is committed. Its absence
+from Git's current publication candidates must not require an unavailable
+before-image or force the raw data into Git.
+
+The check now recognizes only existing, untracked regular files excluded by
+Git's own ignore rules, using literal paths. Tracked edits, deletions, linked
+replacements, staged owner work and genuinely publishable uncaptured drafts
+retain their protection. Original baselines and saved results remain intact;
+repair retries publication, without replaying Codex or restarting experiments.
+Regression tests cover unchanged/growing ignored journals and retained reviews.
+
 ## 0.2.1 — Structured questions and semantic goal retries
 
 Imports maintained commit ea1ca9e9b651f5fb0a31f15ea4e3218723e74764. Redaction

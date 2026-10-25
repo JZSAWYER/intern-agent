@@ -1,7 +1,7 @@
 # Licensing and dependency provenance review
 
-Current release channel: **private**, version **0.2.1**, maintained source
-`ea1ca9e9b651f5fb0a31f15ea4e3218723e74764`. The owner's private-visibility hold
+Current release channel: **private**, version **0.2.2**, maintained source
+`efa10678221efe96e47047eda9f2cd42c489263b`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
 automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
@@ -10,7 +10,7 @@ automation must not change repository visibility. See [distribution](DISTRIBUTIO
 
 The owner explicitly authorized the separate clean Intern Agent product
 at `JZSAWYER/intern-agent`, using MIT for maintained source commit
-`ea1ca9e9b651f5fb0a31f15ea4e3218723e74764`. [LICENSE](../LICENSE) covers the exported
+`efa10678221efe96e47047eda9f2cd42c489263b`. [LICENSE](../LICENSE) covers the exported
 first-party Python, frontend, guides, tests, templates and skills, including local
 release/install improvements. [NOTICE](../NOTICE) records scope and external tools.
 The source inventory records every reviewed input, its original hash where
