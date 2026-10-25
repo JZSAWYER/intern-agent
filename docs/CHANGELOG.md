@@ -1,5 +1,28 @@
 # Feature and fix record
 
+## 0.2.3 — Resume goals after verified Fast settings
+
+Imports maintained commit b58fbc740904e320ffc607dcf8853173426f9f4c. Goal
+continuations recognize exact conversation-specific verified Fast receipts in
+both preflight and transactional queue checks. Historical settings reviews stay
+intact and their commands are not replayed. Missing, unverified or foreign
+receipts and actual agent uncertainty, work, questions or Git/delivery waits
+retain their barriers. Regressions cover one continuation, original-record
+preservation and every retained work/delivery state.
+
+The stable MIT source, VSIX and complete skills use a fresh immutable version.
+Offline checks, isolated installation and authenticated artifact verification
+remain distinct from live account/Remote SSH/production acceptance. The product
+repository stays private under the owner's visibility hold.
+
+## 2026-10-25 — Goal resume and verified settings reviews
+
+Persistent goal continuations now recognize an already verified Fast control
+receipt in their preflight and transactional queue checks. An old retained
+settings review no longer silently blocks an idle resumed goal. The original
+command is neither replayed nor rewritten. Unverified/foreign receipts, actual
+agent uncertainty, unfinished work and pending Git/reply delivery still block.
+
 ## 0.2.2 — Publish bounded artifacts while retaining local journals
 
 Imports maintained commit efa10678221efe96e47047eda9f2cd42c489263b. Git

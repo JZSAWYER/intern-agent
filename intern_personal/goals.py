@@ -365,6 +365,18 @@ def guard(relay,item):
         relay.state.db.execute("UPDATE goal_plans SET status='active' WHERE id=?",(goal['id'],));persist(relay.state,relay.state.session(item['session']))
 
 
+def pending_work(state,session):
+    # A verified settings command is not an unfinished inference turn. Keep
+    # its original review intact, just as lifecycle/diagnostics do; unverified
+    # controls, real agent uncertainty and pending Git/delivery still wait.
+    return state.db.execute("""SELECT 1 FROM events e WHERE e.session=? AND e.role!='urgent'
+        AND e.state IN ('queued','running','awaiting_terminal','preparing_reply','result_ready','sending',
+            'uncertain_execution','uncertain_delivery','record_blocked','sync_pending')
+        AND NOT (e.role='control' AND e.state='uncertain_execution' AND EXISTS (
+            SELECT 1 FROM fast_controls f WHERE f.seq=e.seq AND f.session=e.session AND f.phase='verified'))""",
+        (session['id'],)).fetchone() is not None
+
+
 def poll(relay,now=None):
     state=relay.state;now=time.time() if now is None else now
     settle(relay)
@@ -389,7 +401,7 @@ def poll(relay,now=None):
             saved=state.db.execute('SELECT snapshot FROM '+table+' WHERE session=?',(session['id'],)).fetchone()
             snap=json.loads(saved[0]) if saved else {};active=active or bool(snap.get('active') or snap.get('pending'))
         if active:continue
-        if state.db.execute("SELECT 1 FROM events WHERE session=? AND state IN ('queued','running','awaiting_terminal','preparing_reply','result_ready','sending','uncertain_execution','uncertain_delivery','record_blocked','sync_pending') AND role!='urgent'",(session['id'],)).fetchone():continue
+        if pending_work(state,session):continue
         predecessor=row['last_seq'] or 0
         if state.db.execute('SELECT 1 FROM goal_runs WHERE goal=? AND predecessor=? AND generation=?',(row['id'],predecessor,row['generation'])).fetchone():continue
         identity=state.identity();body='Continue the saved owner goal. Check current evidence, remaining work and the next useful action. Use the goal checkpoint tool before finishing; do not replay the previous prompt or restart existing jobs.'
@@ -398,7 +410,7 @@ def poll(relay,now=None):
             fresh=current(state,session)
             if not fresh or fresh['id']!=row['id'] or fresh['status'] not in {'active','waiting'} or fresh['last_seq']!=row['last_seq']:
                 state.db.execute('ROLLBACK');continue
-            if state.db.execute("SELECT 1 FROM events WHERE session=? AND state IN ('queued','running','awaiting_terminal','preparing_reply','result_ready','sending','uncertain_execution','uncertain_delivery','record_blocked','sync_pending') AND role!='urgent'",(session['id'],)).fetchone():
+            if pending_work(state,session):
                 state.db.execute('ROLLBACK');continue
             key='goal:'+row['id']+':'+str(row['generation'])+':'+str(predecessor)
             cursor=state.db.execute("INSERT OR IGNORE INTO events(app_id,message_id,chat_id,sender,role,workspace,session,text,state) VALUES(?,?,?,?,'agent',?,?,?,'queued')",(identity['app_id'],key,session['chat_id'],identity['owner'],session['workspace'],session['id'],body))

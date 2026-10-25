@@ -1,7 +1,7 @@
 # Source and release readiness audit
 
-Current release channel: **private**, version **0.2.2**, maintained source
-`efa10678221efe96e47047eda9f2cd42c489263b`. The owner's private-visibility hold
+Current release channel: **private**, version **0.2.3**, maintained source
+`b58fbc740904e320ffc607dcf8853173426f9f4c`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
 automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
@@ -10,11 +10,11 @@ automation must not change repository visibility. See [distribution](DISTRIBUTIO
 ## Current candidate — 2026-10-25
 
 The candidate imports verified maintained commit
-`efa10678221efe96e47047eda9f2cd42c489263b` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.2
-respects Git's explicit ignore rules for local raw journals while preserving
-tracked/staged/deleted/linked and genuinely uncaptured draft reviews. Saved
-responses and baselines remain intact; retries do not replay executed prompts.
+`b58fbc740904e320ffc607dcf8853173426f9f4c` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.3
+lets resumed goals pass a historical settings review only with the exact
+verified Fast receipt. Both scheduler checks preserve genuine work, uncertainty,
+questions and Git/reply waits. The original control event remains unchanged.
 The stable namespace retains 39 commands.
 The repository remains private for owner review; prior public verification was
 performed before the owner's visibility change and is historical evidence.

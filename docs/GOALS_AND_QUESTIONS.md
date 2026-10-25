@@ -88,6 +88,18 @@ research alarm. It must not keep a sleeping inference turn alive or launch
 duplicate experiments. Waiting for missing owner input also suppresses another
 automatic iteration.
 
+## A resumed goal produces no new turn
+
+Check `/goal` and `/status` before resending work. A goal waits for its prior
+result, confirmed Git upload, reply delivery and any actual unfinished work or
+question in the same conversation. A historical Fast command with an exact
+conversation-specific verified receipt does not represent unfinished Codex
+work, even if its original execution review remains retained. The scheduler
+checks this both before and inside the continuation transaction, queues one
+normal tracked continuation and never replays that settings command. Missing,
+unverified or foreign-conversation receipts do not bypass a review; neither do
+verified settings bypass real agent uncertainty or pending Git/reply delivery.
+
 ## Answer questions in Feishu
 
 When Codex requests input, the relay sends a card containing the full questions,

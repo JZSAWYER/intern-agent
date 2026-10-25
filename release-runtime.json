@@ -1,8 +1,8 @@
 {
   "schema": "intern-agent.runtime-baseline.v1",
   "observed": "2026-10-25",
-  "snapshot_sha256": "929117b5f90f28e6b6abe4611d903876700f2f7294f798806414e63c8d4ae950",
-  "source_commit": "efa10678221efe96e47047eda9f2cd42c489263b",
+  "snapshot_sha256": "42ad175325cec83132a6f5f08144ee8488dd9a4f11754982c3098b30bc99e639",
+  "source_commit": "b58fbc740904e320ffc607dcf8853173426f9f4c",
   "runtime_files": [
     {
       "path": "intern_personal/__init__.py",
@@ -118,7 +118,7 @@
     },
     {
       "path": "intern_personal/goals.py",
-      "sha256": "c1c702437faf062ca6555a3f3cb5414e150170559fdf05afa9e4fe6aceaaf4cd"
+      "sha256": "003b1d42c5d378009b2818b72cbca0d2872480ef48703296e574b98486ba6d52"
     },
     {
       "path": "intern_personal/host_profile.py",
@@ -326,7 +326,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "6ec3f381bba0763eaf8562cfecf5a55ed15b99931a1bed4ae7b21d487ab6599e"
+      "sha256": "c6dcb0934f3182b86dab2499d5e87832ca807b676a41e62f6d8a8a2d2c47c35e"
     },
     {
       "path": "docs/CONTRIBUTING.md",
@@ -342,7 +342,7 @@
     },
     {
       "path": "docs/DEPLOYMENT_PARITY.md",
-      "sha256": "b7ca492923fe5b9c8929a6b85f49d6ce889916b7f96e7b66c2f019bd59870141"
+      "sha256": "6d240edb2c42703579a546e0c5ba32febae705e403954415ef81266e2141e6bd"
     },
     {
       "path": "docs/DEVELOPMENT_WORKFLOW.md",
@@ -350,7 +350,7 @@
     },
     {
       "path": "docs/DISTRIBUTION.md",
-      "sha256": "c487f80b2369dbb95d9b613c012d8ec5f79268850f4737d23c052d5d38467dc9"
+      "sha256": "990f8da6021347ed6f9a4064e2d4c69d785f196c61bdb23ac5906da060c0dd78"
     },
     {
       "path": "docs/EDITOR_TEAMS.md",
@@ -362,7 +362,7 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "3e4744debc0b7a3a12a949871bafa62002464fc8f1d366a5cb80efd1e4e8ce71"
+      "sha256": "bc67308224c2f0c8202dfe0457b771bfe27272e69de1a52656338af7b0170f46"
     },
     {
       "path": "docs/FILE_TRANSFER.md",
@@ -374,7 +374,7 @@
     },
     {
       "path": "docs/FRONTEND_READINESS.md",
-      "sha256": "bb367878e9ff02f4cb1a7dd562a1bd604170bc1f4713f2d73c85556bee085dc5"
+      "sha256": "b38790b75a728628f0506b270d3f74af73d3fa08f924371ba890c7cd3c575089"
     },
     {
       "path": "docs/GIT_COMPLETION.md",
@@ -382,15 +382,15 @@
     },
     {
       "path": "docs/GOALS_AND_QUESTIONS.md",
-      "sha256": "d5af2a9b883cea6628d3690d96bf6bc411735c97354887c742e62b627ff97b48"
+      "sha256": "407ef5333ec213c21c827226603bd3df2682409fcd8427bd48003e8ba08bcfc0"
     },
     {
       "path": "docs/INSTALL.md",
-      "sha256": "c6143648d1ce2d63eb8c30bdf7d6612a14874829d132d6bee2c5d54fb237900e"
+      "sha256": "55299eec19c264613c8c7ac04174a0f272d919d7340fdb22d86eba86404cd7e7"
     },
     {
       "path": "docs/LICENSING_PROVENANCE.md",
-      "sha256": "2854b994e480d2f26811b2b3d88de8947dc8b827880a46f7cbdf9072dff2c339"
+      "sha256": "668acf68cbedbe36fcd47258bd4328c37ac052a2f9d47e625b21a63919f71654"
     },
     {
       "path": "docs/LIVE.md",
@@ -398,11 +398,11 @@
     },
     {
       "path": "docs/OPEN_SOURCE_AUDIT.md",
-      "sha256": "b7d2ddb9dc78f2d849ee0759801f552fd546fa41985905f3ce75eaa3969f70e3"
+      "sha256": "2565fde05c9deb2ec22319a9fdefe50efee5e561c02b685283464ae01189e18e"
     },
     {
       "path": "docs/OPEN_SOURCE_HANDOFF.md",
-      "sha256": "5c8f8e6c9e35faf322ece03104bbcc29811daa365534589663c28de28df969c4"
+      "sha256": "f4ba46788346cb6fb57c056207341d074261dea052656708813317d315b6424b"
     },
     {
       "path": "docs/PERMISSIONS.md",
@@ -462,7 +462,7 @@
     },
     {
       "path": "docs/SOURCE_MANIFEST.md",
-      "sha256": "cec582f32219cec8e85bba25a4632c2cb4b9c31c0365df5856c42099f7b737ca"
+      "sha256": "2b52f672698cacb2d15fb4a7a7f8fd224ef9d6d598e25b33b9e245da362a1fff"
     },
     {
       "path": "docs/TERMINAL.md",
@@ -478,8 +478,8 @@
     "files": [
       {
         "path": "extension/package.json",
-        "sha256": "245917026ee038d8c01f948f886c23b45eab091d72104741c8bc5048412abaf6",
-        "canonical_sha256": "c68a013d87aa928f26aaf669dfcaa39c5ee05110af1e1ea318eefa353cbda073"
+        "sha256": "796de21e5fba6881caad61d04f3d7098c74578c5d1223be29457b8af370ad55f",
+        "canonical_sha256": "29b099e037d879dc7fd53b61c5dbdae7a17d0dab4f6ff1b5ae7b6c9f5ae47c71"
       },
       {
         "path": "extension/extension.js",

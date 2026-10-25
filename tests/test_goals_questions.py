@@ -90,6 +90,45 @@ class GoalQuestionTests(unittest.TestCase):
         self.assertEqual(self.state.db.execute('SELECT state FROM events WHERE seq=?',(old,)).fetchone()[0],'cancelled')
         self.assertEqual(self.state.db.execute('SELECT count(*) FROM goal_runs').fetchone()[0],2)
 
+    def test_resumed_goal_passes_verified_fast_review_without_replaying_or_editing_it(self):
+        s=self.conversation();relay=self.relay()
+        self.state.ingest(self.event(s,'/fast ON','old_fast'));old=self.state.claim('control')
+        self.state.transition(old['seq'],'uncertain_execution')
+        self.state.db.execute("INSERT INTO fast_controls VALUES(?,?,'priority','verified')",(old['seq'],s['id']))
+        saved=dict(self.state.db.execute('SELECT * FROM events WHERE seq=?',(old['seq'],)).fetchone())
+        goals.start(self.state,s,'Continue verified research without restarting jobs',tracker=self.tracker)
+        goals.control(self.state,s,'pause');goals.control(self.state,s,'resume')
+        goals.poll(relay);goals.poll(relay)
+        self.assertEqual(dict(self.state.db.execute('SELECT * FROM events WHERE seq=?',(old['seq'],)).fetchone()),saved)
+        self.assertEqual(self.state.db.execute('SELECT count(*) FROM goal_runs').fetchone()[0],1)
+        item=self.state.claim('agent');self.assertIsNotNone(item)
+        self.assertNotEqual(item['seq'],old['seq']);self.assertNotEqual(item['text'],'/fast ON')
+        self.assertEqual(relay.process_item(item,'agent'),'complete')
+        self.assertEqual(len(relay.host.calls),1)
+
+    def test_goal_still_waits_for_unverified_or_wrong_conversation_fast_reviews(self):
+        s=self.conversation();other=self.conversation();relay=self.relay()
+        self.state.ingest(self.event(s,'/fast ON','unknown_fast'));old=self.state.claim('control')
+        self.state.transition(old['seq'],'uncertain_execution')
+        goals.start(self.state,s,'Continue verified research',tracker=self.tracker)
+        for receipt in (None,('dispatched',s['id']),('verified',other['id'])):
+            with self.subTest(receipt=receipt):
+                self.state.db.execute('DELETE FROM fast_controls WHERE seq=?',(old['seq'],))
+                if receipt:self.state.db.execute("INSERT INTO fast_controls VALUES(?,?,'priority',?)",(old['seq'],receipt[1],receipt[0]))
+                goals.poll(relay)
+                self.assertEqual(self.state.db.execute('SELECT count(*) FROM goal_runs').fetchone()[0],0)
+
+    def test_verified_settings_receipt_does_not_bypass_work_or_delivery_reviews(self):
+        s=self.conversation();relay=self.relay()
+        self.state.ingest(self.event(s,'/fast ON','busy_fast'));old=self.state.claim('control')
+        self.state.db.execute("INSERT INTO fast_controls VALUES(?,?,'priority','verified')",(old['seq'],s['id']))
+        goals.start(self.state,s,'Continue verified research',tracker=self.tracker)
+        for role,phase in [('control',v) for v in ['queued','running','awaiting_terminal','preparing_reply','result_ready','sending','uncertain_delivery','record_blocked','sync_pending']]+[('agent','uncertain_execution')]:
+            with self.subTest(role=role,phase=phase):
+                self.state.db.execute('UPDATE events SET role=?,state=? WHERE seq=?',(role,phase,old['seq']))
+                goals.poll(relay)
+                self.assertEqual(self.state.db.execute('SELECT count(*) FROM goal_runs').fetchone()[0],0)
+
     def test_user_pause_cannot_be_undone_by_a_late_wait_checkpoint(self):
         s=self.conversation();goals.start(self.state,s,'Keep checking tests',tracker=self.tracker)
         goals.control(self.state,s,'pause');goals.checkpoint(self.state,s,'wait',note='Existing experiment still running',after='10h')

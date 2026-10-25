@@ -8,7 +8,7 @@ the owner explicitly requests public visibility; routine feature-release handoff
 do not lift that hold. Repository access is managed separately.
 
 Start with [installation](docs/INSTALL.md),
-[the 0.2.2 release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.2),
+[the 0.2.3 release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.3),
 [portable recovery](docs/PORTABLE_RECOVERY.md) and
 [contributor onboarding](docs/CONTRIBUTING.md).
 
@@ -48,12 +48,12 @@ Codex CLI, lark-oapi and websockets; setup does not silently install packages.
 
 ## Release source and scope
 
-Version 0.2.2 imports verified maintained source
-`efa10678221efe96e47047eda9f2cd42c489263b`. It includes file/PDF batches, independent
+Version 0.2.3 imports verified maintained source
+`b58fbc740904e320ffc607dcf8853173426f9f4c`. It includes file/PDF batches, independent
 consoles and live follow-ups, peer/recovery/research workflows, model/Fast settings,
 quota/throughput, Git-confirmed completion, reusable records, cold GitHub recovery,
-shared SSH host profiles and portable preferences/roles. This patch lets explicitly ignored local journals stay outside Git while
-retaining draft protections and Git-confirmed completion. Packaging adds a distinct
+shared SSH host profiles and portable preferences/roles. This patch resumes idle goals past exactly verified historical Fast reviews
+while preserving real work, question and publication barriers. Packaging adds a distinct
 public extension identity, a patched hash-locked dependency profile and safe
 complete-resource skills installation. Provenance records both the maintained
 source commit and the clean product commit, with every artifact's SHA-256.

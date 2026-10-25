@@ -1,12 +1,11 @@
 # Intern Agent feature tutorial
 
-## Installable product 0.2.2
+## Installable product 0.2.3
 
-This update respects Git's explicit ignore rules for local-only raw journals,
-including journals visible when a turn started. Tracked edits, deleted drafts,
-linked replacements, staged owner work and publishable uncaptured files retain
-their existing review requirements. Final replies still wait for confirmed Git
-publication; a retry preserves the saved result without replaying Codex.
+This update lets an idle resumed goal pass a historical Fast-command review
+only when its exact conversation-specific receipt is verified. Real unfinished
+work, uncertainty, questions and pending Git/reply delivery still wait. The
+original settings command is preserved and never replayed.
 
 The product repository and releases stay private until the owner explicitly asks
 for public visibility. Install the versioned product VSIX with its matching isolated runtime and verify
@@ -42,6 +41,10 @@ Codex choices in Feishu instead of losing them in a terminal.
 `/goal auto on|off`. Semantic selection uses the current owner request without
 rewriting it. Codex records evidence and remaining work; each continuation waits
 for the prior Git upload and Feishu reply. `/stop` also pauses the goal.
+
+Resuming also respects unfinished work and questions in that conversation.
+An old Fast-command review with an exact verified receipt cannot silently
+block a new goal iteration; its original record remains preserved.
 
 Question cards include options, descriptions and custom text, preserving each
 question independently. Use `/questions` or `/answer CODE TEXT` as a fallback.
@@ -159,8 +162,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.2 uses
-maintained source efa10678221efe96e47047eda9f2cd42c489263b and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.3 uses
+maintained source b58fbc740904e320ffc607dcf8853173426f9f4c and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace
