@@ -102,6 +102,13 @@ verified settings bypass real agent uncertainty or pending Git/reply delivery.
 
 ## Answer questions in Feishu
 
+After a question card appears or your submitted answer is confirmed, the next
+public progress update starts a fresh editable message below the card. Later
+updates continue there, keeping the conversation chronological while Codex
+works. This also applies to native asynchronous questions and survives relay
+restarts. It does not resend your answer, restart a turn or imply completion.
+Separate-message progress mode continues to post each update separately.
+
 When Codex requests input, the relay sends a card containing the full questions,
 option descriptions, selectable choices and custom-answer fields. Single-choice
 questions remain single-choice; requests allowing several selections get a

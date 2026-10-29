@@ -127,7 +127,7 @@
     "bootstrap_distribution_count": 1,
     "tested_at": "2026-10-29",
     "test_platform": "Linux x86_64 CPython 3.12.4",
-    "application_source_commit": "d452826b35de7c760e433bf0a99e4dae384bdfcb",
+    "application_source_commit": "c21ea4419894d892c5c518ca9da3cac11dd3db7c",
     "installed_baseline_verified": true,
     "sdk_model_imports_and_client_builder": true,
     "crypto_native_aes": true,

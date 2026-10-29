@@ -8,7 +8,7 @@ the owner explicitly requests public visibility; routine feature-release handoff
 do not lift that hold. Repository access is managed separately.
 
 Start with [installation](docs/INSTALL.md),
-[the 0.2.4 release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.4),
+[the 0.2.5 release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.5),
 [portable recovery](docs/PORTABLE_RECOVERY.md) and
 [contributor onboarding](docs/CONTRIBUTING.md).
 
@@ -48,13 +48,13 @@ Codex CLI, lark-oapi and websockets; setup does not silently install packages.
 
 ## Release source and scope
 
-Version 0.2.4 imports verified maintained source
-`d452826b35de7c760e433bf0a99e4dae384bdfcb`. It includes file/PDF batches, independent
+Version 0.2.5 imports verified maintained source
+`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. It includes file/PDF batches, independent
 consoles and live follow-ups, peer/recovery/research workflows, model/Fast settings,
 quota/throughput, Git-confirmed completion, reusable records, cold GitHub recovery,
-shared SSH host profiles and portable preferences/roles. This patch shares the owner's conversation-language rule with existing and
-new bots while preserving original prompts and separate document-language
-requirements. Packaging adds a distinct
+shared SSH host profiles and portable preferences/roles. This patch keeps summary progress below delivered question cards and
+confirmed answers, with durable exact-turn positioning and no replay of
+uncertain sends. Packaging adds a distinct
 public extension identity, a patched hash-locked dependency profile and safe
 complete-resource skills installation. Provenance records both the maintained
 source commit and the clean product commit, with every artifact's SHA-256.

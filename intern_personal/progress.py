@@ -86,8 +86,19 @@ def finish(state, session, turn):
     state.db.execute("UPDATE assistant_progress SET state='expired',text='' WHERE session=? AND turn_id=? AND state='pending'",(session['id'],turn))
 
 
+def question_boundary(state,session,turn):
+    """Stable card positions for this exact thread/turn, without answer contents."""
+    current=state.session(session)
+    if not current or not turn:return []
+    rows=state.db.execute("""SELECT code,state,ui_closed FROM user_questions
+        WHERE session=? AND thread=? AND turn=? AND source!='demo'
+        AND receipt IS NOT NULL AND delivery_state='delivered'
+        ORDER BY created_at DESC,rowid DESC LIMIT 32""",(session,current['thread_id'],turn)).fetchall()
+    return sorted((row['code'],'answered' if row['state']=='submitted' and row['ui_closed']==1 else 'card') for row in rows)
+
+
 def panel(relay, item, text, *, turn=None):
-    """One durable editable message per turn; an ambiguous creation is never replayed."""
+    """Editable progress below the latest card; ambiguous creation is never replayed."""
     setting=relay.state.db.execute('SELECT presentation FROM progress_settings WHERE session=?',(item['session'],)).fetchone()
     if (setting and setting[0]=='messages') or not hasattr(relay.api,'edit_progress'):
         return relay.api.progress(item['chat_id'],text,'progress:'+str(item.get('key') or item.get('seq'))+':'+str(item.get('stage','prose')))
@@ -100,10 +111,19 @@ def panel(relay, item, text, *, turn=None):
     if not turn and seq is not None:
         native=db.execute('SELECT turn_id FROM terminal_turns WHERE session=? AND event_seq=?',(item['session'],seq)).fetchone()
         if native:turn=native[0]
-    row=db.execute('SELECT * FROM progress_panels WHERE session=? AND event_seq=?',(item['session'],seq)).fetchone() if seq is not None else None
-    if not row and turn:row=db.execute('SELECT * FROM progress_panels WHERE session=? AND turn_id=?',(item['session'],turn)).fetchone()
+    row=db.execute('SELECT * FROM progress_panels WHERE session=? AND event_seq=? ORDER BY rowid DESC LIMIT 1',(item['session'],seq)).fetchone() if seq is not None else None
+    if not row and turn:row=db.execute('SELECT * FROM progress_panels WHERE session=? AND turn_id=? ORDER BY rowid DESC LIMIT 1',(item['session'],turn)).fetchone()
     key=row['key'] if row else hashlib.sha256(json.dumps([item['session'],seq if seq is not None else turn]).encode()).hexdigest()
     if row and row['state'] in {'creating','uncertain','closed'}:return row['receipt']
+    boundary=question_boundary(relay.state,item['session'],turn or (row['turn_id'] if row else None))
+    if boundary:
+        anchored=hashlib.sha256(json.dumps([item['session'],seq if seq is not None else turn,boundary]).encode()).hexdigest()
+        if row and row['key']!=anchored:
+            # The card occupies a newer chat position. Start one fresh message
+            # for real commentary instead of editing progress above that card.
+            db.execute("UPDATE progress_panels SET state='continued' WHERE key=?",(row['key'],))
+            turn=turn or row['turn_id'];row=None
+        key=anchored
     combined=(row['text']+'\n\n' if row else '')+text
     while len(combined.encode())>MAX_TEXT_BYTES and '\n\n' in combined:combined=combined.split('\n\n',1)[1]
     combined=prose(relay.state,combined)
@@ -125,7 +145,7 @@ def panel(relay, item, text, *, turn=None):
 
 def close_delivered(relay):
     row=relay.state.db.execute("""SELECT p.*,e.chat_id,e.sender,e.app_id,e.role FROM progress_panels p JOIN events e ON e.seq=p.event_seq
-        WHERE p.state IN ('open','edit_failed') AND e.state='complete' ORDER BY p.updated_at LIMIT 1""").fetchone()
+        WHERE p.state IN ('open','edit_failed','continued') AND e.state='complete' ORDER BY p.updated_at LIMIT 1""").fetchone()
     if not row:return False
     item=dict(row)
     # Final delivery is independent of this optional panel edit.

@@ -1,7 +1,7 @@
 # Source and release readiness audit
 
-Current release channel: **private**, version **0.2.4**, maintained source
-`d452826b35de7c760e433bf0a99e4dae384bdfcb`. The owner's private-visibility hold
+Current release channel: **private**, version **0.2.5**, maintained source
+`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
 automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
@@ -10,12 +10,11 @@ automation must not change repository visibility. See [distribution](DISTRIBUTIO
 ## Current candidate — 2026-10-29
 
 The candidate imports verified maintained commit
-`d452826b35de7c760e433bf0a99e4dae384bdfcb` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.4
-adds the owner conversation-language policy to shared application context,
-keeping current owner choices separate from deliverable languages and inferred
-role defaults. Original messages remain unchanged. Offline context routing is
-checked separately from real-model response-language compliance.
+`c21ea4419894d892c5c518ca9da3cac11dd3db7c` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.5
+keeps summary progress below delivered question cards and confirmed answers,
+using exact conversation/thread/turn boundaries. Restart persistence, ambiguous
+send protection and final-delivery closure remain explicit verification cases.
 The stable namespace retains 39 commands.
 The repository remains private for owner review; prior public verification was
 performed before the owner's visibility change and is historical evidence.

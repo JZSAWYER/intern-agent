@@ -1,13 +1,12 @@
 # Intern Agent feature tutorial
 
-## Installable product 0.2.4
+## Installable product 0.2.5
 
-This update supplies one conversation-language policy to existing and new
-bots through the shared submit hook. Follow the current owner's message unless
-they explicitly choose another conversation language. Countries, companies,
-bot names and requested document languages are not inferred chat preferences.
-Document deliverables retain their requested languages; original owner messages
-stay unchanged.
+Summary progress now starts a fresh editable message after a question card is
+delivered or its submitted answer is confirmed. New commentary stays below the
+card while the exact conversation, thread and turn remain unchanged. This
+position survives restart; uncertain sends are not replayed and final-delivery
+requirements remain intact. Separate-message mode keeps its existing behavior.
 
 The product repository and releases stay private until the owner explicitly asks
 for public visibility. Install the versioned product VSIX with its matching isolated runtime and verify
@@ -50,6 +49,8 @@ block a new goal iteration; its original record remains preserved.
 
 Question cards include options, descriptions and custom text, preserving each
 question independently. Use `/questions` or `/answer CODE TEXT` as a fallback.
+In summary mode, the next real progress update after a card or confirmed
+submission starts below that card, rather than editing an earlier message.
 The app needs the published `card.action.trigger` long-connection callback.
 VS Code adds **Manage Persistent Goal** and **Show Pending Codex Questions**.
 See [the goal and question tutorial](GOALS_AND_QUESTIONS.md) for budgets,
@@ -164,8 +165,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.4 uses
-maintained source d452826b35de7c760e433bf0a99e4dae384bdfcb and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.5 uses
+maintained source c21ea4419894d892c5c518ca9da3cac11dd3db7c and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace

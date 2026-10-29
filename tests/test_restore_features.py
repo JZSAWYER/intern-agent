@@ -153,6 +153,72 @@ class EditableProgressTests(unittest.TestCase):
     running=progress_fixture.ProgressTests.running
     add=progress_fixture.ProgressTests.add
 
+    def question_card(self,s,turn='turn',source='rpc',identity=1):
+        from intern_personal import user_questions
+        row=user_questions.register(self.state,s,dict(threadId=s['thread_id'],turnId=turn,isBlocking=False,
+            questions=[dict(id='level',header='Level',question='Which level?',options=[dict(label='Internship',description='Student role')])]),identity,source=source)
+        self.state.db.execute("UPDATE user_questions SET state='pending',receipt='om_card',delivery_state='delivered' WHERE code=?",(row['code'],))
+        return dict(self.state.db.execute('SELECT * FROM user_questions WHERE code=?',(row['code'],)).fetchone())
+
+    def test_progress_moves_below_card_and_submitted_answer_without_replaying_either(self):
+        from intern_personal import user_questions
+        s,item=self.running();edits=[]
+        self.api.edit_progress=lambda receipt,text:edits.append((receipt,text))
+        self.api.progress=lambda chat,text,key:self.notices.append((chat,text,key)) or 'om_panel_'+str(len(self.notices))
+        value=dict(item,event_seq=item['seq'],turn_id='turn')
+        first=progress.panel(self.relay,value,'Before the question.')
+        question=self.question_card(s)
+        second=progress.panel(self.relay,value,'Continuing while the card is visible.')
+        self.assertNotEqual(first,second)
+        user_questions.answer(self.state,s,question['code'],'Internship')
+        self.state.db.execute("UPDATE user_questions SET state='submitted' WHERE code=?",(question['code'],))
+        self.api.update_question=lambda *args:None
+        user_questions.close_card(self.relay,question)
+        third=progress.panel(self.relay,value,'Using your submitted answer.')
+        self.assertNotIn(third,(first,second));self.assertEqual(len(self.notices),3)
+        self.assertEqual(self.notices[-1][1],'Using your submitted answer.')
+        reopened=LiveState(self.temp.name);self.addCleanup(reopened.close)
+        from intern_personal.feishu_live import Relay
+        resumed=Relay(reopened,self.api,self.host,self.tracker)
+        self.assertEqual(progress.panel(resumed,value,'New verified progress.'),third)
+        self.assertEqual(len(self.notices),3);self.assertEqual(edits[-1][0],third)
+        self.assertEqual(json.loads(self.state.db.execute('SELECT answers FROM user_questions WHERE code=?',(question['code'],)).fetchone()[0]),{'level':{'answers':['Internship']}})
+        self.assertEqual(self.host.calls,[])
+        self.state.transition(item['seq'],'complete')
+        for _ in range(3):self.assertTrue(progress.close_delivered(self.relay))
+        self.assertFalse(progress.close_delivered(self.relay))
+        self.assertEqual(self.state.db.execute("SELECT count(*) FROM progress_panels WHERE state='closed'").fetchone()[0],3)
+
+    def test_unrelated_old_thread_old_turn_and_demo_cards_do_not_reanchor_progress(self):
+        s,item=self.running();self.api.edit_progress=lambda *args:None
+        value=dict(item,event_seq=item['seq'],turn_id='turn')
+        original=progress.panel(self.relay,value,'Original progress.')
+        self.question_card(s,turn='older-turn',identity=1)
+        old=self.question_card(s,identity=2)
+        self.state.db.execute("UPDATE user_questions SET thread='old-fixture-thread' WHERE code=?",(old['code'],))
+        self.question_card(s,source='demo',identity=3)
+        other=self.relay.open_session('project',new=True);self.question_card(other,identity=4)
+        self.assertEqual(progress.panel(self.relay,value,'Still the same progress message.'),original)
+        self.assertEqual(len(self.notices),1)
+
+    def test_native_unbound_progress_reanchors_by_exact_turn(self):
+        s,item=self.running();self.api.edit_progress=lambda *args:None
+        self.api.progress=lambda chat,text,key:self.notices.append((chat,text,key)) or 'om_native_'+str(len(self.notices))
+        value=dict(session=s['id'],chat_id=s['chat_id'],turn_id='turn')
+        first=progress.panel(self.relay,value,'Native progress before card.')
+        self.question_card(s)
+        self.assertNotEqual(progress.panel(self.relay,value,'Native progress after card.'),first)
+        self.assertEqual(len(self.notices),2)
+
+    def test_card_does_not_retry_an_ambiguous_progress_creation(self):
+        s,item=self.running();self.api.edit_progress=lambda *args:None
+        value=dict(item,event_seq=item['seq'],turn_id='turn')
+        with patch.object(self.api,'progress',side_effect=TimeoutError):self.assertIsNone(progress.panel(self.relay,value,'Unknown delivery.'))
+        self.question_card(s)
+        self.assertIsNone(progress.panel(self.relay,value,'Later commentary.'))
+        self.assertEqual(self.notices,[])
+        self.assertEqual(self.state.db.execute('SELECT count(*) FROM progress_panels').fetchone()[0],1)
+
     def test_one_panel_per_turn_updates_and_closes_only_after_final_delivery(self):
         s,item=self.running();edits=[];self.api.edit_progress=lambda receipt,text:edits.append((receipt,text))
         self.add(s,item,'First public update.');progress.deliver(self.relay)

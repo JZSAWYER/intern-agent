@@ -1,5 +1,29 @@
 # Feature and fix record
 
+## 0.2.5 — Keep summary progress below question cards
+
+Imports maintained commit c21ea4419894d892c5c518ca9da3cac11dd3db7c. Summary
+progress starts a fresh editable message after an exactly scoped delivered
+question card or confirmed submitted answer. Segments persist across restart
+and close after normal final delivery. Demo, foreign-thread and older-turn
+cards cannot move another turn's progress; ambiguous sends are not replayed.
+Question/answer processing, Codex execution and separate-message mode retain
+their existing behavior.
+
+The stable MIT source, VSIX and complete skills use a new immutable version.
+Offline progress/recovery, editor/package and isolated-install checks remain
+separate from live Feishu card ordering, Remote SSH and production acceptance.
+The repository remains private under the owner's visibility hold.
+
+## 2026-10-29 — Keep progress below question cards
+
+Summary progress now starts a new editable message after a question card is
+delivered or its submitted answer is confirmed. It uses the exact conversation,
+thread and turn; older/foreign/demo cards cannot move another turn's progress.
+The new position is durable across restarts, uncertain sends are not replayed,
+and all segments close only after normal final delivery. Questions, answers,
+Codex execution and separate-message mode retain their existing behavior.
+
 ## 0.2.4 — Preserve owner conversation-language choices
 
 Imports maintained commit d452826b35de7c760e433bf0a99e4dae384bdfcb. The shared

@@ -204,6 +204,10 @@ milestones. `/progress off` disables both in that conversation. In management,
 use `/progress SESSION summary|off`. Final replies and approval requests are
 independent of this setting. Model reasoning effort does not change this filter.
 
+Summary progress starts a fresh message after a question card appears or its
+answer is confirmed, so continued work stays below the card in chat order.
+This creates no new Codex request and never replays a submitted answer.
+
 Only explicitly marked assistant `commentary` is eligible. Function calls,
 command output, reasoning items, final answers and messages with an unknown
 phase are excluded. Code fences are removed; credentials and transport
