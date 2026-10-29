@@ -58,7 +58,7 @@ The release operator uses its own worktree/branch to:
 4. Upload the clean source to the separate public repository and publish the
    versioned GitHub release. Creating this new clean public repository and
    release is authorized by the owner's release request. It does not authorize
-   exposing an existing private repository/history, PRs, merges, invitations,
+   exposing private tracking or operational repositories/history, PRs, merges, invitations,
    Marketplace publication, account permission changes or production services.
 5. Independently check remote source and uploaded asset hashes. Report actual
    public URLs and limits in its own Feishu chat. Save a secret-free private

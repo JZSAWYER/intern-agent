@@ -1,15 +1,17 @@
 # Intern Agent product release handoff
 
-Current release channel: **private**, version **0.2.6**, maintained source
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner's private-visibility hold
-supersedes earlier public-release prose. Only an explicit later owner request
-can authorize going public. Source updates may upload new private releases;
-automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
+Current release channel: **public**, version **0.2.7**, maintained source
+`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner explicitly authorized
+making the clean product repository public on 2026-10-30. Private tracking
+repositories, operational records and account/state data remain excluded.
+Release automation checks visibility and never changes it. See
+[distribution](DISTRIBUTION.md).
 
 The owner authorized synchronizing the clean, separate Intern Agent product at
 `JZSAWYER/intern-agent`, under MIT, from verified maintained-source commit
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The current version is 0.2.6, provided that version is unused. Versions 0.1.0, 0.2.0, 0.2.1, 0.2.2, 0.2.3, 0.2.4 and 0.2.5
-are retained; this update remains private under the owner hold. The existing private tracking repository, its
+`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The current version is 0.2.7, provided that version is unused. Versions 0.1.0, 0.2.0, 0.2.1, 0.2.2, 0.2.3, 0.2.4, 0.2.5 and 0.2.6
+are retained unchanged. The owner explicitly authorized making the clean product
+repository public; the separate private tracking repository, its
 branches, operational records and Git history remain private.
 
 This document defines the reviewed release handoff. Offline and isolated install
@@ -18,7 +20,7 @@ release URL and uploaded asset hashes belong in the completed release receipt.
 
 ## Product contents
 
-The public frontend identity is `intern-agent.intern-agent`, version 0.2.6, with
+The public frontend identity is `intern-agent.intern-agent`, version 0.2.7, with
 39 commands in the `internAgentPublic` namespace. The maintained development
 extension's 0.8.0 preview identity is separate. Public settings, views and context
 values use the public namespace; packaging records generated frontend metadata
@@ -50,7 +52,7 @@ do not install dependencies, authenticate an account or start a relay.
    deterministic assets with new filenames and a fresh immutable version. The
    patched public dependency profile uses a separate virtual environment; the
    historical deployed dependency lock remains explicit reproduction only.
-4. Update the existing private product repository from its reviewed source tree.
+4. Update the existing clean public product repository from its reviewed source tree.
    The first export starts with fresh Git history. Verify the exact product commit
    and tracked inventory, then build the final assets with that commit recorded.
 5. Upload a new release without replacing existing assets. Independently verify

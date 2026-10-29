@@ -1,7 +1,7 @@
 {
   "schema": "intern-agent.runtime-baseline.v1",
   "observed": "2026-10-30",
-  "snapshot_sha256": "079465d91ba1784b93300533493a459fd590bba056781ac03011c236379c1ffe",
+  "snapshot_sha256": "c365201c071e46a162484635dd66454f124445bc0c41c17feaeca5a013381e42",
   "source_commit": "c21ea4419894d892c5c518ca9da3cac11dd3db7c",
   "runtime_files": [
     {
@@ -326,7 +326,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "bc6f3794cb4d5bd0c321c1592ae7b613eafdc174bb20a61171832e0520a6f179"
+      "sha256": "7bbd337a86202d2c5e72ac70c87b8064f3e0f3a9f410061d5c8dcd2dab36ef32"
     },
     {
       "path": "docs/CONTRIBUTING.md",
@@ -342,7 +342,7 @@
     },
     {
       "path": "docs/DEPLOYMENT_PARITY.md",
-      "sha256": "9446c6ed6018fdc909a670864c7dcca1940eba982e3feb28273256a2d2e2b6b5"
+      "sha256": "dd5032dd5c6ca8758eaa6c461cb0e9a58bb1f12d536b4bceb0d4d2f7039db814"
     },
     {
       "path": "docs/DEVELOPMENT_WORKFLOW.md",
@@ -350,11 +350,11 @@
     },
     {
       "path": "docs/DISTRIBUTION.md",
-      "sha256": "98591f216e784b85295066eb24a3510987f98948df6d3105513ada53d2556e97"
+      "sha256": "d4ea2c75020550b5cbfc6900219e52527702244003010a61a8c87d8d0d06bd93"
     },
     {
       "path": "docs/EDITOR_TEAMS.md",
-      "sha256": "f7ef82b5d8cdc947ffa97433b3ed7ec00d60c2d8e4c96553a586d114109c6f15"
+      "sha256": "6a03e2229622f3dd65f28091157c93c973ff00b256ddf624edd860851f4e58ac"
     },
     {
       "path": "docs/FAST.md",
@@ -362,7 +362,7 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "c2bdac78b6d6b926e1430739d7253db2022705c91f04025231046b1b178af343"
+      "sha256": "7785de671541f635ddf6f1346eeaccc87f280a543c34de1aa00d611921174166"
     },
     {
       "path": "docs/FILE_TRANSFER.md",
@@ -374,7 +374,7 @@
     },
     {
       "path": "docs/FRONTEND_READINESS.md",
-      "sha256": "51916af20bb722498c0c635b3d71945403ed37b5beb3a046cc2bbca46b0554f8"
+      "sha256": "c48196eca5d6861ec75a471f2cc4cb0b7fc469b051d080c3bd85cb17c8837b63"
     },
     {
       "path": "docs/GIT_COMPLETION.md",
@@ -386,11 +386,11 @@
     },
     {
       "path": "docs/INSTALL.md",
-      "sha256": "0d6dd1122be362dbb4c8607a539b3284f49cede8d26db83be6c8843cf6bf0f58"
+      "sha256": "d194af21c38195fa72ccb9e21b18155bf1562197901172145fcfe6118cc1ce6e"
     },
     {
       "path": "docs/LICENSING_PROVENANCE.md",
-      "sha256": "cfce576ed6b720166c0a4c184ce3bf37ec2ea03760f874752760c57e901b406d"
+      "sha256": "32908774f3e8a421b25ccbe3bb9b78729a60dd27dfd2974b9cb8b78b721d6470"
     },
     {
       "path": "docs/LIVE.md",
@@ -398,11 +398,11 @@
     },
     {
       "path": "docs/OPEN_SOURCE_AUDIT.md",
-      "sha256": "e8dfad852c82802e321da71484b98cfbd38757d386c8b1da7f29cac195eb12d2"
+      "sha256": "55a9d5db5eaa53528ce29e50579aa803a0a880332b8eb329c75a9e2254801f5b"
     },
     {
       "path": "docs/OPEN_SOURCE_HANDOFF.md",
-      "sha256": "375675ced1ff46123d6806159c542add6863cf3f1a8d6f7bad2c6c963eca2b97"
+      "sha256": "d9cfa27c25be9fe4475d61bdcb1db99333f59b90fd7a0f894d49b7a64abbdbcd"
     },
     {
       "path": "docs/PERMISSIONS.md",
@@ -422,7 +422,7 @@
     },
     {
       "path": "docs/PUBLISHED_RELEASE.md",
-      "sha256": "4033f3e8eef391d826bea40f420b7265daae685b49745f26179b9d383f5c643b"
+      "sha256": "f5e0e98be45e86c616f7913f2de166d6ecdcf2855968288cbe832801452933b0"
     },
     {
       "path": "docs/QUOTA.md",
@@ -462,7 +462,7 @@
     },
     {
       "path": "docs/SOURCE_MANIFEST.md",
-      "sha256": "613ff1c82b6e2d496ab2dfdb1178f60f5f65e2b00aca1247613fb720a478f23e"
+      "sha256": "3c249db30a4f92d4426d199e27a34756385e3e257cf62c6ef513b4a4f92dedac"
     },
     {
       "path": "docs/TERMINAL.md",
@@ -478,8 +478,8 @@
     "files": [
       {
         "path": "extension/package.json",
-        "sha256": "36be5513d03904222f1633d4052e46aa389057c331ccb51e0e54a547d5fec33f",
-        "canonical_sha256": "951961320e76c1bfb859d016995dac8bdf78161913681e40555467fc85f3b9cc"
+        "sha256": "5e6bf6ca6f53a85c5b546e6940f8263f4fcbb7f0ad7baa50c062c7926a7de0b0",
+        "canonical_sha256": "a6d8e5372d4a929d7f6de2d3ba1f372e6d62a496413bf3f2491f15fd754bd9b5"
       },
       {
         "path": "extension/extension.js",

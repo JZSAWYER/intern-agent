@@ -1,11 +1,11 @@
 # Intern Agent product and release workflow
 
-Intern Agent 0.2.6 uses MIT and maintained source
+Intern Agent 0.2.7 uses MIT and maintained source
 `c21ea4419894d892c5c518ca9da3cac11dd3db7c`. Its separate product repository is
-`https://github.com/JZSAWYER/intern-agent`. The owner has explicitly placed this
-repository under a **private visibility hold** until a later explicit request to
-go public. Feature synchronization and inherited public-release wording do not
-lift that hold. No release tool changes repository visibility.
+`https://github.com/JZSAWYER/intern-agent`. On 2026-10-30 the owner explicitly
+authorized making this clean product repository public. Private tracking
+repositories and operational history remain private. Release tools check the
+selected visibility and never change it.
 
 ## Product inputs and identity
 
@@ -14,7 +14,7 @@ and local product deltas. `distribution.json` independently selects VSIX backend
 inputs. Git history from private tracking, `.intern_workspace`, enterprise snapshots,
 credentials, account/chat/native identifiers and machine state are excluded.
 
-The stable identity is `intern-agent.intern-agent`, version 0.2.6, with 39 commands
+The stable identity is `intern-agent.intern-agent`, version 0.2.7, with 39 commands
 and settings/views under `internAgentPublic`. This namespace remains stable across
 repository visibility changes and is distinct from the development preview's
 `intern-agent-local.intern-agent-personal` / `internAgent`. It does not migrate
@@ -23,12 +23,12 @@ canonical installed-manifest hash accept only VS Code's reserved `__metadata`;
 functional manifest fields and script content remain pinned.
 
 `release-product.json` locks version, skills, public dependency profile and the
-verified maintained-source handoff. `release_channel=private`,
-`public_visibility_hold=true` and `final_handoff.channel=private` pin this release.
-The public channel is rejected while the hold is true. Switching to public needs
-the owner's explicit new request and a reviewed policy change; it is never an
-API side effect of publishing a release. MIT licensing is independent of whether
-the repository is currently visible publicly.
+verified maintained-source handoff. `release_channel=public`,
+`public_visibility_hold=false` and `final_handoff.channel=public` record the
+explicitly approved public release. The private channel is rejected for this
+handoff. Visibility changes require a separate owner instruction and are never
+an API side effect of publishing an artifact. MIT licensing is independent of
+whether the repository was previously private.
 
 ## Reproduce versioned assets
 
@@ -38,7 +38,7 @@ From a clean product checkout with the exact credential-free origin:
 PRODUCT_COMMIT="$(git rev-parse HEAD)"
 python3 tools/build_release.py --check-only --expected-export-commit "$PRODUCT_COMMIT"
 python3 tools/build_release.py --expected-export-commit "$PRODUCT_COMMIT" \
-  --output-dir /path/outside/source/release-0.2.6
+  --output-dir /path/outside/source/release-0.2.7
 ```
 
 The destination must be new and outside source. The six files are the stable
@@ -82,22 +82,24 @@ rights/license, dependency and installation gates. Keep all earlier versions.
 
 The existing relay release worker can queue handoffs from its explicitly selected
 source conversation. A queued or completed operator event is not proof of upload.
-Receipts require exact remote source and downloaded asset hashes. The visibility
-hold remains authoritative regardless of an automatic handoff's inherited prose.
+Receipts require exact remote source and downloaded asset hashes. Future handoffs
+must match the reviewed channel; inherited prose cannot authorize changes to
+other repositories or disclosure of operational history.
 
 ## GitHub workflow and publication
 
 The root `.github/workflows/release.yml` tests and builds versioned main updates
 only for the exact product repository. It requires an approved channel/handoff,
 clean tracked inventory and source commit. Event/API visibility must match the
-chosen channel; private source updates cannot publish publicly under the hold.
+chosen channel; this release requires public metadata in both checks.
 No workflow creates a repository, changes visibility, invites a person or changes
 account permissions.
 
 Before mutation, verify the current main commit and unused tag/release version.
 Upload a new draft, download every asset with repository-scoped authentication
-and verify exact bytes/digests before completing the release. The private channel
-uses authenticated downloads after completion as well. Credentials stay in memory
+and verify exact bytes/digests before completing the release. Verify anonymous
+access to published public source and downloads as a separate final check.
+Historical private-channel releases retain their original provenance. Credentials stay in memory
 and are not forwarded to redirected CDN hosts. A partial draft/tag remains for
 review; never replace its assets blindly. Recheck repository visibility before
 upload and completion. The first local publisher for a version uses [skip ci]
@@ -114,4 +116,6 @@ Offline tests, mocked editor checks, isolated sideload/venv installation and rem
 asset verification are distinct from real Feishu/Codex accounts, card callbacks,
 Remote SSH activation and receiver upgrade/rollback/uninstall acceptance. This
 release does not change a production receiver or research job. No PR, merge,
-Marketplace publication or existing-repository visibility change is performed.
+Marketplace publication or automatic repository visibility change is performed.
+The separate owner-authorized public launch changes only the clean product's
+visibility; tracking repositories remain private.

@@ -1,5 +1,18 @@
 # Feature and fix record
 
+## 0.2.7 — Public product availability
+
+The owner explicitly authorized making the clean Intern Agent product repository
+public. Updated installation/README guidance and the reviewed release policy to
+public, with the visibility hold lifted for this product only. Private tracking
+repositories and operational history remain private and excluded. The maintained
+source pin and application behavior are unchanged from 0.2.6.
+
+This uses a fresh version with matching source, VSIX, complete skills, checksums
+and provenance. Earlier tags, artifacts and historical private-channel receipts
+remain unchanged. Release automation checks public visibility; it does not change
+repository visibility or account permissions.
+
 ## 0.2.6 — Simpler installation and checks before setup
 
 Keeps maintained source c21ea4419894d892c5c518ca9da3cac11dd3db7c and adds

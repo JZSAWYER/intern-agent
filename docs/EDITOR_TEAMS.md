@@ -194,11 +194,12 @@ guards validate all referenced parts against the Markdown records. Recovery
 restores teams, assignments and handoffs, but no credentials, account access,
 chat/thread routing or executable queue entries.
 
-The extension is a local 0.5.0 preview, not a public release. Real editor UI
-acceptance, new Feishu attachment permissions/account pilots, invited-human
-collaboration, provider adapters, multi-machine supervision and shared skill
-installation remain separate acceptance or future work. License/provenance
-review is still required before public open-source distribution. Automatic
+The 0.5.0 observations above describe a historical development preview. The
+current MIT product has a separate stable identity and versioned source, VSIX
+and complete skills; see [installation](INSTALL.md) and [distribution](DISTRIBUTION.md).
+Real editor UI acceptance, new Feishu attachment permissions/account pilots,
+invited-human collaboration, provider adapters and multi-machine supervision
+remain separate acceptance or future work. Automatic
 upgrades, global approval bypasses, credential backups, forced deletion and
 Codeup defaults have not been restored.
 

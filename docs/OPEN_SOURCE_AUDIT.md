@@ -1,35 +1,37 @@
 # Source and release readiness audit
 
-Current release channel: **private**, version **0.2.6**, maintained source
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner's private-visibility hold
-supersedes earlier public-release prose. Only an explicit later owner request
-can authorize going public. Source updates may upload new private releases;
-automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
+Current release channel: **public**, version **0.2.7**, maintained source
+`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner explicitly authorized
+making the clean product repository public on 2026-10-30. Private tracking
+repositories, operational records and account/state data remain excluded.
+Release automation checks visibility and never changes it. See
+[distribution](DISTRIBUTION.md).
 
 
 ## Current candidate — 2026-10-30
 
 The candidate imports verified maintained commit
 `c21ea4419894d892c5c518ca9da3cac11dd3db7c` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.6
+patched dependency profile and complete safe skill installation. Version 0.2.7
 adds checks before account setup, an optional hash-verified wheel download without
 system pip, skill metadata/installed-file verification and safer editor setup
 cancellation. The README provides a shorter installation and contributor path.
 Summary progress below cards/answers and its exact-turn recovery guards remain.
 The stable namespace retains 39 commands.
-The repository remains private for owner review; prior public verification was
-performed before the owner's visibility change and is historical evidence.
+The owner authorized public availability of this clean product repository.
+Historical private-channel release receipts retain their original meaning.
 
 Private tracking history, credentials, runtime bindings, queues/transcripts,
 machine/account/chat/native identifiers and enterprise snapshots are excluded.
-Source and VSIX use independent reviewed allowlists. Public disclosure is blocked
-by the owner hold, not inferred from a feature synchronization request.
+Source and VSIX use independent reviewed allowlists. Public availability follows
+the explicit owner instruction; future feature
+updates must keep private tracking history and state outside the product.
 
 ## Release evidence requirements
 
 Run complete discovery, editor/recovery/packaging checks and isolated installation
 against this new pin; earlier 0.1.0 results do not certify this import. Record
-exact final artifacts and authenticated private remote verification in the receipt.
+exact final artifacts, remote verification and anonymous public access in the receipt.
 
 | Evidence class | Required check | What it can establish |
 | --- | --- | --- |

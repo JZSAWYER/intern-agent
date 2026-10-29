@@ -4,7 +4,7 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.6
+## Installable product 0.2.7
 
 Run `python3 tools/doctor_install.py` before configuring accounts. It checks the
 selected installation without creating relay state. VS Code **Check Setup** also
@@ -26,8 +26,9 @@ card while the exact conversation, thread and turn remain unchanged. This
 position survives restart; uncertain sends are not replayed and final-delivery
 requirements remain intact. Separate-message mode keeps its existing behavior.
 
-The product repository and releases stay private until the owner explicitly asks
-for public visibility. Install the versioned product VSIX with its matching isolated runtime and verify
+The product repository and versioned releases are public under MIT. Private
+account configuration and runtime records stay local. Install the product VSIX
+with its matching isolated runtime and verify
 SHA256SUMS/provenance first. The public identity/namespace is independent of
 the development preview. Source and complete recovery/file/install/contributor
 skills are attached alongside the VSIX. Use [installation](INSTALL.md),
@@ -183,7 +184,7 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.6 uses
+replacing COMMIT with the exact checked-out public commit. Version 0.2.7 uses
 maintained source c21ea4419894d892c5c518ca9da3cac11dd3db7c and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill

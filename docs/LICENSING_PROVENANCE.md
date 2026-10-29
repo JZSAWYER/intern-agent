@@ -1,10 +1,11 @@
 # Licensing and dependency provenance review
 
-Current release channel: **private**, version **0.2.6**, maintained source
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner's private-visibility hold
-supersedes earlier public-release prose. Only an explicit later owner request
-can authorize going public. Source updates may upload new private releases;
-automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
+Current release channel: **public**, version **0.2.7**, maintained source
+`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner explicitly authorized
+making the clean product repository public on 2026-10-30. Private tracking
+repositories, operational records and account/state data remain excluded.
+Release automation checks visibility and never changes it. See
+[distribution](DISTRIBUTION.md).
 
 ## Approved MIT source release
 
