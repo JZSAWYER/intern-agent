@@ -66,12 +66,24 @@ def validate(name, data, management=False):
     if not management and suffix=='.zip':
         from .attachments import validate_file
         validate_file(Path(name).name,data,credential_check=code_credentials)
-    # Research workspaces contain papers and figures. Keep metadata and code
-    # parsers strict, but recognize bounded document/image artifacts by magic.
+    # Keep metadata and code parsers strict while recognizing bounded site and
+    # research assets by their format signatures.
     signatures={'.pdf':(b'%PDF-',),'.png':(b'\x89PNG\r\n\x1a\n',),
-        '.jpg':(b'\xff\xd8\xff',),'.jpeg':(b'\xff\xd8\xff',),'.gif':(b'GIF87a',b'GIF89a'),'.zip':(b'PK\x03\x04',b'PK\x05\x06')}
+        '.jpg':(b'\xff\xd8\xff',),'.jpeg':(b'\xff\xd8\xff',),'.gif':(b'GIF87a',b'GIF89a'),'.zip':(b'PK\x03\x04',b'PK\x05\x06'),'.woff2':(b'wOF2',)}
     binary=not management and suffix in signatures
     if binary and not data.startswith(signatures[suffix]):raise Invalid('Document or image signature does not match its file type')
+    if binary and suffix=='.woff2':
+        # Check the WOFF2 header envelope, without decoding or executing fonts:
+        # https://www.w3.org/TR/WOFF2/#woff20Header
+        if len(data)<48 or int.from_bytes(data[8:12],'big')!=len(data):
+            raise Invalid('WOFF2 header length does not match the file')
+        tables=int.from_bytes(data[12:14],'big');compressed=int.from_bytes(data[20:24],'big')
+        if not tables or not compressed or 48+2*tables+compressed>len(data):
+            raise Invalid('WOFF2 table directory or compressed data is truncated')
+        for offset,length in [(28,32),(40,44)]:
+            start=int.from_bytes(data[offset:offset+4],'big');size=int.from_bytes(data[length:length+4],'big')
+            if bool(start)!=bool(size) or (start and (start<48 or start+size>len(data))):
+                raise Invalid('WOFF2 optional data extends outside the file')
     try:text=data.decode('utf-8',errors='ignore' if binary else 'strict')
     except UnicodeDecodeError:raise Invalid('Unsupported binary artifact; review before upload') from None
     if code_credentials(text):raise Invalid('Credential literal rejected by Git hook')

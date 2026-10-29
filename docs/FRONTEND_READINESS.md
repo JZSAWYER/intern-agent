@@ -1,6 +1,6 @@
 # Frontend readiness and acceptance backlog
 
-Refreshed 2026-10-30 for the owner-authorized MIT Intern Agent 0.2.7 candidate.
+Refreshed 2026-10-30 for the owner-authorized MIT Intern Agent 0.2.8 candidate.
 Its installable identity is `intern-agent.intern-agent`, with 39 commands in the
 `internAgentPublic` namespace. The maintained 0.8.0 preview is separate. Editable
 frontend source is `extension/extension.js`, using Node/VS Code builtins without

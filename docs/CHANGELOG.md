@@ -1,5 +1,28 @@
 # Feature and fix record
 
+## 0.2.8 — Publish bounded WOFF2 website assets
+
+Imports maintained commit 146bd33c9e40800b58f8e3c8824a555fbbba46f7. Git guards
+accept WOFF2 site fonts after signature/header, exact file-length and declared
+block bounds checks. Existing size, private-path, credential, branch and strict
+management-record checks remain in force. Completed website work can publish
+legitimate fonts and deliver its saved reply without rerunning Codex.
+
+Tests cover valid/malformed envelopes, retained exclusions and a real guarded
+commit/push preserving exact font bytes. Recovery guidance separates preparation,
+activation and delivered results. Font rendering/decompression and production
+recovery/receiver actions remain separate from this source release. Product
+installation, doctor, complete skills and the stable extension identity remain.
+
+## 2026-10-30 — Publish bounded website font assets
+
+Git guards now accept WOFF2 website fonts with matching signatures, complete
+header envelopes, matching file lengths and bounded declared blocks. Size,
+credential, private-path and branch checks remain enforced; metadata still
+requires its original text/format validation. Completed website edits can
+therefore upload their legitimate font assets and deliver their saved replies
+without replaying the model request. Unknown binary formats still need review.
+
 ## 0.2.7 — Public product availability
 
 The owner explicitly authorized making the clean Intern Agent product repository

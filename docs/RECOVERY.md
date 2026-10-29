@@ -127,10 +127,12 @@ reconciliation. Missing synchronization retry entries are rebuilt, and retries
 rejoin the normal queue with its ordering and exclusive claims. An independent
 console turn defers the Git snapshot without tying up a worker or stopping Codex.
 
-Research PDF, PNG, JPEG and GIF files can pass the Git guards when their
+Research PDF, PNG, JPEG, GIF and WOFF2 site fonts can pass the Git guards when their
 signatures match their extensions. The existing size, private-path, credential
 and branch checks remain in force. Markdown, JSON, Python and management records
-retain strict text/format validation. Unrecognized binary artifacts need review.
+retain strict text/format validation. WOFF2 fonts also require a complete header,
+matching file length and bounded declared blocks; this is a format check rather
+than font rendering or decompression. Unrecognized binary artifacts need review.
 There is no fallback to another repository host.
 
 ## Blocked history and help replies

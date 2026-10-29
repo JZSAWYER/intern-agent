@@ -4,7 +4,13 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.7
+## Installable product 0.2.8
+
+Website work can now publish bounded WOFF2 fonts through the normal Git guards.
+Headers, exact file length and declared blocks are checked; private paths,
+credentials, size and branch protections remain enforced. Saved final replies
+can finish after a confirmed upload without replaying the model request. Font
+rendering/decompression is outside this Git validation.
 
 Run `python3 tools/doctor_install.py` before configuring accounts. It checks the
 selected installation without creating relay state. VS Code **Check Setup** also
@@ -86,6 +92,10 @@ The relay honors those rules even when the raw file was visible at the start of
 the turn. It does not delete the journal or rewrite the saved starting baseline.
 Tracked changes, staged owner work, linked replacements and unreviewed large
 publishable files still require their normal checks.
+
+Website WOFF2 fonts can be uploaded with format-envelope and size checks, so a
+valid local font does not strand a completed preview behind a binary-file
+review. Font rendering/decompression is separate from this Git validation.
 
 **Expected result:** excluded raw journals do not create a false missing-draft
 review. Final replies and turn completion wait for confirmed Git publication;
@@ -184,8 +194,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.7 uses
-maintained source c21ea4419894d892c5c518ca9da3cac11dd3db7c and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.8 uses
+maintained source 146bd33c9e40800b58f8e3c8824a555fbbba46f7 and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace

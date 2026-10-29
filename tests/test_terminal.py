@@ -365,6 +365,14 @@ class HookTests(unittest.TestCase):
         self.assertNotEqual(self.git('push',str(remote),'debug/work:main',ok=False).returncode,0)
         self.assertNotEqual(self.git('push',str(remote),':debug/work',ok=False).returncode,0)
 
+    def test_web_font_passes_real_commit_and_push_guards_without_changing_bytes(self):
+        from test_binary_artifacts import woff2_envelope
+        font=woff2_envelope();(self.repo/'font.woff2').write_bytes(font)
+        self.git('add','font.woff2');self.git('commit','-qm','web font')
+        remote=self.root/'fonts.git';subprocess.run(['git','init','--bare','-q',str(remote)],check=True)
+        self.git('push',str(remote),'debug/work:debug/work')
+        self.assertEqual(subprocess.check_output(['git','-C',str(remote),'show','debug/work:font.woff2']),font)
+
     def test_hook_tampering_rejects_operation(self):
         path=Path(self.config).parent/'pre-commit';path.write_text('#!/bin/sh\nexit 0\n')
         with self.assertRaises(Invalid):verified_path(self.config,self.repo)

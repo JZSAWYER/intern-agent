@@ -1,7 +1,7 @@
 # Licensing and dependency provenance review
 
-Current release channel: **public**, version **0.2.7**, maintained source
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.8**, maintained source
+`146bd33c9e40800b58f8e3c8824a555fbbba46f7`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
@@ -11,7 +11,7 @@ Release automation checks visibility and never changes it. See
 
 The owner explicitly authorized the separate clean Intern Agent product
 at `JZSAWYER/intern-agent`, using MIT for maintained source commit
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. [LICENSE](../LICENSE) covers the exported
+`146bd33c9e40800b58f8e3c8824a555fbbba46f7`. [LICENSE](../LICENSE) covers the exported
 first-party Python, frontend, guides, tests, templates and skills, including local
 release/install improvements. [NOTICE](../NOTICE) records scope and external tools.
 The source inventory records every reviewed input, its original hash where

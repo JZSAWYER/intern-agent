@@ -1,7 +1,7 @@
 # Source and release readiness audit
 
-Current release channel: **public**, version **0.2.7**, maintained source
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.8**, maintained source
+`146bd33c9e40800b58f8e3c8824a555fbbba46f7`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
@@ -11,11 +11,12 @@ Release automation checks visibility and never changes it. See
 ## Current candidate — 2026-10-30
 
 The candidate imports verified maintained commit
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.7
-adds checks before account setup, an optional hash-verified wheel download without
-system pip, skill metadata/installed-file verification and safer editor setup
-cancellation. The README provides a shorter installation and contributor path.
+`146bd33c9e40800b58f8e3c8824a555fbbba46f7` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.8
+adds bounded WOFF2 Git asset support and guarded commit/push regressions, plus
+recovery guidance for precise activation and completion evidence. Existing
+pre-setup doctor, hash-verified wheel downloads without system pip, complete
+skill verification and cancellation-safe editor setup remain included.
 Summary progress below cards/answers and its exact-turn recovery guards remain.
 The stable namespace retains 39 commands.
 The owner authorized public availability of this clean product repository.

@@ -105,6 +105,7 @@ replay merely for an audit.
 An outgoing PDF receipt and matching downloaded bytes do not establish incoming
 PDF/ZIP ingestion into a real Codex turn; test that separately in the selected
 installation. Neither automated coverage nor another operator's live results
-establishes permissions or delivery for a fresh account. The VSIX remains a
-preview; backend feature inheritance does not install or upgrade the extension
-in another editor. See [distribution readiness](DISTRIBUTION.md).
+establishes permissions or delivery for a fresh account. The installable MIT
+product uses a stable extension identity separate from the development preview.
+Backend feature inheritance does not install or upgrade the extension in another
+editor. See [distribution readiness](DISTRIBUTION.md).

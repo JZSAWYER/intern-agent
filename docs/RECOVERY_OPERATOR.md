@@ -146,6 +146,24 @@ use an independent guarded operation after your turn and other managed turns
 end. If that operation is unavailable, report the prepared repair and concrete
 activation blocker to the owner or Control; do not route it to Debug Bot.
 
+A separately attached native monitoring terminal can survive a receiver reload.
+An approved activation operation may preserve that exact native turn using its
+registered configuration, pane/process identity and event association. This is
+not an exception for managed or unidentified active turns. Every nested hook
+repair must enforce the same precise boundary; never hide activity by changing
+saved events or terminal snapshots to idle.
+
+Compare semantic settings when guarding an activation: service tier and model
+choices must stay fixed, while an observation's updated_at is not a changed
+choice. Capture semantic values at preparation. For older raw snapshots, require
+independent evidence proving the narrow timestamp-only difference before
+adjusting expectations. Preserve the original snapshot and all other guards.
+
+Tested, published, scheduled, active and delivered are separate milestones.
+Verify activation receipts and the original source reply before reporting a
+repair complete. If a follow-up was queued, verify its exact dispatch and result;
+a prepared helper or a completed operator turn alone does not prove recovery.
+
 ## Verify and report
 
 Check your own dispatch health as well as the affected bot. A durable incident

@@ -1,7 +1,7 @@
 # Intern Agent product and release workflow
 
-Intern Agent 0.2.7 uses MIT and maintained source
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. Its separate product repository is
+Intern Agent 0.2.8 uses MIT and maintained source
+`146bd33c9e40800b58f8e3c8824a555fbbba46f7`. Its separate product repository is
 `https://github.com/JZSAWYER/intern-agent`. On 2026-10-30 the owner explicitly
 authorized making this clean product repository public. Private tracking
 repositories and operational history remain private. Release tools check the
@@ -14,7 +14,7 @@ and local product deltas. `distribution.json` independently selects VSIX backend
 inputs. Git history from private tracking, `.intern_workspace`, enterprise snapshots,
 credentials, account/chat/native identifiers and machine state are excluded.
 
-The stable identity is `intern-agent.intern-agent`, version 0.2.7, with 39 commands
+The stable identity is `intern-agent.intern-agent`, version 0.2.8, with 39 commands
 and settings/views under `internAgentPublic`. This namespace remains stable across
 repository visibility changes and is distinct from the development preview's
 `intern-agent-local.intern-agent-personal` / `internAgent`. It does not migrate
@@ -38,7 +38,7 @@ From a clean product checkout with the exact credential-free origin:
 PRODUCT_COMMIT="$(git rev-parse HEAD)"
 python3 tools/build_release.py --check-only --expected-export-commit "$PRODUCT_COMMIT"
 python3 tools/build_release.py --expected-export-commit "$PRODUCT_COMMIT" \
-  --output-dir /path/outside/source/release-0.2.7
+  --output-dir /path/outside/source/release-0.2.8
 ```
 
 The destination must be new and outside source. The six files are the stable
