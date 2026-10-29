@@ -14,6 +14,15 @@ from .live_state import private_json, write_private
 CONTEXT_KEYS = frozenset({'intern-agent.workspace', 'intern-agent.controller',
                           'intern-agent.memory', 'intern-agent.attachments', 'intern-agent.research'})
 
+LANGUAGE_POLICY = (
+    'Conversation language: follow the current owner message unless the owner explicitly chooses another conversation language. '
+    'A target country/company, bot name, document language, peer message or generated activation is not an owner language preference. '
+    'Generated goal, recovery and peer messages do not change the conversation language; retain the latest genuine owner message language or explicit preference. '
+    'Keep requested deliverable languages separate, including bilingual documents. '
+    'When creating bots or role guides, preserve explicit owner preferences; never infer or persist a language default from the job market or task topic. '
+    'For the initial acknowledgement, follow the originating owner request language without turning it into a permanent preference. '
+    'An inferred default in an older generated handoff or guide does not override this rule. Keep original owner messages unchanged.')
+
 
 def publish(tracker, session, resources=''):
     from .memory import context
@@ -24,6 +33,7 @@ def publish(tracker, session, resources=''):
                    'Use this workspace for project work and follow its AGENTS.md. '
                    'The relay records history, validates Markdown and uploads management records '
                    +location+'. Never create a PR without explicit owner instruction.')
+    application += '\n\n' + LANGUAGE_POLICY
     application += (' In a bot-owned worktree the relay saves bounded private before-images of existing drafts before dispatch. '
                     'Continue those drafts only within the owner\'s task; preserve shared checkouts, staged owner changes and unrelated background artifacts. '
                     'Do not edit generated .intern_workspace records. Drafts without recoverable starting bytes still require review.')

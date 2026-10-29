@@ -1,5 +1,29 @@
 # Feature and fix record
 
+## 0.2.4 — Preserve owner conversation-language choices
+
+Imports maintained commit d452826b35de7c760e433bf0a99e4dae384bdfcb. The shared
+submit hook supplies a language policy separately from the unchanged owner
+prompt. Existing roles and future bots follow the current owner message or an
+explicit conversation preference, without inferring a permanent default from
+countries, companies, bot names, task topics or document-language requirements.
+Generated continuations retain the genuine owner's language/preference, and
+bilingual deliverables keep their separately requested languages.
+
+The MIT source, stable VSIX and complete skills use a fresh immutable version.
+Offline context-routing, backend/editor/package checks and isolated installation
+remain distinct from real-model language compliance and live account/production
+acceptance. The repository remains private under the owner's visibility hold.
+
+## 2026-10-29 — Preserve owner conversation-language choices
+
+The shared submit hook now tells current and future bots to follow the owner's
+message language unless the owner explicitly chooses another conversation
+language. Generated role handoffs must not turn a country/company or task topic
+into a persistent language preference. Document-language requirements, including
+bilingual resumes, remain separate. Original prompts and historical activations
+are preserved.
+
 ## 0.2.3 — Resume goals after verified Fast settings
 
 Imports maintained commit b58fbc740904e320ffc607dcf8853173426f9f4c. Goal

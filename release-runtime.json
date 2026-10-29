@@ -1,8 +1,8 @@
 {
   "schema": "intern-agent.runtime-baseline.v1",
-  "observed": "2026-10-25",
-  "snapshot_sha256": "42ad175325cec83132a6f5f08144ee8488dd9a4f11754982c3098b30bc99e639",
-  "source_commit": "b58fbc740904e320ffc607dcf8853173426f9f4c",
+  "observed": "2026-10-29",
+  "snapshot_sha256": "0e0a37f619b40c5385cc1c3bd94804ae6af3254d6fc813ba1852d6d211d0d617",
+  "source_commit": "d452826b35de7c760e433bf0a99e4dae384bdfcb",
   "runtime_files": [
     {
       "path": "intern_personal/__init__.py",
@@ -182,7 +182,7 @@
     },
     {
       "path": "intern_personal/prompt_context.py",
-      "sha256": "5543b6d40c69a6ab4b66d83c50c8cfb18295d6c4879e76b8aa8e4ab05f03b50e"
+      "sha256": "6ea806ee9ac49f0a1c4d5fac3f83cc90835a84ff13cfbc4912db255c7b91abf5"
     },
     {
       "path": "intern_personal/publication.py",
@@ -326,7 +326,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "c6dcb0934f3182b86dab2499d5e87832ca807b676a41e62f6d8a8a2d2c47c35e"
+      "sha256": "83261bc9c7c282a457cba26bd3d3cbe9a0b77967c2fa8d1c2d9f059c964e4233"
     },
     {
       "path": "docs/CONTRIBUTING.md",
@@ -342,7 +342,7 @@
     },
     {
       "path": "docs/DEPLOYMENT_PARITY.md",
-      "sha256": "6d240edb2c42703579a546e0c5ba32febae705e403954415ef81266e2141e6bd"
+      "sha256": "863026723af3bed2e47f3d0f56408e0e96e7f3454dc88436247252ec34ec8a18"
     },
     {
       "path": "docs/DEVELOPMENT_WORKFLOW.md",
@@ -350,7 +350,7 @@
     },
     {
       "path": "docs/DISTRIBUTION.md",
-      "sha256": "990f8da6021347ed6f9a4064e2d4c69d785f196c61bdb23ac5906da060c0dd78"
+      "sha256": "3fd0662108ebecb58ce9ae3f53d55649852ec781f56dd6978f6e5a5452822650"
     },
     {
       "path": "docs/EDITOR_TEAMS.md",
@@ -362,7 +362,7 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "bc67308224c2f0c8202dfe0457b771bfe27272e69de1a52656338af7b0170f46"
+      "sha256": "d7b566cac234831407939171147038b1aa8d6cc99a79f2d1be83a4672b29c2be"
     },
     {
       "path": "docs/FILE_TRANSFER.md",
@@ -374,7 +374,7 @@
     },
     {
       "path": "docs/FRONTEND_READINESS.md",
-      "sha256": "b38790b75a728628f0506b270d3f74af73d3fa08f924371ba890c7cd3c575089"
+      "sha256": "2532ac3803e3154a4a73ac1e72a51c29a3689f5fa2963891323bb02ed8d9c936"
     },
     {
       "path": "docs/GIT_COMPLETION.md",
@@ -386,11 +386,11 @@
     },
     {
       "path": "docs/INSTALL.md",
-      "sha256": "55299eec19c264613c8c7ac04174a0f272d919d7340fdb22d86eba86404cd7e7"
+      "sha256": "bc0df1fe98878e142f20710c086d1e94e09467089b24cff3c58cb9639bc39197"
     },
     {
       "path": "docs/LICENSING_PROVENANCE.md",
-      "sha256": "668acf68cbedbe36fcd47258bd4328c37ac052a2f9d47e625b21a63919f71654"
+      "sha256": "1dfbfe2dda7168d537b0cef17c1b934c005a2935723a4a067e50f440d2b2803d"
     },
     {
       "path": "docs/LIVE.md",
@@ -398,11 +398,11 @@
     },
     {
       "path": "docs/OPEN_SOURCE_AUDIT.md",
-      "sha256": "2565fde05c9deb2ec22319a9fdefe50efee5e561c02b685283464ae01189e18e"
+      "sha256": "ff7e2cbb19e10a709c9031908b099ac665c69bf5e02d040b5f8f406da7b242d4"
     },
     {
       "path": "docs/OPEN_SOURCE_HANDOFF.md",
-      "sha256": "f4ba46788346cb6fb57c056207341d074261dea052656708813317d315b6424b"
+      "sha256": "3d349f889bb06a7760c3869bac9fd82cd135820e8719668cfc0a02989c94e394"
     },
     {
       "path": "docs/PERMISSIONS.md",
@@ -414,7 +414,7 @@
     },
     {
       "path": "docs/PROJECT_INIT.md",
-      "sha256": "33c1b2ed256a64e06a92ec49bccfd66b04b55ea3ea91d5e41b708e55bd77674a"
+      "sha256": "b8fe416443a2f9b61f44c9909a420d5146a37bb6ceb29e8ab28f386c4cd142f3"
     },
     {
       "path": "docs/PROMPT_DELIVERY.md",
@@ -462,7 +462,7 @@
     },
     {
       "path": "docs/SOURCE_MANIFEST.md",
-      "sha256": "2b52f672698cacb2d15fb4a7a7f8fd224ef9d6d598e25b33b9e245da362a1fff"
+      "sha256": "edbc2ddca8f104058ece786efd78a4270e0fb4b87e12a540996a8d132ea23152"
     },
     {
       "path": "docs/TERMINAL.md",
@@ -478,8 +478,8 @@
     "files": [
       {
         "path": "extension/package.json",
-        "sha256": "796de21e5fba6881caad61d04f3d7098c74578c5d1223be29457b8af370ad55f",
-        "canonical_sha256": "29b099e037d879dc7fd53b61c5dbdae7a17d0dab4f6ff1b5ae7b6c9f5ae47c71"
+        "sha256": "3386644f3698c045fb2f573ba592916c7fa0dee8ab383f7958f0173ee1b96001",
+        "canonical_sha256": "8049d703058d8118591b2803aa6e245f8f9dba506b40e9630f772af8a287c757"
       },
       {
         "path": "extension/extension.js",

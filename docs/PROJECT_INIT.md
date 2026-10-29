@@ -54,6 +54,15 @@ Creation of an incomplete bot conversation requires inspection of its existing s
 
 An established controller records commands on its existing history branch. For first-project onboarding without a controller archive, original init preview/apply commands and their receive/completion receipts are retained privately and projected into validated Markdown on the first project bot branch. Original bodies and timestamps are preserved. Initialization does not rewrite the owner's prompt or rerun an agent to retry Git.
 
+## Conversation language
+
+New bots follow the language of the owner's current message unless the owner
+explicitly selects another conversation language. Setup and generated role
+handoffs must not infer a language preference from a country, company, bot name
+or task topic. Requested document languages are separate: a bilingual resume
+does not make the chat Chinese by default. The submit hook supplies this policy
+as separate application context without rewriting the owner's prompt.
+
 ## Validation limits
 
 The implementation is tested with disposable Git repositories, simulated GitHub/Feishu/Codex adapters, real read-only host GitHub authentication, frontend command tests and VSIX packaging checks. Creating an actual new repository requires the owner to choose its name and apply its concrete plan. This development milestone does not create a demonstration repository or install/publish the extension automatically.

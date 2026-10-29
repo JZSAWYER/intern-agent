@@ -1,20 +1,21 @@
 # Source and release readiness audit
 
-Current release channel: **private**, version **0.2.3**, maintained source
-`b58fbc740904e320ffc607dcf8853173426f9f4c`. The owner's private-visibility hold
+Current release channel: **private**, version **0.2.4**, maintained source
+`d452826b35de7c760e433bf0a99e4dae384bdfcb`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
 automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
 
 
-## Current candidate — 2026-10-25
+## Current candidate — 2026-10-29
 
 The candidate imports verified maintained commit
-`b58fbc740904e320ffc607dcf8853173426f9f4c` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.3
-lets resumed goals pass a historical settings review only with the exact
-verified Fast receipt. Both scheduler checks preserve genuine work, uncertainty,
-questions and Git/reply waits. The original control event remains unchanged.
+`d452826b35de7c760e433bf0a99e4dae384bdfcb` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.4
+adds the owner conversation-language policy to shared application context,
+keeping current owner choices separate from deliverable languages and inferred
+role defaults. Original messages remain unchanged. Offline context routing is
+checked separately from real-model response-language compliance.
 The stable namespace retains 39 commands.
 The repository remains private for owner review; prior public verification was
 performed before the owner's visibility change and is historical evidence.
@@ -42,7 +43,7 @@ exact final artifacts and authenticated private remote verification in the recei
 | Live acceptance | Explicit real-account, Remote SSH, activation, upgrade/rollback and uninstall/reinstall pilot | Not established by this release audit |
 
 The public profile contains 14 runtime distributions plus a hash-locked pip
-bootstrap tool. Version-specific OSV queries repeated on 2026-10-25 returned no findings
+bootstrap tool. Version-specific OSV queries repeated on 2026-10-29 returned no findings
 for those 15 selected versions; upstream wheel and notice hashes are recorded in
 `requirements/public-profile.json`. This is dated dependency evidence, not a claim
 against future vulnerabilities. The older deployed reference lock retains its

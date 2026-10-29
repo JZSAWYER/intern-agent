@@ -1,11 +1,13 @@
 # Intern Agent feature tutorial
 
-## Installable product 0.2.3
+## Installable product 0.2.4
 
-This update lets an idle resumed goal pass a historical Fast-command review
-only when its exact conversation-specific receipt is verified. Real unfinished
-work, uncertainty, questions and pending Git/reply delivery still wait. The
-original settings command is preserved and never replayed.
+This update supplies one conversation-language policy to existing and new
+bots through the shared submit hook. Follow the current owner's message unless
+they explicitly choose another conversation language. Countries, companies,
+bot names and requested document languages are not inferred chat preferences.
+Document deliverables retain their requested languages; original owner messages
+stay unchanged.
 
 The product repository and releases stay private until the owner explicitly asks
 for public visibility. Install the versioned product VSIX with its matching isolated runtime and verify
@@ -162,8 +164,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.3 uses
-maintained source b58fbc740904e320ffc607dcf8853173426f9f4c and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.4 uses
+maintained source d452826b35de7c760e433bf0a99e4dae384bdfcb and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace
@@ -399,6 +401,10 @@ conversation.
 **Expected result:** each new bot has its own worktree, permanent code/history
 branch, Codex process and visible tmux console. Named tasks stay on that branch.
 Existing legacy bots keep their previous layout unless explicitly migrated.
+Conversation language follows the owner's current message unless the owner
+explicitly chooses another language. Setup does not infer a language from the
+target job market or a document's requested language; bilingual deliverables
+keep their own language requirements.
 
 **Verification and limits:** branch isolation and workspace binding are tested;
 tracked GitHub upload and Feishu text round-trips have passed. Unknown folders
