@@ -1,214 +1,128 @@
 # Intern Agent
 
-**Intern Agent** connects GitHub workspaces and persistent Codex conversations to
-Feishu. The MIT-licensed public product includes maintained source, an installable
-VSIX and Codex skills, with independent private state for each installation.
-The product repository is currently **private for review**. It stays private until
-the owner explicitly requests public visibility; routine feature-release handoffs
-do not lift that hold. Repository access is managed separately.
+Work on GitHub projects from Feishu, with persistent Codex sessions and controls
+in VS Code. Send a task, follow its progress, answer questions and receive the
+result in the project's chat. Reopen the same conversation in the editor when
+you want to work directly.
 
-Start with [installation](docs/INSTALL.md),
-[the 0.2.5 release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.5),
-[portable recovery](docs/PORTABLE_RECOVERY.md) and
-[contributor onboarding](docs/CONTRIBUTING.md).
+Intern Agent includes an installable VS Code extension (VSIX), a Python relay,
+maintained source and optional Codex skills. Each installation uses its own
+accounts and private state.
 
-For installation on another machine, start with [the installation guide](docs/INSTALL.md)
-and optional [installation skill](skills/install-on-linux/SKILL.md). Every user
-provisions independent accounts and state; private machine migration is separate.
+**Current release:** [v0.2.5](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.5).
+The repository and downloads are currently private; access is required.
 
-This project supplies a GitHub-only Feishu workspace relay, a Linux workspace
-VS Code extension, and offline migration tools. One management bot routes each
-GitHub-attached workspace conversation to its own group and Codex thread. Historical source evidence records a real
-Codex transport and owner-only Feishu round-trip; this source sync runs offline
-checks and does not repeat that live acceptance.
-Every registered relay bot uses its own permanent branch for code and validated
-Markdown history; named tasks stay on that bot's branch. Human source development
-uses separate owner and collaborator branches with PRs to the integration branch;
-GitHub users can contribute from forks. See [contributing](docs/CONTRIBUTING.md)
-and the [collaboration skill](skills/collaborate-on-source/SKILL.md). A running
-bot does not create actual PRs without an explicit instruction.
-See [live setup](docs/LIVE.md) and [distribution requirements](docs/DISTRIBUTION.md).
-For another computer or a lost installation, use [portable recovery](docs/PORTABLE_RECOVERY.md).
-Private development/tracking history stays separate from this clean public
-product; see [published releases](docs/PUBLISHED_RELEASE.md).
-The owner Control group also supports unchanged natural-language messages and
-slash commands through its own [tracked controller conversation](docs/CONTROLLER.md).
-Create a new private repository and project bot through [project initialization](docs/PROJECT_INIT.md).
-See the [frontend comparison](docs/FRONTEND_COMPARISON.md) for differences from the original extension.
-Start with the [feature tutorial](docs/FEATURE_GUIDE.md) for commands and expected
-results. The [change record](docs/CHANGELOG.md) tracks features and fixes; the
-[development workflow](docs/DEVELOPMENT_WORKFLOW.md) keeps those guides current
-in the explicitly selected Debug Bot and Control conversations.
-Use [persistent goals and Feishu questions](docs/GOALS_AND_QUESTIONS.md) for
-multi-iteration work, selectable answers and custom input.
+## What you can do
 
-The offline commands need only Python 3.10+ on Linux and `/usr/bin/git` for
-repository inspection. The live relay additionally needs tmux, an authenticated
-Codex CLI, lark-oapi and websockets; setup does not silently install packages.
+- **Keep project conversations running.** Each bot has its own Git worktree,
+  permanent branch, Codex session and Feishu chat. Named tasks stay on that branch.
+- **Work from chat or the editor.** Follow progress, send follow-ups during a
+  turn, open the conversation's console and inspect status in VS Code.
+- **Exchange files.** Send files and PDFs as a batch with your next message,
+  and request generated files back in Feishu.
+- **Guide longer work.** Track persistent goals, answer question cards, and
+  manage model, reasoning, Fast and quota settings.
+- **Coordinate bots.** Use peer requests and the documented recovery and
+  research workflows while keeping each conversation separate.
+- **Reconnect or recover.** Reuse an existing Linux host profile, or restore
+  uploaded project records from GitHub on a replacement host.
 
-## Release source and scope
+See the [feature guide](docs/FEATURE_GUIDE.md) for commands and examples.
 
-Version 0.2.5 imports verified maintained source
-`c21ea4419894d892c5c518ca9da3cac11dd3db7c`. It includes file/PDF batches, independent
-consoles and live follow-ups, peer/recovery/research workflows, model/Fast settings,
-quota/throughput, Git-confirmed completion, reusable records, cold GitHub recovery,
-shared SSH host profiles and portable preferences/roles. This patch keeps summary progress below delivered question cards and
-confirmed answers, with durable exact-turn positioning and no replay of
-uncertain sends. Packaging adds a distinct
-public extension identity, a patched hash-locked dependency profile and safe
-complete-resource skills installation. Provenance records both the maintained
-source commit and the clean product commit, with every artifact's SHA-256.
+## Get started
 
-Installation is verified in isolated Linux/editor directories. Fresh real account,
-Remote SSH activation and upgrade/rollback acceptance remain separate; this
-release does not deploy or change an existing receiver. See
-[distribution](docs/DISTRIBUTION.md) and [baseline scope](docs/DEPLOYMENT_PARITY.md).
+The supported installation host is **Linux x86_64 with Python 3.12**. You can
+connect from a Windows or macOS VS Code client through Remote SSH to that Linux
+host. Native macOS and Claude Code support are outside this release's accepted
+installation profile.
 
-## Commands
+Before setup, you need:
+
+- Python 3.12 with `venv` and `ensurepip`, Git and tmux on the Linux host.
+- A VS Code client, with Remote SSH when connecting to a remote Linux host.
+- A separately installed, authenticated Codex CLI.
+- Your own GitHub access and a self-built Feishu app with the required bot,
+  event and chat permissions.
+
+Follow the [installation guide](docs/INSTALL.md) for the commands and account
+setup. The sequence is:
+
+1. **Download and verify the release.** Get the matching source ZIP, VSIX,
+   provenance and checksums. Verify `SHA256SUMS`, then extract the source.
+2. **Install the Python runtime.** Review the install plan and create an isolated
+   environment from the hash-locked dependency profile. Keep private state
+   outside the installation directory.
+3. **Install the VSIX.** In VS Code, use **Install from VSIX** on the Linux
+   workspace host. Select the installed runtime's Python executable.
+4. **Set up the relay.** Run **Intern Agent: Set Up Personal Relay**, select or
+   create your host profile, and configure your own accounts through the setup UI.
+5. **Pair and test.** Follow [live setup](docs/LIVE.md) to pair your Feishu group,
+   attach a GitHub project and verify a real message, reply and Git upload.
+
+The stable extension ID is `intern-agent.intern-agent`; its settings use
+`internAgentPublic`. The development preview has a separate identity.
+
+Package installation and offline checks have been verified in isolated Linux
+environments. New-account setup, Remote SSH activation and production upgrades
+still need acceptance on the chosen installation; see
+[installation acceptance](docs/INSTALL.md#acceptance-upgrade-and-uninstall).
+
+### Try the offline demo
+
+From the extracted source directory, run:
 
 ```bash
-python3 -m intern_personal doctor
 TMPDIR=/tmp python3 -m intern_personal simulate
-python3 -m intern_personal migration-plan --legacy-root "$LEGACY_WORK_ROOT"
-env -u CODEX_THREAD_ID TMPDIR=/tmp python3 -m unittest discover -s tests -v
-python3 tools/check_distribution.py
 ```
 
-Set `LEGACY_WORK_ROOT` to the old work-agents directory before requesting a
-migration preview. No environment file is sourced automatically.
+This sends a synthetic event through a fake agent and reply adapter, then removes
+its temporary state. It needs no Feishu account and starts no relay or Codex session.
 
-The GitHub username is configurable and belongs only in private `personal.json`.
-There is no account default in code. Supply your username during initialization
-or change it later with `set-owner`. Changing it never changes Git remotes and is
-rejected if existing workspace destinations belong to a different owner.
-For a separate project, set `GITHUB_OWNER` to your chosen username, then run:
+### Optional Codex skills
 
-```bash
-python3 -m intern_personal --project /tmp/intern-personal-example init --github-owner "${GITHUB_OWNER:?Set your GitHub username}"
-python3 -m intern_personal set-owner "${GITHUB_OWNER:?Set your GitHub username}"
-```
+The release includes skills for installation, recovery, file transfer and source
+collaboration. Follow [skills installation](docs/INSTALL.md#install-the-codex-skills-bundle)
+to inspect and install the complete bundle. Each skill includes its required
+reference files; installing skills does not configure accounts or start the relay.
 
-To register a repository in the new personal registry without cloning or
-contacting GitHub:
+## Working on a project
 
-```bash
-python3 -m intern_personal workspace-add demo "https://github.com/${GITHUB_OWNER:?}/demo.git"
-python3 -m intern_personal workspace-add metadata-demo "https://github.com/${GITHUB_OWNER:?}/metadata-demo.git" --metadata-mode metadata_branch --metadata-branch intern_workspace
-```
+1. Open a project's bound Feishu conversation and describe the task in your own words.
+2. Follow progress, answer any questions and send follow-ups in the same chat.
+   Use the VS Code dashboard or console when you need direct access.
+3. Review the result and uploaded changes. Final completion waits for confirmed
+   Git publication and reply delivery; returned files have separate delivery receipts.
 
-Registration checks owner restrictions when configured and rejects Codeup,
-other hosts, embedded credentials, URL options, path traversal, duplicate IDs,
-duplicate destinations and unsupported metadata layouts. Updates use a file
-lock and atomic replacement so simultaneous registrations do not lose data.
-No existing repository or legacy registry is changed.
+For another computer or a lost installation, use
+[portable recovery](docs/PORTABLE_RECOVERY.md). Recovery restores uploaded
+records; new account credentials and unpushed local work need separate handling.
 
-## Migration preview
+## Find the right guide
 
-The generated report is `reports/migration-preview.json`. To supply proposed
-destinations, create a secret-free JSON mapping of workspace-directory IDs:
+| I want to… | Guide |
+| --- | --- |
+| Install on my own machine | [Installation](docs/INSTALL.md) |
+| Configure Feishu and connect a project | [Live setup](docs/LIVE.md) · [New projects](docs/PROJECT_INIT.md) |
+| Use the dashboard, tasks and terminals | [Editor workflow](docs/EDITOR_TEAMS.md) · [Conversations](docs/CONVERSATIONS.md) |
+| Use goals, question cards or attachments | [Goals and questions](docs/GOALS_AND_QUESTIONS.md) · [File transfer](docs/FILE_TRANSFER.md) |
+| Reconnect or troubleshoot saved work | [Portable recovery](docs/PORTABLE_RECOVERY.md) · [Recovery](docs/RECOVERY.md) |
+| Understand the implementation | [Architecture](docs/ARCHITECTURE.md) |
+| Check release contents and provenance | [Distribution](docs/DISTRIBUTION.md) · [Release baseline](docs/DEPLOYMENT_PARITY.md) |
+| See recent changes | [Changelog](docs/CHANGELOG.md) |
 
-```json
-{
-  "ws_example": "https://github.com/<github-username>/<repository-name>.git"
-}
-```
+## Contribute
 
-```bash
-python3 -m intern_personal migration-plan --legacy-root "$LEGACY_WORK_ROOT" --destinations destinations.json
-```
+Use a separate checkout and your own development branch. The owner and each
+collaborator work on their own branches and propose changes through pull requests
+to the integration branch. Contributors without write access can use a fork.
+Runtime bots keep their registered permanent branches.
 
-Replace the example placeholders before use; the validator rejects them.
-The planner reads legacy records but never uses their repository URLs or
-provider credentials. Old GitHub records are not assumed to belong to the
-desired personal account; each destination needs an explicit mapping.
-Unknown workspace IDs, non-GitHub targets and duplicate destinations are
-rejected or flagged. Preview entries always remain `ready: false`: destination
-access, LFS/submodule completeness, a complete worktree/ref audit, a secret scan,
-and migration authorization are not established by this offline inspection.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the branch workflow, relevant
+checks and review expectations. Coding agents can also use the
+[source collaboration skill](skills/collaborate-on-source/SKILL.md).
 
-Discovery covers `source`, the metadata checkout, and immediate intern
-clone/worktree directories. It is bounded, not an exhaustive disk scan.
-Missing checkouts mean **not found by this scan**, not proven lost.
-Uncommitted work is flagged and left unchanged. Branch counts are local;
-the old server is never contacted and unavailable server-only history cannot
-be reconstructed from registry records alone.
+## License
 
-## Isolation
-
-- Active code: `intern_personal/`; no imports of the old extension/backend.
-- Config/state: this project's `personal.json` and `runtime/`; no `.bashrc` edits,
-  legacy env loading, or credentials in the supported configuration schema.
-- Local Git inspection uses a constructed environment, disables optional
-  locks, hooks, filesystem monitor, credential helpers, global/system Git
-  configuration, lazy fetch and transport protocols. No network operations or
-  clone/fetch/pull/push/checkout commands exist in the offline inspection tools.
-  The live Codex agent can perform actions explicitly requested by its owner.
-- Historical packaged reference snapshots are excluded from this candidate,
-  version control exports and the VSIX. Their former local presence establishes
-  no permission to redistribute them.
-- Reports, personal configuration, runtime state and reference snapshot are
-  excluded by `.gitignore`. Live workspace adoption and GitHub uploads require
-  explicit authorization.
-
-## Offline runtime
-
-`simulate` creates a temporary synthetic profile, delivers one event twice,
-runs the fake agent once, records one fake reply, and removes its temporary
-profile. It uses no network, tmux session or agent process and does not use
-the private account configuration. See [runtime behavior](docs/RUNTIME.md).
-
-The core enforces an explicit app ID, owner open ID and chat/workspace binding.
-It stores tasks in a private SQLite queue and uses a single-worker lease.
-Uncertain execution or delivery blocks later work in that workspace; it is
-never silently retried. A saved result can be delivered after restart without
-reexecuting the task. No message body is emitted in routine status output.
-
-Templates under `templates/` contain explicit placeholders. They are examples,
-not working configurations. Unreplaced placeholders fail validation.
-
-## Next implementation/deployment work
-
-Named tasks, independent conversation/activity status, validated per-turn
-Markdown and priority `/stop` are implemented. See
-[conversation lifecycle](docs/CONVERSATIONS.md) for commands and recovery.
-
-An opt-in live relay now exists alongside the offline preparation commands.
-See [live setup and workspace chats](docs/LIVE.md). Its real Codex transport has
-passed an isolated create/persist/resume round-trip and an owner-only Feishu
-message pilot. A new account still needs its own credential handoff, app
-availability, pairing and message verification.
-Live private state is independent of the offline project's registry and should
-be placed on a data volume. The preview extension provides private setup,
-credential input, pairing, status, Git recovery and optional workspace connection
-on Linux, including Remote SSH. A VSIX was built and installed in an isolated
-VS Code profile. Release acceptance for another host/account remains distinct
-from this installation's live pilot.
-
-Build a local preview without installing build packages:
-
-```bash
-python3 tools/build_vsix.py --output /path/to/intern-agent-preview.vsix
-```
-
-The output must not already exist. The builder uses the backend allowlist and
-rejects private configuration, credentials and the locally configured username.
-See [extension setup](extension/README.md).
-
-1. Verify access to the configured GitHub account and select a pilot; finish its
-   worktree, branch, LFS, submodule and secret inventory.
-2. Complete the live Feishu pilot using the SDK receiver, chat API and structured
-   Codex bridge. Offline transport tests do not establish account capability.
-3. Validate operator reconciliation, network reconnection and live authorization
-   before treating the relay as deployed.
-4. Verify GitHub authentication on each installation. Each new bot keeps code
-   and management records on one branch; PRs require an explicit user request.
-5. Complete explicit account onboarding and the authorized message pilot;
-   obtain authorization before repository uploads/remotes or public releases.
-
-The seven proposed Feishu tenant scopes are in the example configuration.
-The typing reaction additionally needs `im:message.reactions:write_only`;
-see [live setup and reaction behavior](docs/LIVE.md).
-Account-specific grants, publication and connection are setup steps, not
-properties of this distributable code.
-
-See [the editor, message and team workflow guide](docs/EDITOR_TEAMS.md) for the 0.5.0 dashboard, setup diagnostics, session controls, bounded teams, workspace access and paged recovery.
+First-party source, frontend, documentation and skills use the [MIT license](LICENSE).
+External dependencies and tools retain their own terms; see [NOTICE](NOTICE) and
+[licensing and provenance](docs/LICENSING_PROVENANCE.md).

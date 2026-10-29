@@ -1,5 +1,19 @@
 # Feature and fix record
 
+## Unreleased — Clearer README and getting started
+
+Reorganized the product README around what Intern Agent does, supported host
+requirements, a single installation sequence, everyday use and contributor
+onboarding. Detailed setup, recovery, architecture and release evidence are
+linked from a guide table. Removed repeated links and historical deployment
+checklists from the introduction. Corrected the contributor entrypoint's stale
+license-review wording to match the approved MIT license.
+
+This is a local documentation candidate after 0.2.5. The published release and
+its immutable artifacts are unchanged. Documentation links, source inventory,
+runtime documentation hashes and normal file guards are checked separately
+from backend or live installation tests.
+
 ## 0.2.5 — Keep summary progress below question cards
 
 Imports maintained commit c21ea4419894d892c5c518ca9da3cac11dd3db7c. Summary

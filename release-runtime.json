@@ -1,7 +1,7 @@
 {
   "schema": "intern-agent.runtime-baseline.v1",
   "observed": "2026-10-29",
-  "snapshot_sha256": "362dd5adb9f36d6be6e9a01ea8a0b35a907fd4f391baab39e5b93913677be82f",
+  "snapshot_sha256": "f13518c4bbf9d9d59592b60dc9f2597fc2316576a30d89daff675f6c90399676",
   "source_commit": "c21ea4419894d892c5c518ca9da3cac11dd3db7c",
   "runtime_files": [
     {
@@ -326,7 +326,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "5134d038fe87a2d9ca38bf122e6462256e8c7a5ef2b5e24b2aa676776f240ae7"
+      "sha256": "0fa8a29febbd41f44710c971458cac1397f165dd64d250edf29219d08611ee9c"
     },
     {
       "path": "docs/CONTRIBUTING.md",
@@ -362,7 +362,7 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "b1d8b837dd21b148744c03693a2f366afb67ca317283d5c7f96f4c5f193e72fb"
+      "sha256": "2c68d125e9b5ac55990ea3ae9796e6addb487950cf30a4fdff19d69a265a908a"
     },
     {
       "path": "docs/FILE_TRANSFER.md",

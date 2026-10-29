@@ -1,5 +1,9 @@
 # Intern Agent feature tutorial
 
+For a short overview and the setup sequence, start with the
+[project README](../README.md). Use [installation](INSTALL.md) for the full
+commands, prerequisites and account setup, then return here for feature details.
+
 ## Installable product 0.2.5
 
 Summary progress now starts a fresh editable message after a question card is

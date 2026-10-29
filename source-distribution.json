@@ -28,7 +28,7 @@
       "path": "CONTRIBUTING.md",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution",
-      "sha256": "82fef6ff1bc762c2bb88ef0499779c171a718c189c3a137e37f461b8b9963bb2"
+      "sha256": "c70b52febc078f243f6f5b9fa74d2a2c020004326a1882b9d1786393744b3e9b"
     },
     {
       "path": "LICENSE",
@@ -44,7 +44,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "3ed41059f8d5f8c684f63f839bd814b23453e3c71dbd4b20db26d12e6563778d",
+      "sha256": "11af40d12705f8db50e0ddaec8f5632b7509a99b061c6a880d909f13df6c0992",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "44868df17cbd609a0dd23a0e9244f4ebabe329003cb7e11d6ebd843684b2b099",
@@ -90,7 +90,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "5134d038fe87a2d9ca38bf122e6462256e8c7a5ef2b5e24b2aa676776f240ae7",
+      "sha256": "0fa8a29febbd41f44710c971458cac1397f165dd64d250edf29219d08611ee9c",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "492ee5dc2db32c382dd8b900a2df7d49eb4ecb7efcf07f102ca4c37e958c46d4",
@@ -170,7 +170,7 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "b1d8b837dd21b148744c03693a2f366afb67ca317283d5c7f96f4c5f193e72fb",
+      "sha256": "2c68d125e9b5ac55990ea3ae9796e6addb487950cf30a4fdff19d69a265a908a",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "98ddcbb46bc223c33b24474dfd99b90d087fb9ba5590d2e09a0178f4f637fc98",
@@ -1012,7 +1012,7 @@
     },
     {
       "path": "release-runtime.json",
-      "sha256": "378f2b3fe587cf0a1f8013231c98702c5dcf2fa1405c7a644f00e25d8ac6f8a7",
+      "sha256": "36d1305207d672229424d29a5e08eedbfaf6fd0a36ba33d0c25cd8e467cc4715",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -1619,7 +1619,7 @@
   ],
   "dependency_security_approved": true,
   "prepared": "2026-10-29",
-  "runtime_snapshot_sha256": "362dd5adb9f36d6be6e9a01ea8a0b35a907fd4f391baab39e5b93913677be82f",
+  "runtime_snapshot_sha256": "f13518c4bbf9d9d59592b60dc9f2597fc2316576a30d89daff675f6c90399676",
   "release_authorization": {
     "repository": "JZSAWYER/intern-agent",
     "version": "0.2.5",
