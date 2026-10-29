@@ -1,7 +1,7 @@
 {
   "schema": "intern-agent.runtime-baseline.v1",
-  "observed": "2026-10-29",
-  "snapshot_sha256": "f13518c4bbf9d9d59592b60dc9f2597fc2316576a30d89daff675f6c90399676",
+  "observed": "2026-10-30",
+  "snapshot_sha256": "079465d91ba1784b93300533493a459fd590bba056781ac03011c236379c1ffe",
   "source_commit": "c21ea4419894d892c5c518ca9da3cac11dd3db7c",
   "runtime_files": [
     {
@@ -242,7 +242,7 @@
     },
     {
       "path": "intern_personal/skill_bundle.py",
-      "sha256": "6099adbb9ed018072c89d60f3fa7d0f33249999c75f01f611239774b6975c43b"
+      "sha256": "2c839037bb34a5d127a2ffecc3b37dfc310ab1373865de42559d42ecc378803b"
     },
     {
       "path": "intern_personal/skills.py",
@@ -326,7 +326,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "0fa8a29febbd41f44710c971458cac1397f165dd64d250edf29219d08611ee9c"
+      "sha256": "bc6f3794cb4d5bd0c321c1592ae7b613eafdc174bb20a61171832e0520a6f179"
     },
     {
       "path": "docs/CONTRIBUTING.md",
@@ -342,7 +342,7 @@
     },
     {
       "path": "docs/DEPLOYMENT_PARITY.md",
-      "sha256": "51f7268adb5c241858303e00dba4d4ee6f5c6498df5c5fec1abfc2ed2f445c8d"
+      "sha256": "9446c6ed6018fdc909a670864c7dcca1940eba982e3feb28273256a2d2e2b6b5"
     },
     {
       "path": "docs/DEVELOPMENT_WORKFLOW.md",
@@ -350,7 +350,7 @@
     },
     {
       "path": "docs/DISTRIBUTION.md",
-      "sha256": "774faf92fea8d1f3900969d2118e5bbd9a5753aee20bbbfdf2294f8a53b18e35"
+      "sha256": "98591f216e784b85295066eb24a3510987f98948df6d3105513ada53d2556e97"
     },
     {
       "path": "docs/EDITOR_TEAMS.md",
@@ -362,7 +362,7 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "2c68d125e9b5ac55990ea3ae9796e6addb487950cf30a4fdff19d69a265a908a"
+      "sha256": "c2bdac78b6d6b926e1430739d7253db2022705c91f04025231046b1b178af343"
     },
     {
       "path": "docs/FILE_TRANSFER.md",
@@ -374,7 +374,7 @@
     },
     {
       "path": "docs/FRONTEND_READINESS.md",
-      "sha256": "9c16b50d02025737fe4e6e108ff14f3c9cbed42988580064ceefed88603ea0f6"
+      "sha256": "51916af20bb722498c0c635b3d71945403ed37b5beb3a046cc2bbca46b0554f8"
     },
     {
       "path": "docs/GIT_COMPLETION.md",
@@ -386,11 +386,11 @@
     },
     {
       "path": "docs/INSTALL.md",
-      "sha256": "df8472d495712fefcc7be6a084d9bd379a05acace4ade8412f72067550e1cfa5"
+      "sha256": "0d6dd1122be362dbb4c8607a539b3284f49cede8d26db83be6c8843cf6bf0f58"
     },
     {
       "path": "docs/LICENSING_PROVENANCE.md",
-      "sha256": "3371f815bbe18e2827aa9e0287c635d6e185eb72289ca67b8e94aec5d6492191"
+      "sha256": "cfce576ed6b720166c0a4c184ce3bf37ec2ea03760f874752760c57e901b406d"
     },
     {
       "path": "docs/LIVE.md",
@@ -398,11 +398,11 @@
     },
     {
       "path": "docs/OPEN_SOURCE_AUDIT.md",
-      "sha256": "69ea8548ea912adf6c139e0c4bb7b8c877fe6f453c599f42c9db454a9db9dce1"
+      "sha256": "e8dfad852c82802e321da71484b98cfbd38757d386c8b1da7f29cac195eb12d2"
     },
     {
       "path": "docs/OPEN_SOURCE_HANDOFF.md",
-      "sha256": "4ec23a9c29ff8ea09a301d1d20714dad4f3cc1dfb6a06112b8f246b0adb56ccb"
+      "sha256": "375675ced1ff46123d6806159c542add6863cf3f1a8d6f7bad2c6c963eca2b97"
     },
     {
       "path": "docs/PERMISSIONS.md",
@@ -462,7 +462,7 @@
     },
     {
       "path": "docs/SOURCE_MANIFEST.md",
-      "sha256": "ecdfd676b9734ef55e1395731925cdc2a3539c05d03a90ff8309726cf25ba4e5"
+      "sha256": "613ff1c82b6e2d496ab2dfdb1178f60f5f65e2b00aca1247613fb720a478f23e"
     },
     {
       "path": "docs/TERMINAL.md",
@@ -478,12 +478,12 @@
     "files": [
       {
         "path": "extension/package.json",
-        "sha256": "c6868bab36f3ecaba60dd4eb33877a995bc6fdeaca9ff83f0b6e4d918914f3e8",
-        "canonical_sha256": "26f76f561570753e1377d78d1d16c33d6d16b44f9eb7d2e47c6d0453f767046f"
+        "sha256": "36be5513d03904222f1633d4052e46aa389057c331ccb51e0e54a547d5fec33f",
+        "canonical_sha256": "951961320e76c1bfb859d016995dac8bdf78161913681e40555467fc85f3b9cc"
       },
       {
         "path": "extension/extension.js",
-        "sha256": "21271b50b2f2ec07e9868987ddfc43ddf35116834f6d48564131bafc69ed63b8"
+        "sha256": "7310bd5394cbc978c06af3af4901157fa0f33677414b1cbf7381ee015196fb97"
       }
     ]
   },

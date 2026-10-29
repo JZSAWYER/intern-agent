@@ -4,7 +4,21 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.5
+## Installable product 0.2.6
+
+Run `python3 tools/doctor_install.py` before configuring accounts. It checks the
+selected installation without creating relay state. VS Code **Check Setup** also
+works before setup; failures include next actions. After installation, run the
+installed backend's doctor with `--require-runtime` using its venv Python.
+`install_runtime.py --apply --download --wheelhouse PATH` downloads only reviewed,
+hash-verified wheels and removes the system-pip prerequisite; offline apply remains
+available. Fresh setup cancellation preserves existing editor settings.
+
+Skill installation validates names/descriptions and complete resources. Use the
+standalone installer's `--verify` or the matching installation doctor's
+`--skills-directory` check, then confirm discovery and explicitly invoke the skill
+in the actual Codex client. File installation is separate from agent execution.
+See [installation and skill activation](INSTALL.md).
 
 Summary progress now starts a fresh editable message after a question card is
 delivered or its submitted answer is confirmed. New commentary stays below the
@@ -169,7 +183,7 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.5 uses
+replacing COMMIT with the exact checked-out public commit. Version 0.2.6 uses
 maintained source c21ea4419894d892c5c518ca9da3cac11dd3db7c and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill

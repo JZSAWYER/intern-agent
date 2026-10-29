@@ -2,7 +2,7 @@
   "name": "intern-agent",
   "displayName": "Intern Agent",
   "description": "Connect registered Linux workspaces and Codex conversations to dedicated Feishu chats.",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "publisher": "intern-agent",
   "license": "MIT",
   "engines": {

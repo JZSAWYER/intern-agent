@@ -1,20 +1,21 @@
 # Source and release readiness audit
 
-Current release channel: **private**, version **0.2.5**, maintained source
+Current release channel: **private**, version **0.2.6**, maintained source
 `c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
 automation must not change repository visibility. See [distribution](DISTRIBUTION.md).
 
 
-## Current candidate — 2026-10-29
+## Current candidate — 2026-10-30
 
 The candidate imports verified maintained commit
 `c21ea4419894d892c5c518ca9da3cac11dd3db7c` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.5
-keeps summary progress below delivered question cards and confirmed answers,
-using exact conversation/thread/turn boundaries. Restart persistence, ambiguous
-send protection and final-delivery closure remain explicit verification cases.
+patched dependency profile and complete safe skill installation. Version 0.2.6
+adds checks before account setup, an optional hash-verified wheel download without
+system pip, skill metadata/installed-file verification and safer editor setup
+cancellation. The README provides a shorter installation and contributor path.
+Summary progress below cards/answers and its exact-turn recovery guards remain.
 The stable namespace retains 39 commands.
 The repository remains private for owner review; prior public verification was
 performed before the owner's visibility change and is historical evidence.
@@ -42,7 +43,7 @@ exact final artifacts and authenticated private remote verification in the recei
 | Live acceptance | Explicit real-account, Remote SSH, activation, upgrade/rollback and uninstall/reinstall pilot | Not established by this release audit |
 
 The public profile contains 14 runtime distributions plus a hash-locked pip
-bootstrap tool. Version-specific OSV queries repeated on 2026-10-29 returned no findings
+bootstrap tool. Version-specific OSV queries repeated on 2026-10-30 returned no findings
 for those 15 selected versions; upstream wheel and notice hashes are recorded in
 `requirements/public-profile.json`. This is dated dependency evidence, not a claim
 against future vulnerabilities. The older deployed reference lock retains its

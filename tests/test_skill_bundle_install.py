@@ -3,12 +3,16 @@ import contextlib
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import stat
+import subprocess
+import sys
 import tempfile
 import unittest
 import warnings
 import zipfile
+from unittest.mock import patch
 
 from tools import install_skill_bundle as installer
 
@@ -23,7 +27,7 @@ class SkillBundleInstallTests(unittest.TestCase):
     def bundle(self, *, changes=None, manifest_changes=None, extra=None, symlink=None, duplicate=False):
         files = {'skills/example-skill/SKILL.md': b'---\nname: example-skill\ndescription: Example\n---\nRead [the guide](references/guide.md).\n',
                  'skills/example-skill/references/guide.md': b'# Reference\nReviewed inert instructions.\n',
-                 'skills/second-skill/SKILL.md': b'# Another reviewed skill\n'}
+                 'skills/second-skill/SKILL.md': b'---\nname: second-skill\ndescription: Another reviewed skill\n---\n# Instructions\n'}
         files.update(changes or {})
         manifest = {'schema': installer.SCHEMA, 'product': 'intern-agent', 'version': '1.0.0',
                     'source_commit': 'a' * 40, 'license': 'MIT', 'release_approved': True,
@@ -55,7 +59,7 @@ class SkillBundleInstallTests(unittest.TestCase):
         self.assertFalse(result['writes_files'])
         self.assertFalse(self.destination.exists())
         result = installer.install(archive, self.destination, digest)
-        self.assertEqual(result['files_installed'], len(files))
+        self.assertEqual(result['files_installed'], len(files) + 2)
         for name, data in files.items():
             self.assertEqual((self.destination / name.removeprefix('skills/')).read_bytes(), data)
         receipt = Path(result['receipt'])
@@ -69,6 +73,8 @@ class SkillBundleInstallTests(unittest.TestCase):
         notice = receipt.with_suffix('.LICENSE')
         self.assertEqual(hashlib.sha256(notice.read_bytes()).hexdigest(), metadata['license_file']['sha256'])
         self.assertEqual(notice.stat().st_mode & 0o777, 0o600)
+        for name in ['example-skill', 'second-skill']:
+            self.assertEqual((self.destination / name / 'LICENSE').read_bytes(), notice.read_bytes())
 
     def test_idempotence_preserves_identical_and_unrelated_files(self):
         archive, digest, _ = self.bundle()
@@ -79,7 +85,7 @@ class SkillBundleInstallTests(unittest.TestCase):
         directories = {p: p.stat().st_mtime_ns for p in [self.destination, *self.destination.rglob('*')] if p.is_dir()}
         second = installer.install(archive, self.destination, digest)
         self.assertEqual(second['files_installed'], 0)
-        self.assertEqual(second['files_preserved'], 3)
+        self.assertEqual(second['files_preserved'], 5)
         self.assertEqual({p: (p.read_bytes(), p.stat().st_mtime_ns) for p in before}, before)
         self.assertEqual({p: p.stat().st_mtime_ns for p in directories}, directories)
         self.assertEqual(first['receipt'], second['receipt'])
@@ -221,6 +227,133 @@ class SkillBundleInstallTests(unittest.TestCase):
             self.assertEqual(installer.main([str(archive), '--destination', str(self.destination), '--apply']), 2)
         self.assertEqual(json.loads(output.getvalue())['error'], 'apply_requires_external_bundle_sha256')
         self.assertNotIn(str(self.root), output.getvalue())
+
+    def test_verify_checks_complete_bytes_receipt_and_notice_without_writes(self):
+        archive, digest, _ = self.bundle()
+        installer.install(archive, self.destination, digest)
+        owner = self.destination / 'example-skill/owner-notes.md'
+        owner.write_text('Preserve owner additions\n')
+        before = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in self.destination.rglob('*') if p.is_file()}
+        directories = {p: p.stat().st_mtime_ns for p in [self.destination, *self.destination.rglob('*')] if p.is_dir()}
+        result = installer.verify(archive, self.destination, digest)
+        self.assertTrue(result['verified'])
+        self.assertTrue(result['receipt_verified'])
+        self.assertTrue(result['license_verified'])
+        self.assertFalse(result['writes_files'])
+        self.assertFalse(result['skill_discovery_verified'])
+        self.assertFalse(result['skills_execution_verified'])
+        self.assertEqual(result['files_verified'], 5)
+        self.assertEqual({p: (p.read_bytes(), p.stat().st_mtime_ns) for p in before}, before)
+        self.assertEqual({p: p.stat().st_mtime_ns for p in directories}, directories)
+
+    def test_verify_requires_external_pin_and_never_repairs_missing_or_changed_files(self):
+        archive, digest, _ = self.bundle()
+        with self.assertRaisesRegex(installer.SkillInstallError, 'external_bundle_sha256'):
+            installer.verify(archive, self.destination, None)
+        with self.assertRaisesRegex(installer.SkillInstallError, 'missing'):
+            installer.verify(archive, self.destination, digest)
+        self.assertFalse(self.destination.exists())
+        installer.install(archive, self.destination, digest)
+        resource = self.destination / 'example-skill/references/guide.md'
+        resource.write_text('Owner changes\n')
+        with self.assertRaisesRegex(installer.SkillInstallError, 'differs'):
+            installer.verify(archive, self.destination, digest)
+        self.assertEqual(resource.read_text(), 'Owner changes\n')
+        resource.unlink()
+        with self.assertRaisesRegex(installer.SkillInstallError, 'missing'):
+            installer.verify(archive, self.destination, digest)
+        self.assertFalse(resource.exists())
+
+    def test_verify_requires_matching_private_receipt_and_mit_notice(self):
+        archive, digest, _ = self.bundle()
+        result = installer.install(archive, self.destination, digest)
+        receipt = Path(result['receipt'])
+        original = receipt.read_bytes()
+        receipt.unlink()
+        with self.assertRaisesRegex(installer.SkillInstallError, 'receipt_missing'):
+            installer.verify(archive, self.destination, digest)
+        self.assertFalse(receipt.exists())
+        receipt.write_bytes(original); receipt.chmod(0o600)
+        notice = receipt.with_suffix('.LICENSE'); notice.unlink()
+        with self.assertRaisesRegex(installer.SkillInstallError, 'notice_missing'):
+            installer.verify(archive, self.destination, digest)
+        self.assertFalse(notice.exists())
+
+    def test_invalid_skill_metadata_is_rejected_before_any_write(self):
+        invalid = [b'# Missing frontmatter\n', b'---\nname: wrong-name\ndescription: Example\n---\n',
+                   b'---\nname: example-skill\n---\n',
+                   b'---\nname: example-skill\nname: example-skill\ndescription: Example\n---\n',
+                   b'---\nname: example-skill\ndescription: |\n  Multiline\n---\n',
+                   b'---\nname: example-skill\ndescription: true\n---\n']
+        for data in invalid:
+            archive, digest, _ = self.bundle(changes={'skills/example-skill/SKILL.md': data})
+            with self.subTest(data=data), self.assertRaises(installer.SkillInstallError):
+                installer.install(archive, self.destination, digest)
+            self.assertFalse(self.destination.exists())
+
+    def test_verify_cli_has_read_only_mode_and_reports_fixed_errors(self):
+        archive, digest, _ = self.bundle()
+        installer.install(archive, self.destination, digest)
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = installer.main([str(archive), '--destination', str(self.destination), '--sha256', digest, '--verify'])
+        self.assertEqual(code, 0)
+        self.assertTrue(json.loads(output.getvalue())['verified'])
+        self.assertNotIn(str(self.root), output.getvalue())
+
+    def test_modified_derived_license_is_preserved_before_any_other_skill_write(self):
+        archive, digest, _ = self.bundle()
+        license_path = self.destination / 'second-skill/LICENSE'
+        license_path.parent.mkdir(parents=True)
+        license_path.write_text('Owner notice\n')
+        with self.assertRaisesRegex(installer.SkillInstallError, 'existing_skill_resource_differs'):
+            installer.install(archive, self.destination, digest)
+        self.assertEqual(license_path.read_text(), 'Owner notice\n')
+        self.assertFalse((self.destination / 'example-skill').exists())
+        self.assertFalse((self.destination / installer.RECEIPTS).exists())
+
+    def test_explicit_skill_notice_must_equal_release_notice_and_is_never_replaced(self):
+        notice = b'MIT fixture notice\n'
+        archive, digest, _ = self.bundle(changes={'skills/example-skill/LICENSE': b'Different source notice\n'})
+        with self.assertRaisesRegex(installer.SkillInstallError, 'bundled_skill_notice_differs'):
+            installer.install(archive, self.destination, digest)
+        self.assertFalse(self.destination.exists())
+        archive, digest, files = self.bundle(changes={'skills/example-skill/LICENSE': notice,
+                                                    'skills/second-skill/LICENSE': notice})
+        # Explicit notices count once. No nonexistent derived notices consume
+        # the resource budget or replace the source manifest's validated bytes.
+        with patch.object(installer, 'MAX_FILES', len(files)):
+            result = installer.install(archive, self.destination, digest)
+        self.assertEqual(result['files_installed'], len(files))
+        self.assertTrue(installer.verify(archive, self.destination, digest)['verified'])
+        for name in ['example-skill', 'second-skill']:
+            self.assertEqual((self.destination / name / 'LICENSE').read_bytes(), notice)
+
+    @unittest.skipUnless(hasattr(os, 'mkfifo'), 'requires supported Unix file types')
+    def test_fifo_skill_or_receipt_is_rejected_without_blocking_or_writing(self):
+        archive, digest, _ = self.bundle()
+        for kind in ['skill', 'receipt']:
+            destination = self.root / ('fifo-' + kind)
+            if kind == 'skill':
+                target = destination / 'example-skill/SKILL.md'
+                target.parent.mkdir(parents=True)
+            else:
+                installed = installer.install(archive, destination, digest)
+                target = Path(installed['receipt'])
+                target.unlink()
+            os.mkfifo(target, 0o600)
+            command = [sys.executable, '-B', installer.__file__, str(archive), '--destination',
+                       str(destination), '--sha256', digest, '--verify']
+            # A blocking open on the FIFO would exceed this bounded child
+            # process, rather than hanging the entire test runner.
+            result = subprocess.run(command, capture_output=True, timeout=3,
+                env={'PATH': os.defpath, 'PYTHONDONTWRITEBYTECODE': '1'})
+            self.assertEqual(result.returncode, 2)
+            self.assertEqual(json.loads(result.stdout)['error'], 'unsafe_or_oversized_local_file')
+            self.assertTrue(stat.S_ISFIFO(target.stat().st_mode))
+            if kind == 'skill':
+                self.assertFalse((destination / 'second-skill').exists())
+                self.assertFalse((destination / installer.RECEIPTS).exists())
 
 
 if __name__ == '__main__':

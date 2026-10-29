@@ -31,6 +31,37 @@ class SkillInstallError(ValueError):
     """Fixed diagnostic labels never echo rejected input contents."""
 
 
+def _skill_metadata(data, name):
+    # Keep this standalone installer independent of the runtime and YAML packages.
+    header = re.match(r'\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)', data.decode('utf-8'), re.S)
+    if not header:
+        raise SkillInstallError('skill_frontmatter_missing')
+    fields = {}
+    for key in ['name', 'description']:
+        values = re.findall(r'(?m)^' + key + r':[ \t]*(.*)\r?$', header[1])
+        if len(values) != 1:
+            raise SkillInstallError('skill_frontmatter_requires_unique_name_and_description')
+        value = values[0].strip()
+        if value.startswith('"'):
+            try:
+                value = json.loads(value)
+            except ValueError:
+                raise SkillInstallError('skill_frontmatter_requires_literal_strings') from None
+        elif value.startswith("'"):
+            if not value.endswith("'") or "'" in value[1:-1].replace("''", ''):
+                raise SkillInstallError('skill_frontmatter_requires_literal_strings')
+            value = value[1:-1].replace("''", "'")
+        elif (not value or value[0] in '&*!{}[]|>@%`' or ': ' in value or ' #' in value
+              or value.lower() in {'true', 'false', 'null', '~'}):
+            raise SkillInstallError('skill_frontmatter_requires_literal_strings')
+        if not isinstance(value, str) or not value.strip() or len(value) > 1024 or any(ord(c) < 32 for c in value):
+            raise SkillInstallError('skill_frontmatter_requires_bounded_single_line_strings')
+        fields[key] = value
+    if fields['name'] != name:
+        raise SkillInstallError('skill_name_must_match_directory')
+    return fields
+
+
 def _json(raw):
     def unique(pairs):
         result = {}
@@ -84,7 +115,7 @@ def _read_file(path, *, maximum, private=False):
         return None
     try:
         try:
-            descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent)
+            descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
         except FileNotFoundError:
             return None
         try:
@@ -178,7 +209,9 @@ def inspect(bundle, expected_sha256=None):
             relative = _entry(entry)
             if (len(relative.parts) < 3 or relative.parts[0] != 'skills'
                     or not SKILL.fullmatch(relative.parts[1]) or len(relative.parts[1]) > 64
-                    or relative.suffix.lower() not in TEXT_SUFFIXES or any(part.startswith('.') for part in relative.parts)):
+                    or (relative.suffix.lower() not in TEXT_SUFFIXES
+                        and not (len(relative.parts) == 3 and relative.name == 'LICENSE'))
+                    or any(part.startswith('.') for part in relative.parts)):
                 raise SkillInstallError('bundle_resource_is_not_inert_skill_text')
             if entry['path'] in payload:
                 raise SkillInstallError('duplicate_bundle_file_entry')
@@ -207,6 +240,8 @@ def inspect(bundle, expected_sha256=None):
                 payload[entry['path']] = data
             else:
                 notice = data
+        for name in skills:
+            _skill_metadata(payload['skills/' + name + '/SKILL.md'], name)
         for name, data in payload.items():
             if PurePosixPath(name).suffix.lower() != '.md':
                 continue
@@ -219,6 +254,23 @@ def inspect(bundle, expected_sha256=None):
                 prefix = '/'.join(PurePosixPath(name).parts[:2]) + '/'
                 if target.scheme or target.netloc or '\\' in resource or not resolved.startswith(prefix) or resolved not in payload:
                     raise SkillInstallError('skill_reference_missing_or_outside_bundle')
+        # The source manifest remains the exact archive inventory. Installed
+        # skills also carry the same independently hash-validated MIT notice,
+        # matching installation from a VSIX backend. Preflight all derived
+        # notices together with the source resources before writing anything.
+        if notice is not None:
+            missing_notices = []
+            for name in skills:
+                target = 'skills/' + name + '/LICENSE'
+                if target in payload:
+                    if payload[target] != notice:
+                        raise SkillInstallError('bundled_skill_notice_differs_from_release')
+                else:
+                    missing_notices.append(target)
+            if len(payload) + len(missing_notices) > MAX_FILES or sum(map(len, payload.values())) + len(notice) * len(missing_notices) > MAX_TOTAL:
+                raise SkillInstallError('derived_skill_notice_limits_exceeded')
+            for target in missing_notices:
+                payload[target] = notice
         return manifest, digest, payload, notice
 
 
@@ -340,15 +392,46 @@ def install(bundle, destination, expected_sha256):
             'receipt': str(receipt), 'executes_skills': False, 'uses_network': False}
 
 
+def verify(bundle, destination, expected_sha256):
+    """Verify installed instructions, resources and provenance without any writes."""
+    if expected_sha256 is None:
+        raise SkillInstallError('verify_requires_external_bundle_sha256')
+    destination = _path(destination, absolute=True)
+    if destination == Path(destination.anchor):
+        raise SkillInstallError('choose_a_dedicated_skill_destination')
+    manifest, digest, payload, notice = inspect(bundle, expected_sha256)
+    if not manifest['release_approved'] or manifest['license'] != 'MIT':
+        raise SkillInstallError('preparation_bundle_is_plan_only')
+    actions = _preflight(manifest, digest, payload, destination, notice)
+    if any(item['action'] != 'preserve_identical' for item in actions):
+        raise SkillInstallError('expected_installed_skill_resource_missing')
+    receipt = destination / RECEIPTS / (manifest['version'] + '.json')
+    if _read_file(receipt, maximum=MAX_FILE, private=True) != _receipt(manifest, digest):
+        raise SkillInstallError('installed_skill_receipt_missing_or_changed')
+    if notice is not None and _read_file(receipt.with_suffix('.LICENSE'), maximum=MAX_FILE, private=True) != notice:
+        raise SkillInstallError('installed_skill_notice_missing_or_changed')
+    skills = sorted({PurePosixPath(name).parts[1] for name in payload})
+    return {'schema': 'intern-agent.skill-verification.v1', 'verified': True,
+            'version': manifest['version'], 'bundle_sha256': digest, 'skills': skills,
+            'files_verified': len(payload), 'receipt_verified': True, 'license_verified': notice is not None,
+            'writes_files': False, 'executes_skills': False, 'uses_network': False,
+            'skill_discovery_verified': False, 'skills_execution_verified': False,
+            'next_action': 'In the intended Codex session, confirm the selected directory is discovered and explicitly invoke the required skill.'}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('bundle', help='Downloaded release skills ZIP')
     parser.add_argument('--destination', required=True, help='Explicit absolute skills directory')
     parser.add_argument('--sha256', help='Expected SHA-256 from the selected release checksums')
-    parser.add_argument('--apply', action='store_true', help='Install an approved MIT bundle after full preflight')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--apply', action='store_true', help='Install an approved MIT bundle after full preflight')
+    mode.add_argument('--verify', action='store_true', help='Read and compare installed resources and receipt; write nothing')
     args = parser.parse_args(argv)
     try:
-        result = install(args.bundle, args.destination, args.sha256) if args.apply else plan(args.bundle, args.destination, args.sha256)
+        result = (verify(args.bundle, args.destination, args.sha256) if args.verify else
+                  install(args.bundle, args.destination, args.sha256) if args.apply else
+                  plan(args.bundle, args.destination, args.sha256))
         print(json.dumps(result, sort_keys=True))
         return 0
     except (OSError, ValueError, TypeError, KeyError, zipfile.BadZipFile, NotImplementedError) as error:

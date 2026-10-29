@@ -1,5 +1,6 @@
 """Install shipped public skills and inert resources without replacing user files."""
 import os
+import json
 from pathlib import Path, PurePosixPath
 import posixpath
 import re
@@ -16,6 +17,32 @@ MAX_FILES=256
 TEXT_SUFFIXES={'.md','.txt','.json','.yaml','.yml','.toml'}
 NOTICE_NAMES={'LICENSE','NOTICE','COPYING','AUTHORS'}
 SKILL=re.compile(r'[a-z][a-z0-9]*(?:-[a-z0-9]+)*')
+
+
+def metadata(data,name):
+    """Validate the small, literal frontmatter profile shipped by this product."""
+    header=re.match(r'\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)',data.decode('utf-8'),re.S)
+    if not header:raise Invalid('Bundled skill needs name and description frontmatter')
+    fields={}
+    for key in ['name','description']:
+        values=re.findall(r'(?m)^'+key+r':[ \t]*(.*)\r?$',header[1])
+        if len(values)!=1:raise Invalid('Bundled skill needs unique name and description')
+        value=values[0].strip()
+        if value.startswith('"'):
+            try:value=json.loads(value)
+            except ValueError:raise Invalid('Bundled skill metadata must be literal single-line strings') from None
+        elif value.startswith("'"):
+            if not value.endswith("'") or "'" in value[1:-1].replace("''",''):
+                raise Invalid('Bundled skill metadata must be literal single-line strings')
+            value=value[1:-1].replace("''", "'")
+        elif (not value or value[0] in '&*!{}[]|>@%`' or ': ' in value or ' #' in value
+                or value.lower() in {'true','false','null','~'}):
+            raise Invalid('Bundled skill metadata must be literal single-line strings')
+        if not isinstance(value,str) or not value.strip() or len(value)>1024 or any(ord(c)<32 for c in value):
+            raise Invalid('Bundled skill metadata must be bounded single-line strings')
+        fields[key]=value
+    if fields['name']!=name:raise Invalid('Bundled skill name must match its directory')
+    return fields
 
 
 def _path(value,absolute=False):
@@ -99,6 +126,7 @@ def _payload(root):
             try:walk(child,PurePosixPath(name))
             finally:os.close(child)
             if name+'/SKILL.md' not in payload:raise Invalid('Bundled skill instructions are missing')
+            metadata(payload[name+'/SKILL.md'],name)
             skills.append(name)
     finally:os.close(descriptor)
     if not skills:raise Invalid('No bundled Codex skills are available')
@@ -185,3 +213,21 @@ def install(destination,source=None):
     except (OSError,UnicodeError):
         raise Invalid('A bundled skill or destination is linked, inaccessible or invalid; existing instructions are preserved') from None
     return dict(installed=skills,user_instructions_preserved=True)
+
+
+def verify(destination,source=None):
+    """Read every expected installed byte without installing or executing skills."""
+    destination=_path(destination,absolute=True)
+    root=_path(source if source is not None else Path(__file__).resolve().parents[1]/'skills')
+    if destination==Path(destination.anchor) or destination.is_relative_to(root) or root.is_relative_to(destination):
+        raise Invalid('Keep bundled skills and installed user instructions in separate directories')
+    try:
+        payload,skills=_payload(root)
+        _include_license(root,payload,skills)
+        _preflight(destination,payload)
+        for relative,data in payload.items():
+            if _existing(destination/relative)!=data:raise Invalid('An expected installed skill resource is missing or differs')
+    except (OSError,UnicodeError):
+        raise Invalid('Installed skill verification failed; existing instructions are preserved') from None
+    return dict(skills=skills,files_verified=len(payload),writes_files=False,uses_network=False,
+        skills_execution_verified=False,skill_discovery_verified=False)

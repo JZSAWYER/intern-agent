@@ -1,6 +1,6 @@
 # Intern Agent product and release workflow
 
-Intern Agent 0.2.5 uses MIT and maintained source
+Intern Agent 0.2.6 uses MIT and maintained source
 `c21ea4419894d892c5c518ca9da3cac11dd3db7c`. Its separate product repository is
 `https://github.com/JZSAWYER/intern-agent`. The owner has explicitly placed this
 repository under a **private visibility hold** until a later explicit request to
@@ -14,7 +14,7 @@ and local product deltas. `distribution.json` independently selects VSIX backend
 inputs. Git history from private tracking, `.intern_workspace`, enterprise snapshots,
 credentials, account/chat/native identifiers and machine state are excluded.
 
-The stable identity is `intern-agent.intern-agent`, version 0.2.5, with 39 commands
+The stable identity is `intern-agent.intern-agent`, version 0.2.6, with 39 commands
 and settings/views under `internAgentPublic`. This namespace remains stable across
 repository visibility changes and is distinct from the development preview's
 `intern-agent-local.intern-agent-personal` / `internAgent`. It does not migrate
@@ -38,7 +38,7 @@ From a clean product checkout with the exact credential-free origin:
 PRODUCT_COMMIT="$(git rev-parse HEAD)"
 python3 tools/build_release.py --check-only --expected-export-commit "$PRODUCT_COMMIT"
 python3 tools/build_release.py --expected-export-commit "$PRODUCT_COMMIT" \
-  --output-dir /path/outside/source/release-0.2.5
+  --output-dir /path/outside/source/release-0.2.6
 ```
 
 The destination must be new and outside source. The six files are the stable
@@ -60,6 +60,12 @@ ship together with MIT notice. The separate installer is byte-identical to its
 reviewed source and requires an explicit destination/checksum/apply; it preserves
 modified user files. The bundled installer also retains full resources/notices
 and rejects linked ancestors. Skill installation starts no relay or agent.
+
+The packaged installation doctor is read-only and independent of relay state.
+Its default preflight and strict installed-runtime checks are separate from
+operational `/doctor`. Optional wheel downloading uses only reviewed profile
+URLs/hashes without system pip. Skills metadata and installed bytes are checked;
+actual client discovery and invocation require their own evidence.
 
 ## Synchronize committed feature updates
 

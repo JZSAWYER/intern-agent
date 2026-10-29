@@ -27,6 +27,15 @@ let profileVisible = false;
 let profileUnsafe = false;
 let missingPrivateStdin = false;
 let alreadyRegistered = false;
+let configuredStateExists = true;
+let doctorExit = 0;
+let doctorRaw;
+let doctorReport = { schema:'intern-agent.install-doctor.v1',ok:true,
+  checks:[{id:'bundled_skills',status:'pass',next_action:''},{id:'installed_skills',status:'pass',next_action:''}],
+  writes_files:false,uses_network:false,starts_relay:false,skill_discovery_verified:false,skills_execution_verified:false };
+const outputLines = [];
+const informationMessages = [];
+const configurationUpdates = [];
 const configurationNamespaces = new Set();
 const recoveryPlan = {schema:'intern-agent.repository-recovery.v1',plan_id:'rp_0123456789abcdef',repo_url:'https://github.com/example-owner/project.git',workspace:'recovered-project',branch:'intern-agent/project/bot',tasks:1,turns:3,conversations:2};
 const initPlan = { plan_id:'init_0123456789abcdef',workspace:'new-project',repo_url:'https://github.com/example-owner/new-project.git',
@@ -42,14 +51,14 @@ const vscode = {
   Uri: { parse: x => x, file:x=>x }, env: { openExternal: async () => true },
   workspace: {
     isTrusted: true, workspaceFolders: [folder],
-    getConfiguration: name => { configurationNamespaces.add(name);return { get: (key, fallback) => config[key] ?? fallback, update: async (key,value) => { config[key] = value; } }; },
+    getConfiguration: name => { configurationNamespaces.add(name);return { get: (key, fallback) => config[key] ?? fallback, update: async (key,value) => { configurationUpdates.push([key,value]);config[key] = value; } }; },
     onDidChangeWorkspaceFolders: callback => { folderCallback = callback; return { dispose() {} }; }
   },
   window: {
     createTreeView: () => ({ visible:false, dispose() {} }),
-    createOutputChannel: () => ({ appendLine() {}, show() {}, dispose() {} }),
+    createOutputChannel: () => ({ appendLine:line=>outputLines.push(line), show() {}, dispose() {} }),
     showErrorMessage: text => { throw new Error(text); },
-    showInformationMessage: async () => undefined,
+    showInformationMessage: async text => { informationMessages.push(text);return undefined; },
     showInputBox: async () => inputs.shift(),
     showWarningMessage: async (text,options) => {
       if (text === 'Recover saved workspace?') { assert(options.modal); assert(options.detail.includes(recoveryPlan.repo_url)); return recoverApproved ? 'Recover workspace' : undefined; }
@@ -75,6 +84,10 @@ Module._load = function (name, ...rest) {
         return {uid:process.getuid(),mode:profileUnsafe?0o644:0o600,isSymbolicLink:()=>false,isFile:()=>true,isDirectory:()=>false};
       }
       if(file === '/data/shared-state')return {uid:process.getuid(),mode:0o700,isSymbolicLink:()=>false,isFile:()=>false,isDirectory:()=>true};
+      if(file === '/data/private-state/live.json') {
+        if(!configuredStateExists)throw Object.assign(new Error('Fixture state absent'),{code:'ENOENT'});
+        return {uid:process.getuid(),mode:0o600,isSymbolicLink:()=>false,isFile:()=>true,isDirectory:()=>false};
+      }
       return realFs.lstat(file);
     },
     readFile:async (file,...args)=>file.endsWith('/intern-agent/host.json') ?
@@ -82,6 +95,10 @@ Module._load = function (name, ...rest) {
   };
   if (name === 'node:child_process') return { execFile: (executable,args,options,callback) => {
     calls.push({ executable,args,options });
+    if(args[0].endsWith('/doctor_install.py')) {
+      setImmediate(()=>callback(doctorExit ? Object.assign(new Error('Synthetic doctor status'),{code:doctorExit}) : null,
+        doctorRaw ?? JSON.stringify(doctorReport)));return;
+    }
     if(args.includes('github-auth') || args.includes('bootstrap')) {
       setImmediate(()=>callback(null,JSON.stringify({authenticated:true,initialized:true,login:'example-owner'})));
       return missingPrivateStdin?{}:{stdin:{on:()=>{},end:value=>{privateStdin=value;}}};
@@ -131,6 +148,37 @@ async function main() {
   assert.notEqual(extension.workspaceName('/a/project'), extension.workspaceName('/b/project'));
   assert(/^[A-Za-z0-9]/.test(extension.workspaceName('/data/_private-workspace')));
   assert(/^[A-Za-z0-9][A-Za-z0-9_-]+$/.test(extension.workspaceName(folder.uri.fsPath)));
+  // A fresh install gets useful checks without initializing relay state or loading LiveState.
+  calls.length=0;configurationUpdates.length=0;config.stateDirectory='';
+  await commands.get(namespace + '.doctor')();
+  assert.equal(calls.length,1);assert.equal(calls[0].executable,'/data/python');
+  assert.equal(calls[0].args[0],'/data/preview-extension/backend/tools/doctor_install.py');
+  // Import and pip checks each have a 45-second deadline inside the doctor.
+  assert(calls[0].options.timeout>90000);
+  assert(!calls[0].args.includes('--require-runtime'));assert(!calls[0].args.includes('--state'));
+  assert.equal(calls[0].options.shell,undefined);assert.equal(config.stateDirectory,'');
+  assert.equal(configurationUpdates.length,0);assert(outputLines.some(line=>line.includes('No relay state was created')));
+  calls.length=0;config.stateDirectory='/data/private-state';configuredStateExists=false;
+  await commands.get(namespace + '.doctor')();
+  assert.equal(calls.length,1);assert(!calls[0].args.includes('--require-runtime'));
+  calls.length=0;configuredStateExists=true;
+  await commands.get(namespace + '.doctor')();
+  assert.equal(calls.length,2);assert(calls[0].args.includes('--require-runtime'));
+  assert(calls[1].args.includes('doctor'));assert(calls[1].args.includes('--state'));
+  // Structured nonzero output remains visible and blocks operational doctor startup.
+  calls.length=0;doctorExit=2;
+  doctorReport={...doctorReport,ok:false,checks:[{id:'runtime_imports',status:'fail',next_action:'Install the isolated runtime.'}]};
+  await commands.get(namespace + '.doctor')();
+  assert.equal(calls.length,1);assert(outputLines.some(line=>line.includes('FAIL: runtime_imports')));
+  assert(informationMessages.at(-1).includes('found blockers'));
+  calls.length=0;doctorRaw='Synthetic private process output: do not display';
+  await assert.rejects(commands.get(namespace + '.doctor')(),/Setup checks could not run/);
+  assert(!outputLines.some(line=>line.includes('Synthetic private process output')));
+  doctorExit=0;doctorRaw=undefined;
+  doctorReport={...doctorReport,ok:true,checks:[{id:'installed_skills',status:'pass',next_action:''}]};
+  calls.length=0;vscode.workspace.isTrusted=false;
+  await assert.rejects(commands.get(namespace + '.doctor')(),/Trust/);assert.equal(calls.length,0);
+  vscode.workspace.isTrusted=true;
   calls.length = 0;
   await commands.get(namespace + '.newSession')();
   assert(calls[1].args.includes('--new-session'));
@@ -261,17 +309,52 @@ async function main() {
   calls.length=0;inputs=['example-memory-only-fixture'];missingPrivateStdin=true;
   await assert.rejects(commands.get(namespace + '.githubCredentials')(),/handoff is unavailable/);
   assert(!JSON.stringify(calls).includes('example-memory-only-fixture'));missingPrivateStdin=false;
+  // Cancelling any setup prompt preserves previous settings and makes no backend calls.
+  const setupPick=vscode.window.showQuickPick;
+  for (const canceledInputs of [[],['/data/canceled-state'],['/data/canceled-state','/data/canceled-python'],
+      ['/data/canceled-state','/data/canceled-python','example-owner'],
+      ['/data/canceled-state','/data/canceled-python','example-owner','example-model']]) {
+    calls.length=0;configurationUpdates.length=0;inputs=[...canceledInputs];
+    vscode.window.showQuickPick=async()=>canceledInputs.length===2 ? undefined : 'Existing SSH/Git authentication (advanced)';
+    await commands.get(namespace + '.setup')();
+    assert.equal(config.stateDirectory,'/data/private-state');assert.equal(config.pythonExecutable,'/data/python');
+    assert.equal(configurationUpdates.length,0);assert.equal(calls.length,0);
+  }
+  calls.length=0;inputs=['/data/canceled-state','/data/canceled-python'];
+  vscode.window.showQuickPick=async()=>'GitHub PAT (recommended)';
+  await commands.get(namespace + '.setup')();
+  assert.equal(configurationUpdates.length,0);assert.equal(calls.length,0);
+  assert.equal(config.stateDirectory,'/data/private-state');assert.equal(config.pythonExecutable,'/data/python');
+  vscode.window.showQuickPick=setupPick;
+  calls.length=0;inputs=['/data/fresh-fixture-state','/data/fresh-python','example-memory-only-fixture'];missingPrivateStdin=true;
+  await assert.rejects(commands.get(namespace + '.setup')(),/handoff is unavailable/);
+  assert.equal(configurationUpdates.length,0);assert.equal(config.stateDirectory,'/data/private-state');
+  assert.equal(config.pythonExecutable,'/data/python');assert(!calls.some(call=>call.args.includes('host-profile')));
+  assert(!JSON.stringify(calls).includes('example-memory-only-fixture'));missingPrivateStdin=false;
   calls.length=0;inputs=['/data/fresh-fixture-state','/data/fresh-python','example-memory-only-fixture'];
   await commands.get(namespace + '.setup')();
   assert(calls.some(call=>call.args.includes('bootstrap')));
   assert(calls.some(call=>call.args.includes('host-profile')&&call.args.includes('register')));
   assert(!calls.some(call=>call.args.includes('launch')));
+  assert(calls.every(call=>call.executable==='/data/fresh-python'));
+  assert(calls.every(call=>call.args[call.args.indexOf('--state')+1]==='/data/fresh-fixture-state'));
+  assert.equal(config.pythonExecutable,'/data/fresh-python');assert.equal(config.stateDirectory,'/data/fresh-fixture-state');
   assert.equal(JSON.parse(privateStdin).pat,'example-memory-only-fixture');
   assert(!JSON.stringify(calls).includes('example-memory-only-fixture'));privateStdin=undefined;
   config.stateDirectory='/data/private-state';config.pythonExecutable='/data/python';
   calls.length=0;inputs=['/data/fixture-codex-skills'];
   await commands.get(namespace + '.installSkills')();
   assert(calls[0].args.includes('install-skills'));assert(calls[0].args.includes('/data/fixture-codex-skills'));
+  assert(calls[1].args[0].endsWith('/doctor_install.py'));assert(calls[1].args.includes('--require-runtime'));
+  assert.equal(calls[1].args[calls[1].args.indexOf('--skills-directory')+1],'/data/fixture-codex-skills');
+  assert(informationMessages.at(-1).includes('Skill files verified'));
+  assert(informationMessages.at(-1).includes('copying files does not prove execution'));
+  calls.length=0;inputs=['/data/fixture-codex-skills'];doctorExit=2;
+  doctorReport={...doctorReport,ok:false,checks:[{id:'installed_skills',status:'fail',next_action:'Review the selected skill directory.'}]};
+  await commands.get(namespace + '.installSkills')();
+  assert(informationMessages.at(-1).includes('verification needs attention'));
+  assert(!informationMessages.at(-1).includes('Skill files verified'));
+  doctorExit=0;doctorReport={...doctorReport,ok:true,checks:[{id:'installed_skills',status:'pass',next_action:''}]};
   calls.length=0;await commands.get(namespace + '.releaseStatus')();
   assert(calls[0].args.includes('release-sync'));assert(calls[0].args.includes('status'));
   calls.length=0;await commands.get(namespace + '.recoveryStatus')();
@@ -305,6 +388,6 @@ async function main() {
   assert.equal(calls.length,0);vscode.workspace.isTrusted=true;
   config.stateDirectory = '<unconfigured>';
   assert.throws(() => runtime.backend(['status']), /absolute private/);
-  console.log('Extension tests passed: isolated namespace, routing, literal argv, reviewed init/recovery, exact-console reconnect, private PAT/bootstrap, shared-host reuse, goal/question controls and release/skill commands.');
+  console.log('Extension tests passed: isolated namespace/routing, state-free setup doctor, structured failed checks, cancellation-safe setup, private PAT/bootstrap, verified skill files, shared-host reuse and reviewed project/session controls.');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

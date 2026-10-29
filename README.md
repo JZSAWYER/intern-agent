@@ -9,7 +9,7 @@ Intern Agent includes an installable VS Code extension (VSIX), a Python relay,
 maintained source and optional Codex skills. Each installation uses its own
 accounts and private state.
 
-**Current release:** [v0.2.5](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.5).
+**Current release:** [v0.2.6](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.6).
 The repository and downloads are currently private; access is required.
 
 ## What you can do
@@ -49,8 +49,9 @@ setup. The sequence is:
 
 1. **Download and verify the release.** Get the matching source ZIP, VSIX,
    provenance and checksums. Verify `SHA256SUMS`, then extract the source.
-2. **Install the Python runtime.** Review the install plan and create an isolated
-   environment from the hash-locked dependency profile. Keep private state
+2. **Check and install the Python runtime.** Run the installation doctor, review
+   the plan and use the optional download step to create an isolated environment
+   without system pip. Keep private state
    outside the installation directory.
 3. **Install the VSIX.** In VS Code, use **Install from VSIX** on the Linux
    workspace host. Select the installed runtime's Python executable.
@@ -84,6 +85,9 @@ The release includes skills for installation, recovery, file transfer and source
 collaboration. Follow [skills installation](docs/INSTALL.md#install-the-codex-skills-bundle)
 to inspect and install the complete bundle. Each skill includes its required
 reference files; installing skills does not configure accounts or start the relay.
+Verify the installed files, confirm the skill appears in your Codex client, then
+explicitly invoke `$install-on-linux` with the selected product root. The guide
+separates file verification, discovery and actual execution evidence.
 
 ## Working on a project
 

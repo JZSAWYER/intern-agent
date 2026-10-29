@@ -38,13 +38,13 @@
     },
     {
       "path": "NOTICE",
-      "sha256": "fa3bd851a654e77b43d7324a081b207dfc9ef462b7cc435100ad1b9cdcae7624",
+      "sha256": "cb37b8de22f5d31a5e6255246f9edd5d7f4ab3a2dcc985981de5c2ee0870d854",
       "rights": "approved_for_distribution",
       "provenance": "owner-authorized-product-release"
     },
     {
       "path": "README.md",
-      "sha256": "11af40d12705f8db50e0ddaec8f5632b7509a99b061c6a880d909f13df6c0992",
+      "sha256": "6e631a5e17d9d1ec86ad5ccbe2dc1087076af62874d9768943e705e45365c146",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "44868df17cbd609a0dd23a0e9244f4ebabe329003cb7e11d6ebd843684b2b099",
@@ -52,7 +52,7 @@
     },
     {
       "path": "distribution.json",
-      "sha256": "3342c5e279b5a1490fbfcd8ad2480d167d95d51e2dd3fe14c9f976addc22ab45",
+      "sha256": "9c5a98e414742668bdab14347e38187055847eb4deba6a1c1e8f976327d9edec",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "50c2af4e3671736c61eb42897eccc9fa0b04ab9105dd066ba9b4c43763d1cfb8",
@@ -90,7 +90,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "0fa8a29febbd41f44710c971458cac1397f165dd64d250edf29219d08611ee9c",
+      "sha256": "bc6f3794cb4d5bd0c321c1592ae7b613eafdc174bb20a61171832e0520a6f179",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "492ee5dc2db32c382dd8b900a2df7d49eb4ecb7efcf07f102ca4c37e958c46d4",
@@ -132,7 +132,7 @@
     },
     {
       "path": "docs/DEPLOYMENT_PARITY.md",
-      "sha256": "51f7268adb5c241858303e00dba4d4ee6f5c6498df5c5fec1abfc2ed2f445c8d",
+      "sha256": "9446c6ed6018fdc909a670864c7dcca1940eba982e3feb28273256a2d2e2b6b5",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -146,7 +146,7 @@
     },
     {
       "path": "docs/DISTRIBUTION.md",
-      "sha256": "774faf92fea8d1f3900969d2118e5bbd9a5753aee20bbbfdf2294f8a53b18e35",
+      "sha256": "98591f216e784b85295066eb24a3510987f98948df6d3105513ada53d2556e97",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "0e4247ec5e55b9042381e360893339e6e2270252b35633b8e96e3aac3390ffd1",
@@ -170,7 +170,7 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "2c68d125e9b5ac55990ea3ae9796e6addb487950cf30a4fdff19d69a265a908a",
+      "sha256": "c2bdac78b6d6b926e1430739d7253db2022705c91f04025231046b1b178af343",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "98ddcbb46bc223c33b24474dfd99b90d087fb9ba5590d2e09a0178f4f637fc98",
@@ -194,7 +194,7 @@
     },
     {
       "path": "docs/FRONTEND_READINESS.md",
-      "sha256": "9c16b50d02025737fe4e6e108ff14f3c9cbed42988580064ceefed88603ea0f6",
+      "sha256": "51916af20bb722498c0c635b3d71945403ed37b5beb3a046cc2bbca46b0554f8",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -216,13 +216,13 @@
     },
     {
       "path": "docs/INSTALL.md",
-      "sha256": "df8472d495712fefcc7be6a084d9bd379a05acace4ade8412f72067550e1cfa5",
+      "sha256": "0d6dd1122be362dbb4c8607a539b3284f49cede8d26db83be6c8843cf6bf0f58",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
     {
       "path": "docs/LICENSING_PROVENANCE.md",
-      "sha256": "3371f815bbe18e2827aa9e0287c635d6e185eb72289ca67b8e94aec5d6492191",
+      "sha256": "cfce576ed6b720166c0a4c184ce3bf37ec2ea03760f874752760c57e901b406d",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -236,13 +236,13 @@
     },
     {
       "path": "docs/OPEN_SOURCE_AUDIT.md",
-      "sha256": "69ea8548ea912adf6c139e0c4bb7b8c877fe6f453c599f42c9db454a9db9dce1",
+      "sha256": "e8dfad852c82802e321da71484b98cfbd38757d386c8b1da7f29cac195eb12d2",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
     {
       "path": "docs/OPEN_SOURCE_HANDOFF.md",
-      "sha256": "4ec23a9c29ff8ea09a301d1d20714dad4f3cc1dfb6a06112b8f246b0adb56ccb",
+      "sha256": "375675ced1ff46123d6806159c542add6863cf3f1a8d6f7bad2c6c963eca2b97",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -360,7 +360,7 @@
     },
     {
       "path": "docs/SOURCE_MANIFEST.md",
-      "sha256": "ecdfd676b9734ef55e1395731925cdc2a3539c05d03a90ff8309726cf25ba4e5",
+      "sha256": "613ff1c82b6e2d496ab2dfdb1178f60f5f65e2b00aca1247613fb720a478f23e",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -382,7 +382,7 @@
     },
     {
       "path": "extension/README.md",
-      "sha256": "a8401bcf53d77736ff3e14535d615be00cb232bfe834f75113dfd366d611accd",
+      "sha256": "98dc5d6c7cfd266a6ffa83f645c06ef071a860dbf8e7c11120b431a11cd14965",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "1660b8d59b32c1c7e2d4290305c94ce8f2b42742bd82acd3076f2845eaa56a02",
@@ -390,7 +390,7 @@
     },
     {
       "path": "extension/extension.js",
-      "sha256": "21271b50b2f2ec07e9868987ddfc43ddf35116834f6d48564131bafc69ed63b8",
+      "sha256": "7310bd5394cbc978c06af3af4901157fa0f33677414b1cbf7381ee015196fb97",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "a3af013ee8e35db15d87f4ecfbff1231a3a32b20c6af358b5c43fc8c32591bed",
@@ -398,7 +398,7 @@
     },
     {
       "path": "extension/package.json",
-      "sha256": "c6868bab36f3ecaba60dd4eb33877a995bc6fdeaca9ff83f0b6e4d918914f3e8",
+      "sha256": "36be5513d03904222f1633d4052e46aa389057c331ccb51e0e54a547d5fec33f",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "cf96888dc1d6ec1f40b7ef30aec71dd95fe7ad45231a439a1aebe961156ff930",
@@ -878,7 +878,7 @@
     },
     {
       "path": "intern_personal/skill_bundle.py",
-      "sha256": "6099adbb9ed018072c89d60f3fa7d0f33249999c75f01f611239774b6975c43b",
+      "sha256": "2c839037bb34a5d127a2ffecc3b37dfc310ab1373865de42559d42ecc378803b",
       "rights": "approved_for_distribution",
       "provenance": "maintained-source",
       "original_sha256": "a0eb3f00b8651605228e2c71be6f9ff8d2e6faf27f718bb39ce496492278748f",
@@ -1008,11 +1008,11 @@
       "path": "release-product.json",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution",
-      "sha256": "9f86818997f3c433f8c02f9ac1fd45156b79618c8ffcef5084978f00ecbb1e3b"
+      "sha256": "799526129b13875f284a2843fbea785ad274e5ccdaae274dae221c7557b6881c"
     },
     {
       "path": "release-runtime.json",
-      "sha256": "36d1305207d672229424d29a5e08eedbfaf6fd0a36ba33d0c25cd8e467cc4715",
+      "sha256": "159933d388c95fb8ed70ee41761f2d45d6eb4e8ded44998e5210941ab6fec1be",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -1056,7 +1056,7 @@
     },
     {
       "path": "skills/install-on-linux/SKILL.md",
-      "sha256": "44b43e40114c50e3f2beb3c77278d07bfe83d1ca71cb98b3c9cc3bb38780cc54",
+      "sha256": "5ad7b86b2173beb5be55d2903b1ac59335e21d1f276ae06a86a70452aa95492f",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -1098,7 +1098,7 @@
     },
     {
       "path": "tests/extension.test.js",
-      "sha256": "2e902562eddb041fa472a5f6fe0bfe405210638e0eb3d52543f03a4818a812a0",
+      "sha256": "5591c8851c7531b1561e5aa74d9284f4583ad22cac4ed81116e3018c2b172373",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "768ae903ed390b4fdaba40619c138253ae61cd350058ca5d783274ab6378ec1c",
@@ -1241,6 +1241,12 @@
       "sha256": "8396a0bee4570e589eea96ec453f496c2010644f054c94107e0f420ecba7c914"
     },
     {
+      "path": "tests/test_install_doctor.py",
+      "sha256": "3ef813233980d154adc7e616f8111335daef1f2592e36b190e37eedda831145d",
+      "rights": "approved_for_distribution",
+      "provenance": "owner-authorized-product-release"
+    },
+    {
       "path": "tests/test_large_transcripts.py",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
@@ -1314,11 +1320,11 @@
     },
     {
       "path": "tests/test_portable_recovery.py",
-      "sha256": "c15ebe2f05e761df074b608f2174c052b27783f5dca247ed422ab2e3a866fdc7",
+      "sha256": "d07c874b859a5a808fca48371c22a4235ac0a6cb278ce6dd94b201e386431645",
       "rights": "approved_for_distribution",
       "provenance": "maintained-source",
       "original_sha256": "c15ebe2f05e761df074b608f2174c052b27783f5dca247ed422ab2e3a866fdc7",
-      "locally_modified": false
+      "locally_modified": true
     },
     {
       "path": "tests/test_progress.py",
@@ -1474,11 +1480,11 @@
       "path": "tests/test_skill_bundle_install.py",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution",
-      "sha256": "5ecf8a626259c5c2197d17eecd20ee7e72e3356dba059344fa0a65657568f0d8"
+      "sha256": "affcd08c52bdff174b47b35f71b9fe0013f99ce5fb409597abf0210ed7988e14"
     },
     {
       "path": "tests/test_skill_bundle_runtime.py",
-      "sha256": "5b73125ff9db21000105a5b856a0aa0ddc09bf79d79e9aceca713df652e13012",
+      "sha256": "3eed5974d1ace3180f75639e4d01bb895ce8a0cce3133894f154b1324df5bacf",
       "rights": "approved_for_distribution",
       "provenance": "owner-authorized-product-release"
     },
@@ -1542,7 +1548,7 @@
     },
     {
       "path": "tests/test_transfer_runtime.py",
-      "sha256": "1839d7d5f5ceeb5ad98a10b5002518de727483f0df1944cf4f7c26e43db353bd",
+      "sha256": "81c354fb2a4fd59adbe2761647b1024e07f6e3b4ae19f3a14ebca544cce93cdd",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -1605,8 +1611,14 @@
       "rights": "approved_for_distribution"
     },
     {
+      "path": "tools/doctor_install.py",
+      "sha256": "67b37be3ce2b9a144360e56512746ed1775ebc148722e9280b2215cae0750d85",
+      "rights": "approved_for_distribution",
+      "provenance": "owner-authorized-product-release"
+    },
+    {
       "path": "tools/install_runtime.py",
-      "sha256": "091295553e51ba9ea811b582c56eeb4c8a073c9c533d8a8d2fa62a06a2dfecaf",
+      "sha256": "53412fd342c4eb2e2654d8b9fa976bac82ffde412880fd459252326f0d6cc2e9",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -1614,15 +1626,15 @@
       "path": "tools/install_skill_bundle.py",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution",
-      "sha256": "9ed0d4fd14f473da6e3b85e25e9cdd003e1c485e11f46f92a6ce0a9c9d9e35ae"
+      "sha256": "75e3d80c9a12291a46cac500dee8ed7875aebce0640e4f765e5266f8e3196dae"
     }
   ],
   "dependency_security_approved": true,
-  "prepared": "2026-10-29",
-  "runtime_snapshot_sha256": "f13518c4bbf9d9d59592b60dc9f2597fc2316576a30d89daff675f6c90399676",
+  "prepared": "2026-10-30",
+  "runtime_snapshot_sha256": "079465d91ba1784b93300533493a459fd590bba056781ac03011c236379c1ffe",
   "release_authorization": {
     "repository": "JZSAWYER/intern-agent",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "license": "MIT",
     "maintained_source_commit": "c21ea4419894d892c5c518ca9da3cac11dd3db7c",
     "owner_authorized_clean_product_release": true,

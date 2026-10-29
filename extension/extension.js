@@ -19,21 +19,24 @@ function activate(context) {
   const configuration = () => vscode.workspace.getConfiguration('internAgentPublic');
   const source = path.join(context.extensionPath, 'backend');
 
-  function statePath() {
-    const value = configuration().get('stateDirectory', '');
+  function statePath(value = configuration().get('stateDirectory', '')) {
     if (!path.isAbsolute(value) || /[<>\0\n]/.test(value)) {
       throw new Error('Set an absolute private Intern Agent state directory on the Linux host.');
     }
     return value;
   }
 
-  function backend(args, privateInput) {
+  function pythonExecutable(value = configuration().get('pythonExecutable', 'python3')) {
+    if (!value || /[\0\r\n]/.test(value)) throw new Error('Invalid Python executable.');
+    return value;
+  }
+
+  function backend(args, privateInput, selected) {
     if (process.platform !== 'linux') {
       throw new Error('Run Intern Agent on a Linux workspace host, for example through Remote SSH.');
     }
-    const state = statePath();
-    const executable = configuration().get('pythonExecutable', 'python3');
-    if (!executable || /[\0\n]/.test(executable)) throw new Error('Invalid Python executable.');
+    const state = statePath(selected?.stateDirectory);
+    const executable = pythonExecutable(selected?.pythonExecutable);
     return new Promise((resolve, reject) => {
       const child = execFile(executable, ['-m', 'intern_personal.feishu_live', '--state', state, ...args], {
         cwd: source, env: { ...process.env, PYTHONPATH: source }, timeout: ['attach','project-init','recover-repository'].includes(args[0]) ? 240000 : 45000, maxBuffer: 1024 * 1024
@@ -60,6 +63,65 @@ function activate(context) {
     return vscode.window.showInputBox({ title, prompt, password, ignoreFocusOut: true });
   }
 
+  function installDoctor(requireRuntime = false, skillsDirectory) {
+    const args = [path.join(source, 'tools', 'doctor_install.py')];
+    if (requireRuntime) args.push('--require-runtime');
+    if (skillsDirectory) args.push('--skills-directory', skillsDirectory);
+    return new Promise((resolve, reject) => {
+      execFile(pythonExecutable(), args, {
+        cwd: source, env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' }, timeout: 120000, maxBuffer: 1024 * 1024
+      }, (error, stdout) => {
+        let report;
+        try { report = JSON.parse(stdout.trim()); } catch (_) { /* Process output may contain private data. */ }
+        if (report?.schema !== 'intern-agent.install-doctor.v1' || typeof report.ok !== 'boolean'
+            || report.writes_files !== false || report.uses_network !== false || report.starts_relay !== false
+            || !Array.isArray(report.checks) || !report.checks.length || report.checks.some(check => !check || typeof check.id !== 'string'
+              || !['pass','warn','fail'].includes(check.status) || typeof check.next_action !== 'string')
+            || (report.ok && report.checks.some(check => check.status === 'fail'))) {
+          reject(new Error('Setup checks could not run. Select a Python executable and check the installed package; arbitrary process output was withheld.'));
+        } else if (error && (error.code !== 2 || report.ok)) {
+          reject(new Error('Setup checks did not complete. Check the Python executable and try again.'));
+        } else {
+          resolve(report);
+        }
+      });
+    });
+  }
+
+  function showInstallDoctor(report) {
+    output.appendLine('Intern Agent installation checks');
+    for (const check of report.checks) output.appendLine(check.status.toUpperCase() + ': ' + check.id + (check.next_action ? ' — ' + check.next_action : ''));
+    output.appendLine('These checks do not verify account login, a live message round-trip or Codex skill execution.');
+    output.show();
+  }
+
+  async function checkSetup() {
+    if (!vscode.workspace.isTrusted) throw new Error('Trust the workspace before running setup checks.');
+    let configured = false;
+    const directory = configuration().get('stateDirectory', '');
+    if (path.isAbsolute(directory) && !/[<>\0\n]/.test(directory)) {
+      try {
+        const info = await fs.lstat(path.join(directory, 'live.json'));
+        configured = info.isFile() && !info.isSymbolicLink();
+      } catch (error) {
+        if (error.code !== 'ENOENT') throw new Error('Cannot inspect the configured relay state. Check its private directory permissions.');
+      }
+    }
+    const report = await installDoctor(configured);
+    showInstallDoctor(report);
+    if (!report.ok) {
+      vscode.window.showInformationMessage('Setup checks found blockers. Follow the next steps in the Intern Agent output, then run Check Setup again.');
+      return;
+    }
+    if (!configured) {
+      output.appendLine('Next: follow docs/INSTALL.md to install the runtime, then run Intern Agent: Set Up Personal Relay. No relay state was created by these checks.');
+      vscode.window.showInformationMessage('Preflight complete. Review any warnings, install the isolated runtime and run Set Up Personal Relay.');
+      return;
+    }
+    output.appendLine('Existing relay diagnostics');
+    output.appendLine(JSON.stringify(await backend(['doctor']), null, 2));
+  }
+
   async function setup() {
     if (!vscode.workspace.isTrusted) throw new Error('Trust the workspace before setup.');
     if (process.platform !== 'linux') throw new Error('Connect to the Linux machine through Remote SSH first.');
@@ -72,8 +134,8 @@ function activate(context) {
     if (!path.isAbsolute(directory) || /[<>\0\n]/.test(directory)) throw new Error('Enter an absolute directory path.');
     const python = await input('Python runtime', 'Python executable on the Linux host with lark-oapi and websockets installed (for example an absolute environment path)');
     if (!python) return;
-    await configuration().update('pythonExecutable', python, vscode.ConfigurationTarget.Global);
-    await configuration().update('stateDirectory', directory, vscode.ConfigurationTarget.Global);
+    pythonExecutable(python);
+    const selected = { pythonExecutable: python, stateDirectory: directory };
     let exists = false;
     try { await fs.access(path.join(directory, 'live.json')); exists = true; } catch (_) { /* New setup. */ }
     if (!exists) {
@@ -82,7 +144,7 @@ function activate(context) {
       if (authentication.startsWith('GitHub PAT')) {
         let pat = await input('GitHub authentication','PAT with access to your projects. The account is detected automatically; Codex must be installed and signed in on this host.',true);
         if (!pat) return;
-        try { await backend(['bootstrap'],{pat}); } finally { pat = undefined; }
+        try { await backend(['bootstrap'],{pat},selected); } finally { pat = undefined; }
       } else {
         const owner = await input('GitHub account', 'Your GitHub username. Stored only in private relay configuration.');
         if (!owner) return;
@@ -90,10 +152,12 @@ function activate(context) {
         if (!model) return;
         const executable = await input('Codex executable', 'Absolute path to the Codex executable on the Linux host');
         if (!executable) return;
-        await backend(['init', '--github-owner', owner, '--model', model, '--codex-executable', executable]);
+        await backend(['init', '--github-owner', owner, '--model', model, '--codex-executable', executable],undefined,selected);
       }
     }
-    await backend(['host-profile','register']);
+    await backend(['host-profile','register'],undefined,selected);
+    await configuration().update('pythonExecutable', python, vscode.ConfigurationTarget.Global);
+    await configuration().update('stateDirectory', directory, vscode.ConfigurationTarget.Global);
     vscode.window.showInformationMessage('Private relay setup ready. Set Feishu credentials, start the relay, then pair your management group.');
   }
 
@@ -316,10 +380,13 @@ function activate(context) {
   command('internAgentPublic.releaseStatus',async () => { output.appendLine(JSON.stringify(await backend(['release-sync','status']),null,2)); output.show(true); });
   command('internAgentPublic.installSkills',async () => {
     if (!vscode.workspace.isTrusted) throw new Error('Trust the workspace before installing Codex skills.');
-    const destination = await input('Install bundled Codex skills','Absolute Codex skills directory on this Linux host. Existing modified skills are preserved.');
+    const destination = await input('Install bundled Codex skills','Absolute directory scanned by your running Codex on this host (for example ~/.agents/skills, expanded to an absolute path). Existing modified skills are preserved.');
     if (!destination) return;
     const result = await backend(['install-skills',destination]);
-    vscode.window.showInformationMessage('Installed Codex skills: '+result.installed.join(', ')+'. Recovery instructions are also included in the release bundle.');
+    const report = await installDoctor(true,destination);
+    showInstallDoctor(report);
+    const verified = report.checks.some(check => check.id === 'installed_skills' && check.status === 'pass');
+    vscode.window.showInformationMessage('Copied Codex skills: '+result.installed.join(', ')+'. '+(verified ? 'Skill files verified. ' : 'Skill file verification needs attention in the output. ')+'Reload Codex, confirm skill discovery and explicitly invoke the skill; copying files does not prove execution.');
   });
   command('internAgentPublic.pair', pair);
   command('internAgentPublic.attach', attachWorkspace);
@@ -432,7 +499,7 @@ function activate(context) {
   timer.unref?.();
   context.subscriptions.push({ dispose: () => clearInterval(timer) });
   command('internAgentPublic.refresh', refresh);
-  command('internAgentPublic.doctor', async () => { const report = await backend(['doctor']); output.appendLine(JSON.stringify(report, null, 2)); output.show(); });
+  command('internAgentPublic.doctor', checkSetup);
   command('internAgentPublic.repair', async () => {
     if (!vscode.workspace.isTrusted) throw new Error('Trust the workspace before reviewing local repairs.');
     const plan = await backend(['repair', 'preview']);

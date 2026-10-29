@@ -10,6 +10,7 @@
     "requirements/*.lock",
     "requirements/*.json",
     "tools/install_runtime.py",
+    "tools/doctor_install.py",
     "tools/check_release_runtime.py",
     "skills/install-on-linux/references/*.md",
     "templates/AGENTS.example.md",

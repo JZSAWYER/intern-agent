@@ -2,12 +2,22 @@
 
 Connect Linux workspace folders to dedicated Feishu chats using one application
 bot and persistent Codex conversations. Install the released VSIX on your Linux
-workspace host through VS Code Remote SSH. The Windows desktop supplies the UI;
+workspace host. Windows and macOS VS Code clients can connect through Remote SSH;
 the backend and agent run on Linux.
 
-Requirements on Linux: Python 3.10+, Git 2.34+, tmux, authenticated Codex CLI 0.162.0,
-`lark-oapi` and `websockets` with Unix client support. The extension does not
-silently install dependencies or configure your Feishu account.
+The supported installer profile is **Linux x86_64 with Python 3.12**. It uses a
+separate, hash-locked Python environment; see the bundled `docs/INSTALL.md`.
+Python 3.10+ compatibility of some offline source commands does not make it a
+supported live installation profile. Git, tmux and an authenticated Codex CLI
+must also be available on the host. The extension does not silently install
+dependencies or configure your Feishu account.
+
+Run **Intern Agent: Check Setup** before setup. It checks the installation,
+Python, host tools and bundled skill resources without creating relay state,
+starting a service or contacting accounts. Review each warning or failure in the
+Intern Agent output. With an existing real relay configuration, it requires the
+installed runtime dependencies to pass before showing operational diagnostics.
+These checks do not prove account login or a real Feishu message round-trip.
 
 Use the Command Palette:
 
@@ -33,6 +43,15 @@ selects the exact saved bot/branch, including the saved Control conversation.
 Use **Set GitHub Authentication**, **Show Git Recovery Status** and **Install
 Bundled Codex Skills** for the related setup. Restored history is not an execution
 queue. See the bundled `docs/PORTABLE_RECOVERY.md` and `recover-intern-agent` skill.
+
+For skills, choose an absolute directory that the running Codex actually scans
+on this host; current Codex uses `~/.agents/skills`, while older installations
+may use another configured location. The installer preserves modified user
+instructions and checks the copied instructions, references and license. Reload
+Codex and confirm the skill appears, then explicitly invoke it, such as
+`$install-on-linux`. Ask it to follow the skill and report its checks. File
+verification, session discovery and execution are separate steps; installation
+alone does not show that a skill was executed.
 
 For a project whose repository does not exist, use **Intern Agent: Initialize
 New Private Project** or `/init WORKSPACE [REPOSITORY]` in Feishu Control.
@@ -82,7 +101,7 @@ switch an active receiver; private state is preserved. Marketplace publication
 is separate.
 **Show Release Synchronization** displays the configured operator's release jobs.
 
-See [the editor, message and team workflow guide](../docs/EDITOR_TEAMS.md) for the 0.5.0 dashboard, setup diagnostics, session controls, bounded teams, workspace access and paged recovery.
+See [the editor, message and team workflow guide](../docs/EDITOR_TEAMS.md) for dashboard diagnostics, session controls, bounded teams, workspace access and paged recovery.
 
 The editor includes **Bot Communication** and mailbox counts; use the bundled
 BOT_COMMUNICATION and SESSION_FEATURES guides for account policy and coverage.

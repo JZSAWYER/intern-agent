@@ -1,18 +1,25 @@
 # Feature and fix record
 
-## Unreleased — Clearer README and getting started
+## 0.2.6 — Simpler installation and checks before setup
 
-Reorganized the product README around what Intern Agent does, supported host
-requirements, a single installation sequence, everyday use and contributor
-onboarding. Detailed setup, recovery, architecture and release evidence are
-linked from a guide table. Removed repeated links and historical deployment
-checklists from the introduction. Corrected the contributor entrypoint's stale
-license-review wording to match the approved MIT license.
+Keeps maintained source c21ea4419894d892c5c518ca9da3cac11dd3db7c and adds
+product installation improvements. The optional reviewed-wheel download step
+removes the system-pip prerequisite while keeping offline plan/apply available.
+Missing venv/ensurepip and missing or tampered wheels fail before prefix creation.
 
-This is a local documentation candidate after 0.2.5. The published release and
-its immutable artifacts are unchanged. Documentation links, source inventory,
-runtime documentation hashes and normal file guards are checked separately
-from backend or live installation tests.
+A read-only installation doctor checks host/Python support, runtime/profile
+integrity, dependencies and skills without account setup or state creation.
+VS Code Check Setup can run it before a relay exists. Cancelling fresh setup
+preserves existing editor settings. Skill installation validates frontmatter;
+read-only verification compares complete installed instructions/resources/notices.
+Documentation distinguishes verified files, Codex discovery, explicit invocation
+and actual command results.
+
+The README now leads with product purpose, supported requirements, one setup
+sequence and a guide table. Contributor licensing wording matches the approved
+MIT grant. Source, VSIX and complete skills use a fresh immutable private version.
+Offline tests, isolated package/runtime installation and remote artifact checks
+remain separate from live accounts, Remote SSH UI and production acceptance.
 
 ## 0.2.5 — Keep summary progress below question cards
 

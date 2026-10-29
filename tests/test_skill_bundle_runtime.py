@@ -15,10 +15,10 @@ class RuntimeSkillBundleTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root=Path(self.temporary.name);self.source=self.root/'bundled-skills'
         self.destination=self.root/'user-skills'
-        self.files={'alpha-skill/SKILL.md':b'Read [the guide](references/guide.md).\n',
+        self.files={'alpha-skill/SKILL.md':b'---\nname: alpha-skill\ndescription: Example alpha skill\n---\nRead [the guide](references/guide.md).\n',
                     'alpha-skill/references/guide.md':b'Read [rules](nested/rules.txt).\n',
                     'alpha-skill/references/nested/rules.txt':b'Preserve owner instructions.\n',
-                    'zeta-skill/SKILL.md':b'# Another synthetic skill\n',
+                    'zeta-skill/SKILL.md':b'---\nname: zeta-skill\ndescription: Example zeta skill\n---\n# Instructions\n',
                     'zeta-skill/settings.json':b'{"mode":"synthetic"}\n'}
         for name,data in self.files.items():self.write(self.source/name,data)
 
@@ -102,7 +102,8 @@ class RuntimeSkillBundleTests(unittest.TestCase):
 
     def test_missing_entrypoint_reference_and_outside_reference_fail_before_writes(self):
         instruction=self.source/'alpha-skill/SKILL.md';original=instruction.read_bytes()
-        for data in [b'[Missing](references/missing.md)\n',b'[Outside](../../outside.md)\n']:
+        for body in [b'[Missing](references/missing.md)\n',b'[Outside](../../outside.md)\n']:
+            data=b'---\nname: alpha-skill\ndescription: Example\n---\n'+body
             instruction.write_bytes(data)
             with self.subTest(data=data),self.assertRaisesRegex(Invalid,'reference'):
                 skill_bundle.install(self.destination,self.source)
@@ -157,6 +158,29 @@ class RuntimeSkillBundleTests(unittest.TestCase):
         self.assertEqual(changed,['SKILL.md'])
         self.assertEqual((self.destination/'alpha-skill/SKILL.md').read_bytes(),b'Concurrent owner instructions\n')
         self.assertEqual(list(self.destination.rglob('.intern-agent-write-*')),[])
+
+    def test_invalid_frontmatter_is_rejected_before_destination_creation(self):
+        path=self.source/'alpha-skill/SKILL.md'
+        for data in [b'No frontmatter\n',b'---\nname: another-name\ndescription: Example\n---\n',
+                     b'---\nname: alpha-skill\ndescription: []\n---\n',
+                     b'---\nname: alpha-skill\ndescription: Example\ndescription: Duplicate\n---\n']:
+            path.write_bytes(data)
+            with self.subTest(data=data),self.assertRaises(Invalid):
+                skill_bundle.install(self.destination,self.source)
+            self.assertFalse(self.destination.exists())
+
+    def test_verify_checks_all_resources_and_notices_without_writing_or_execution(self):
+        (self.root/'LICENSE').write_bytes(b'MIT fixture notice\n')
+        skill_bundle.install(self.destination,self.source)
+        before={p:(p.read_bytes(),p.stat().st_mtime_ns) for p in self.destination.rglob('*') if p.is_file()}
+        report=skill_bundle.verify(self.destination,self.source)
+        self.assertEqual(report['files_verified'],len(self.files)+2)
+        self.assertFalse(report['skill_discovery_verified']);self.assertFalse(report['skills_execution_verified'])
+        self.assertFalse(report['writes_files'])
+        self.assertEqual({p:(p.read_bytes(),p.stat().st_mtime_ns) for p in before},before)
+        resource=self.destination/'alpha-skill/references/guide.md';resource.unlink()
+        with self.assertRaisesRegex(Invalid,'missing'):skill_bundle.verify(self.destination,self.source)
+        self.assertFalse(resource.exists())
 
 
 if __name__=='__main__':unittest.main()

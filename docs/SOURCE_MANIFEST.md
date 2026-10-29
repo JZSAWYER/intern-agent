@@ -1,6 +1,6 @@
 # Source repository and archive policy
 
-Current release channel: **private**, version **0.2.5**, maintained source
+Current release channel: **private**, version **0.2.6**, maintained source
 `c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;
@@ -8,10 +8,10 @@ automation must not change repository visibility. See [distribution](DISTRIBUTIO
 
 ## Current release scope
 
-The owner authorized the separate MIT Intern Agent 0.2.5 export from maintained
+The owner authorized the separate MIT Intern Agent 0.2.6 export from maintained
 commit `c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The existing private tracking
 repository and Git history remain private. The public product uses
-`intern-agent.intern-agent` with 37 `internAgentPublic` commands; it does not reuse
+`intern-agent.intern-agent` with 39 `internAgentPublic` commands; it does not reuse
 the maintained development preview's identity. Final checks and remote publication
 must be recorded separately; this policy is not an upload receipt.
 
@@ -38,7 +38,7 @@ all reviewed resources beneath the four configured skill directories.
 | `CONTRIBUTING.md`, tests and release-only tooling | Include | Exclude | Contributor verification and reproducible release maintenance |
 | Placeholder templates | Include | Backend | No real account configuration or machine bindings |
 | Four selected skill directories and inert references | Include | Allowlisted entrypoints/references | Recovery, file transfer, installation and collaboration |
-| Public dependency lock/profile, runtime installer, parity helper and safe skills installer | Include | Backend | Isolated supported installation and verification |
+| Public dependency lock/profile, runtime installer, installation doctor, parity helper and safe skills installer | Include | Backend | Isolated supported installation and verification |
 | Historical deployed reference lock/profile | Include with explicit scope | Backend reference inputs | Optional reproduction, never the public installation default |
 | Product/source/runtime/backend manifests and `.gitignore` | Include reviewed inventory/configuration | Only backend/product/runtime manifests selected by allowlist | Separate archive and runtime boundaries |
 | `.github/workflows/release.yml`, `tools/build_release.py` | Include | Exclude | Guarded public source-to-release automation |
@@ -80,7 +80,7 @@ From the public source root:
 python3 tools/check_source_candidate.py --release
 python3 tools/check_distribution.py
 python3 tools/check_release_runtime.py
-python3 tools/build_vsix.py --release --output /path/to/new/intern-agent-0.2.5.vsix
+python3 tools/build_vsix.py --release --output /path/to/new/intern-agent-0.2.6.vsix
 python3 tools/build_release.py --expected-export-commit PUBLIC_COMMIT --output-dir /path/to/new/release-assets
 ```
 

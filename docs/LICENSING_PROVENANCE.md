@@ -1,6 +1,6 @@
 # Licensing and dependency provenance review
 
-Current release channel: **private**, version **0.2.5**, maintained source
+Current release channel: **private**, version **0.2.6**, maintained source
 `c21ea4419894d892c5c518ca9da3cac11dd3db7c`. The owner's private-visibility hold
 supersedes earlier public-release prose. Only an explicit later owner request
 can authorize going public. Source updates may upload new private releases;

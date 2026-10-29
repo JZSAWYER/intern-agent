@@ -338,7 +338,7 @@ class CredentialAndProfileTests(unittest.TestCase):
     def test_bundled_skills_do_not_replace_modified_user_instructions(self):
         from intern_personal.skill_bundle import install
         source=self.root/'release-skills';skill=source/'recover-intern-agent/SKILL.md';skill.parent.mkdir(parents=True)
-        skill.write_text('# Public recovery instructions\n')
+        skill.write_text('---\nname: recover-intern-agent\ndescription: Public recovery instructions\n---\n# Instructions\n')
         destination=self.root/'codex-skills';result=install(destination,source)
         self.assertEqual(result['installed'],['recover-intern-agent'])
         self.assertEqual(install(destination,source),result)
