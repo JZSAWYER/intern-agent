@@ -4,9 +4,9 @@ Each user installs independent accounts, private state and projects. No access t
 the original operator's machine is needed. Source development uses
 [contributor onboarding](CONTRIBUTING.md).
 
-Intern Agent 0.2.8 is the separate MIT-licensed product at
+Intern Agent 0.2.9 is the separate MIT-licensed product at
 [the product repository](https://github.com/JZSAWYER/intern-agent).
-Select its [versioned release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.8)
+Select its [versioned release](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.9)
 and verify checksums/provenance, rather than using a private operational branch.
 The repository and release downloads are public. Each installation still needs
 its own GitHub, Codex and Feishu accounts for live use.
@@ -174,11 +174,11 @@ assuming an arbitrary destination is discoverable. Inspect the plan,
 then apply only an approved released bundle, with its external SHA-256:
 
 ```bash
-python3 tools/install_skill_bundle.py /path/to/intern-agent-0.2.8-skills.zip \
+python3 tools/install_skill_bundle.py /path/to/intern-agent-0.2.9-skills.zip \
   --destination /path/to/your/codex/skills
-python3 tools/install_skill_bundle.py /path/to/intern-agent-0.2.8-skills.zip \
+python3 tools/install_skill_bundle.py /path/to/intern-agent-0.2.9-skills.zip \
   --destination /path/to/your/codex/skills --sha256 "${IA_BUNDLE_SHA256:?Set the verified skills ZIP hash}" --apply
-python3 tools/install_skill_bundle.py /path/to/intern-agent-0.2.8-skills.zip \
+python3 tools/install_skill_bundle.py /path/to/intern-agent-0.2.9-skills.zip \
   --destination /path/to/your/codex/skills --sha256 "${IA_BUNDLE_SHA256:?Set the verified skills ZIP hash}" --verify
 ```
 

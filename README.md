@@ -9,7 +9,7 @@ Intern Agent includes an installable VS Code extension (VSIX), a Python relay,
 maintained source and optional Codex skills. Each installation uses its own
 accounts and private state.
 
-**Current release:** [v0.2.8](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.8).
+**Current release:** [v0.2.9](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.9).
 Source and versioned downloads are publicly available under the MIT license.
 
 ## What you can do

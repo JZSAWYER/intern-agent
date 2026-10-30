@@ -1,7 +1,7 @@
 # Source, package and deployment baselines
 
-Current release channel: **public**, version **0.2.8**, maintained source
-`146bd33c9e40800b58f8e3c8824a555fbbba46f7`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.9**, maintained source
+`cda3e6c4d50679ecc4c6fedeafbec8d97249e40f`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
@@ -10,7 +10,7 @@ Release automation checks visibility and never changes it. See
 ## Current source baseline
 
 The owner-authorized public candidate targets maintained-source commit
-`146bd33c9e40800b58f8e3c8824a555fbbba46f7` and stable product version 0.2.8 under
+`cda3e6c4d50679ecc4c6fedeafbec8d97249e40f` and stable product version 0.2.9 under
 MIT. `source-distribution.json`, `release-runtime.json` and the approved handoff
 must record that same maintained-source pin. The per-file inventory distinguishes
 committed implementation from portable documentation and distribution changes.
@@ -54,7 +54,7 @@ From the public source root:
 ```bash
 python3 tools/check_source_candidate.py --release
 python3 tools/check_release_runtime.py
-python3 tools/build_vsix.py --release --output /path/to/new/intern-agent-0.2.8.vsix
+python3 tools/build_vsix.py --release --output /path/to/new/intern-agent-0.2.9.vsix
 ```
 
 The stable builder validates the complete packaged backend and generated frontend.
@@ -62,8 +62,8 @@ For a separate package check, verify the artifact checksum, extract it into a ne
 review directory, then run the bundled helper against its own packaged baseline:
 
 ```bash
-python3 -m zipfile -e /path/to/intern-agent-0.2.8.vsix /path/to/new/review
-python3 /path/to/new/review/extension/backend/tools/check_release_runtime.py --vsix /path/to/intern-agent-0.2.8.vsix
+python3 -m zipfile -e /path/to/intern-agent-0.2.9.vsix /path/to/new/review
+python3 /path/to/new/review/extension/backend/tools/check_release_runtime.py --vsix /path/to/intern-agent-0.2.9.vsix
 ```
 
 VS Code may add its reserved `__metadata` object during installation. The installed

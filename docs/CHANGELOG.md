@@ -1,5 +1,28 @@
 # Feature and fix record
 
+## 0.2.9 — Clean project publication review guidance
+
+Imported maintained commit `cda3e6c4d50679ecc4c6fedeafbec8d97249e40f` through the reviewed source export.
+Added a bounded operator guide for code-only review branches, explicit owner
+authorization, unchanged permanent bot branches, normal guards and remote
+verification. This is documentation, not a new relay command or permission.
+The stable VSIX, complete skills, installation doctor and release automation
+remain included. Current artifact installation and publication evidence is
+recorded separately; earlier live pilot observations are historical.
+
+## 2026-10-30 — Document temporary clean publication exports
+
+A Homepage publishing request exposed a missing route: the permanent bot branch
+contains recoverable records, while its guard correctly rejects other branch
+destinations. The bounded operator workflow now documents a separate, code-only
+review export from the default branch, without expanding the bot's allowlist.
+It preserves manual PR review and blocks direct default-branch writes. The
+pilot verified an exact approved 25-file patch, one-commit history, eight
+negative guard checks and a fresh Jekyll/content/asset build. The new branch
+upload was confirmed with the default branch unchanged, and temporary access
+was closed. This is not a general bot permission or new relay command. No PR
+was created; future operations need their own scoped authorization and receipts.
+
 ## 0.2.8 — Publish bounded WOFF2 website assets
 
 Imports maintained commit 146bd33c9e40800b58f8e3c8824a555fbbba46f7. Git guards

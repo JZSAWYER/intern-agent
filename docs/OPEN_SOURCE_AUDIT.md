@@ -1,7 +1,7 @@
 # Source and release readiness audit
 
-Current release channel: **public**, version **0.2.8**, maintained source
-`146bd33c9e40800b58f8e3c8824a555fbbba46f7`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.9**, maintained source
+`cda3e6c4d50679ecc4c6fedeafbec8d97249e40f`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
@@ -11,10 +11,11 @@ Release automation checks visibility and never changes it. See
 ## Current candidate — 2026-10-30
 
 The candidate imports verified maintained commit
-`146bd33c9e40800b58f8e3c8824a555fbbba46f7` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.8
-adds bounded WOFF2 Git asset support and guarded commit/push regressions, plus
-recovery guidance for precise activation and completion evidence. Existing
+`cda3e6c4d50679ecc4c6fedeafbec8d97249e40f` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.9
+adds scoped clean project-review publication guidance; executable modules,
+installer, editor JavaScript, skills and tests are unchanged from 0.2.8.
+WOFF2 asset support and precise recovery guidance remain included. Existing
 pre-setup doctor, hash-verified wheel downloads without system pip, complete
 skill verification and cancellation-safe editor setup remain included.
 Summary progress below cards/answers and its exact-turn recovery guards remain.

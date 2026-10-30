@@ -4,7 +4,12 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.8
+## Installable product 0.2.9
+
+The new [clean publication guide](CLEAN_PUBLICATION.md) explains separately
+authorized project review branches while preserving permanent bot branches,
+normal Git guards and manual owner PR review. This adds operator guidance,
+not a relay command or broader publication access.
 
 Website work can now publish bounded WOFF2 fonts through the normal Git guards.
 Headers, exact file length and declared blocks are checked; private paths,
@@ -96,6 +101,12 @@ publishable files still require their normal checks.
 Website WOFF2 fonts can be uploaded with format-envelope and size checks, so a
 valid local font does not strand a completed preview behind a binary-file
 review. Font rendering/decompression is separate from this Git validation.
+
+When a deployment needs a project-only PR, keep the bot's code/history branch
+unchanged and use a separately authorized, temporary export onto a clean review
+branch. This is an operator procedure, not general publication permission or a
+new chat command. The owner creates and merges the PR; direct agent pushes to
+the default branch stay blocked. See [clean publication review](CLEAN_PUBLICATION.md).
 
 **Expected result:** excluded raw journals do not create a false missing-draft
 review. Final replies and turn completion wait for confirmed Git publication;
@@ -194,8 +205,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.8 uses
-maintained source 146bd33c9e40800b58f8e3c8824a555fbbba46f7 and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.9 uses
+maintained source cda3e6c4d50679ecc4c6fedeafbec8d97249e40f and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace
