@@ -1,21 +1,22 @@
 # Source and release readiness audit
 
-Current release channel: **public**, version **0.2.9**, maintained source
-`cda3e6c4d50679ecc4c6fedeafbec8d97249e40f`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.10**, maintained source
+`f451dd79e7ae4e910400ad8f1809f0cc5793a4d3`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
 [distribution](DISTRIBUTION.md).
 
 
-## Current candidate — 2026-10-30
+## Current candidate — 2026-11-09
 
 The candidate imports verified maintained commit
-`cda3e6c4d50679ecc4c6fedeafbec8d97249e40f` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.9
-adds scoped clean project-review publication guidance; executable modules,
-installer, editor JavaScript, skills and tests are unchanged from 0.2.8.
-WOFF2 asset support and precise recovery guidance remain included. Existing
+`f451dd79e7ae4e910400ad8f1809f0cc5793a4d3` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.10
+adds raw tensor storage and saved-result publication repair guidance, plus the
+owner-requested first-bot role map and clearer onboarding. Executable modules,
+installer, editor JavaScript, skills and tests are unchanged from 0.2.9.
+Clean project-review guidance, WOFF2 support and recovery safeguards remain included. Existing
 pre-setup doctor, hash-verified wheel downloads without system pip, complete
 skill verification and cancellation-safe editor setup remain included.
 Summary progress below cards/answers and its exact-turn recovery guards remain.
@@ -47,7 +48,7 @@ exact final artifacts, remote verification and anonymous public access in the re
 | Live acceptance | Explicit real-account, Remote SSH, activation, upgrade/rollback and uninstall/reinstall pilot | Not established by this release audit |
 
 The public profile contains 14 runtime distributions plus a hash-locked pip
-bootstrap tool. Version-specific OSV queries repeated on 2026-10-30 returned no findings
+bootstrap tool. Version-specific OSV queries repeated on 2026-11-09 returned no findings
 for those 15 selected versions; upstream wheel and notice hashes are recorded in
 `requirements/public-profile.json`. This is dated dependency evidence, not a claim
 against future vulnerabilities. The older deployed reference lock retains its

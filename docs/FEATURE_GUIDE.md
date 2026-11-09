@@ -4,7 +4,18 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.9
+## Installable product 0.2.10
+
+Start with [one project bot and the role guide](BOT_SETUP.md). The paired
+management group runs commands without an optional controller Codex session.
+Debug and incident-operator conversations are optional; doctors are diagnostics.
+The guide separates saved-result Git repair, transient Codex recovery and
+replacement-machine restoration.
+
+New guidance explains project-declared local storage for generated `.pt` tensors,
+size/hash manifests and separate backups, plus evidence-scoped staging repair.
+This documents storage and publication policy without changing binary guards or
+automatically excluding files in other projects.
 
 The new [clean publication guide](CLEAN_PUBLICATION.md) explains separately
 authorized project review branches while preserving permanent bot branches,
@@ -97,6 +108,17 @@ The relay honors those rules even when the raw file was visible at the start of
 the turn. It does not delete the journal or rewrite the saved starting baseline.
 Tracked changes, staged owner work, linked replacements and unreviewed large
 publishable files still require their normal checks.
+
+Generated PyTorch `.pt` tensors need a declared project storage policy before
+turn publication. Retain raw numerical/model evidence on the configured data
+volume, explicitly exclude it from Git when appropriate, and version a useful
+size/hash manifest and transfer instructions. A manifest does not back up the
+tensor bytes: those require a separate copy when moving machines. Keep source,
+reports, protocols and accounting in normal guarded uploads. An unsupported
+binary is not permission to disable the guard or rerun a finished experiment.
+If a failed automatic commit already staged new raw tensors, verify the saved
+starting index and exact current bytes before reconciling only those entries;
+preserve owner-staged work and all local files.
 
 Website WOFF2 fonts can be uploaded with format-envelope and size checks, so a
 valid local font does not strand a completed preview behind a binary-file
@@ -205,8 +227,8 @@ read [deployment parity](DEPLOYMENT_PARITY.md) and [frontend readiness](FRONTEND
 
 **Use:** read [distribution](DISTRIBUTION.md). From a clean public checkout, run
 `python3 tools/build_release.py --expected-export-commit COMMIT --output-dir /path/outside/source/new-release`,
-replacing COMMIT with the exact checked-out public commit. Version 0.2.9 uses
-maintained source cda3e6c4d50679ecc4c6fedeafbec8d97249e40f and MIT.
+replacing COMMIT with the exact checked-out public commit. Version 0.2.10 uses
+maintained source f451dd79e7ae4e910400ad8f1809f0cc5793a4d3 and MIT.
 
 **Expected result:** deterministic source, VSIX, complete skills, standalone skill
 installer, provenance and SHA256SUMS. The public internAgentPublic namespace

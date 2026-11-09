@@ -1,5 +1,34 @@
 # Feature and fix record
 
+## 0.2.10 — Raw tensor storage and saved-result publication guidance
+
+Imported maintained commit `f451dd79e7ae4e910400ad8f1809f0cc5793a4d3` through the reviewed source export.
+Documents project-declared local tensor storage, useful size/hash manifests,
+separate backup/transfer requirements and evidence-scoped repair of relay-created
+staging. This guidance adds neither automatic tensor exclusions nor binary
+upload support; it does not run a project repair or repeat an experiment.
+Existing backend, frontend, installer, skills and release workflow are retained.
+Current artifact, installation and publication evidence is recorded separately.
+
+Owner-requested onboarding now explains the minimum live installation: one app
+and receiver, the paired management group, and one project conversation. A
+controller Codex conversation, manual Debug and a configured incident operator
+are optional; diagnostics are not bot roles. README/install/live guides link to
+the new role map and distinguish Git repair, failed-turn recovery and cold
+workspace restoration. Documentation changes grant no operational permission.
+
+## 2026-11-09 — Declare raw tensor storage before final Git upload
+
+A completed research turn's upload could block a submitted owner answer when
+new PyTorch tensor dumps were automatically staged. The project repair retains
+all raw evidence locally, records exact sizes/hashes and transfer requirements,
+and declares generated run tensors local-only through its own ignore policy.
+Only proven relay-created tensor staging is reconciled; pre-existing owner
+staging, original requests/results and scientific sources remain protected.
+Publication retries the saved result, allowing the original queued answer to
+proceed without replaying an experiment. This is a documented project artifact
+policy, not implicit binary support or automatic exclusion in other workspaces.
+
 ## 0.2.9 — Clean project publication review guidance
 
 Imported maintained commit `cda3e6c4d50679ecc4c6fedeafbec8d97249e40f` through the reviewed source export.

@@ -2,11 +2,15 @@
 
 For named tasks, conversation modes, Markdown validation, recovery and priority
 `/stop`, see [conversation lifecycle](CONVERSATIONS.md).
+For a first installation, start with [one project bot and optional roles](BOT_SETUP.md).
+The paired management group accepts commands without attaching a controller
+Codex conversation; manual Debug and recovery-operator conversations are optional.
 
 The opt-in live relay adds one management group and one group per registered
 Codex conversation. This module uses the installed Feishu Python SDK and a
-Codex app-server on a private Unix socket. A separate tmux server hosts it;
-legacy tmux sessions, enterprise services and migration records are independent.
+Codex app-server on a private Unix socket. The receiver launcher and managed
+conversation consoles have separate ownership: each managed conversation has
+its own tmux session, not a separate tmux server per bot. See [architecture](ARCHITECTURE.md).
 
 The implementation supports real transports. A deployment is accepted only
 after an authorized Feishu message receives its actual Codex response in the
@@ -15,12 +19,12 @@ does not establish that result.
 
 ## Requirements and private state
 
-Use Linux, Python 3.10+, tmux, an authenticated Codex CLI, `lark-oapi`, and
+Use the supported Linux x86_64/CPython 3.12 installation profile, tmux, an authenticated Codex CLI, `lark-oapi`, and
 `websockets` with `websockets.sync.client.unix_connect`. The implementation was
 developed against Codex CLI 0.162.0. App-server is a versioned experimental
 interface; validate its generated protocol schema when changing CLI versions.
-A local preview VSIX can be built with `tools/build_vsix.py`; its installation
-was verified in an isolated VS Code profile. It runs on Linux workspace hosts,
+The stable product VSIX is available from the versioned release; use [installation](INSTALL.md).
+Its installation is checked in an isolated VS Code profile. It runs on Linux workspace hosts,
 including Remote SSH. Live account and editor activation tests are still needed.
 
 Choose an absolute, private directory on a data volume. Its permissions must be
@@ -108,7 +112,7 @@ Deliberate sparse-checkout coverage is inherited by new worktrees; excluded
 tracked artifacts remain in Git. Materialize any required excluded datasets
 before running project experiments.
 
-The preview extension provides **Attach Workspace to GitHub** with a publication
+The extension provides **Attach Workspace to GitHub** with a publication
 confirmation, then **Connect Workspace to Feishu**. Automatic connection uses
 only previously attached workspaces, including their intern worktrees.
 
@@ -124,9 +128,11 @@ legacy-compatible intern `status.md`/`knowledge.md` and task `README.md`,
 and queue state remain outside Git. Prompts and results become repository records;
 use a private repository when those contents should not be public.
 
-Before execution, task metadata is uploaded. After execution, code changes are
-committed to the intern branch and uploaded, and task records are saved before
-the final reply. Code containing recognized credentials, private state, linked
+Before execution, the relay validates the registered worktree/branch and saves
+the request and starting baseline locally. Final publication carries the code
+and validated task/history records; the official final reply waits for exact
+remote commit confirmation. See [Git completion](GIT_COMPLETION.md).
+Code containing recognized credentials, private state, linked
 files or new blobs larger than 10 MiB is blocked for review. Existing public base
 files are not scanned as newly authored work. These guards do not replace a
 review of sensitive project contents. Upload failures preserve local results;

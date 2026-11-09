@@ -9,7 +9,7 @@ Intern Agent includes an installable VS Code extension (VSIX), a Python relay,
 maintained source and optional Codex skills. Each installation uses its own
 accounts and private state.
 
-**Current release:** [v0.2.9](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.9).
+**Current release:** [v0.2.10](https://github.com/JZSAWYER/intern-agent/releases/tag/v0.2.10).
 Source and versioned downloads are publicly available under the MIT license.
 
 ## What you can do
@@ -28,6 +28,19 @@ Source and versioned downloads are publicly available under the MIT license.
   uploaded project records from GitHub on a replacement host.
 
 See the [feature guide](docs/FEATURE_GUIDE.md) for commands and examples.
+
+## How many bots do I need?
+
+Start with **one Feishu app bot, one relay, one paired management group and one
+project conversation**. The management group runs slash commands without a
+separate AI controller. A controller for ordinary-language management, a manual
+Debug conversation and a recovery operator are optional. **Check Setup** and
+`/doctor` are diagnostics, not extra bots to deploy.
+
+Use [your first bot and optional roles](docs/BOT_SETUP.md) for the setup sequence,
+where to send each message, and the difference between Git publication repair,
+failed-turn recovery and restoring a workspace from GitHub. You do not need to
+copy the original operator's collection of conversations.
 
 ## Get started
 
@@ -107,6 +120,7 @@ records; new account credentials and unpushed local work need separate handling.
 | --- | --- |
 | Install on my own machine | [Installation](docs/INSTALL.md) |
 | Configure Feishu and connect a project | [Live setup](docs/LIVE.md) · [New projects](docs/PROJECT_INIT.md) |
+| Decide whether I need Control, Debug or a recovery operator | [First bot and roles](docs/BOT_SETUP.md) |
 | Use the dashboard, tasks and terminals | [Editor workflow](docs/EDITOR_TEAMS.md) · [Conversations](docs/CONVERSATIONS.md) |
 | Use goals, question cards or attachments | [Goals and questions](docs/GOALS_AND_QUESTIONS.md) · [File transfer](docs/FILE_TRANSFER.md) |
 | Reconnect or troubleshoot saved work | [Portable recovery](docs/PORTABLE_RECOVERY.md) · [Recovery](docs/RECOVERY.md) |

@@ -1,4 +1,14 @@
-# Automatic Codex recovery and Recovery Sentinel incidents
+# Automatic Codex recovery and optional incident operator
+
+You can start with one project bot and no recovery operator. Portable installs
+leave automatic recovery off until their owner enables it. A dedicated operator
+is a later, explicit configuration choice; `/doctor` is a diagnostic command,
+not that operator. See [first bot and role setup](BOT_SETUP.md).
+
+This guide uses “Recovery Sentinel” as an example name for the configured incident
+operator. The name alone establishes no binding. The original operator's manual
+Debug bot is not required on another installation, and receives no automatic
+fallback incidents.
 
 The receiver checks registered Codex conversations every five seconds. When
 Codex reports a completed turn with a transient network, capacity or server

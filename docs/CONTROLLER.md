@@ -1,5 +1,10 @@
 # Intern Agent Control
 
+The paired management group is the required owner command surface. Attaching a
+controller Codex conversation is optional: slash commands already work before
+binding, while ordinary-language management needs the controller. For the
+minimal installation and other optional roles, see [first bot setup](BOT_SETUP.md).
+
 The paired, owner-only Control group accepts both ordinary language and slash commands. Ordinary text is submitted unchanged to its controller Codex conversation. Commands are handled by the relay, so `/stop` remains immediate and `/list`, `/new`, `/team` and `/resolve` retain their management functions.
 
 ## Binding

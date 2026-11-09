@@ -1,4 +1,10 @@
-# Recovery Sentinel operator runbook
+# Optional recovery operator runbook
+
+This runbook is for an explicitly configured incident-operator conversation.
+It is not required for a first installation or ordinary project work. `/doctor`
+and setup checks do not create this role. See [first bot and optional roles](BOT_SETUP.md).
+“Recovery Sentinel” and “Debug” below describe operator roles/example names;
+another installation does not need to duplicate the original operator's chats.
 
 Recovery Sentinel owns automatic network/capacity recovery and relay flow
 incidents. It has its own registered workspace, permanent code/history branch,
