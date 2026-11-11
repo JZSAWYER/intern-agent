@@ -25,7 +25,7 @@ def allows(state,item):
     tokens=item['text'].strip().split()
     if not tokens:return False
     command=tokens[0].lower()
-    if command in {'/help','/status','/usage','/cost','/models','/unsupported'}:return True
+    if command in {'/help','/status','/usage','/cost','/quota','/models','/unsupported'}:return True
     if command in {'/model','/reasoning'}:return permission=='operator' or len(tokens)==1
     if command == '/fast':return tokens[1:] == ['status']
     if permission=='viewer':return False

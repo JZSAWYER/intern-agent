@@ -5,6 +5,8 @@ import time
 
 
 MAX_AGE_SECONDS = 15 * 60
+COMMAND_CACHE_SECONDS = 30
+COMMAND_TIMEOUT_SECONDS = 5
 UNAVAILABLE = 'Quota: unavailable (Codex did not report current account limits).'
 
 
@@ -28,12 +30,16 @@ def normalize(data):
     """Keep only numeric quota windows; never persist account/credit identities."""
     if not isinstance(data, dict):
         return None
-    if 'rateLimits' in data:
+    buckets = data.get('rateLimitsByLimitId')
+    if isinstance(buckets, dict) and 'codex' in buckets:
+        # The backward-compatible view may describe a different model bucket.
+        # The explicitly identified Codex pool is authoritative when available.
+        limits = buckets['codex']
+    elif 'rateLimits' in data:
         limits = data['rateLimits']
     elif 'rate_limits' in data:
         limits = data['rate_limits']
     else:
-        buckets = data.get('rateLimitsByLimitId')
         if not isinstance(buckets, dict):
             return None
         limits = buckets.get('codex')
@@ -104,6 +110,44 @@ def format_line(observed, now=None):
         label = duration(window.get('windowDurationMins'), key.capitalize())
         parts.append(f'{label}: {percent(used)}% used, {percent(100 - used)}% left')
     return 'Quota (account): ' + ' | '.join(parts) if parts else UNAVAILABLE
+
+
+def interval(seconds):
+    seconds = max(0, int(seconds))
+    for label, unit in [('d', 86400), ('h', 3600), ('m', 60)]:
+        if seconds >= unit:
+            count, remainder = divmod(seconds, unit)
+            next_unit = 3600 if unit == 86400 else 60 if unit == 3600 else 1
+            next_label = 'h' if unit == 86400 else 'm' if unit == 3600 else 's'
+            return f'{count}{label}' + (f' {remainder // next_unit}{next_label}' if remainder // next_unit else '')
+    return f'{seconds}s'
+
+
+def report(observed, tokens=None, *, refresh_failed=False, now=None):
+    """Human-readable inspection; account quota is distinct from session tokens."""
+    now = time.time() if now is None else now
+    line = format_line(observed, now=now)
+    parts = [line]
+    if line != UNAVAILABLE:
+        limits, at = observed
+        age = interval(now - at)
+        parts.append(('Live refresh unavailable; last Codex report: ' if refresh_failed else 'Last Codex report: ') + age + ' ago.')
+        for key in ['primary', 'secondary']:
+            window = limits.get(key) or {}
+            reset = window.get('resetsAt')
+            if number(reset) and reset > now:
+                label = duration(window.get('windowDurationMins'), key.capitalize())
+                parts.append(f'{label} resets in {interval(reset - now)}.')
+    else:
+        parts.append('A current account limit report is unavailable; try /usage again later.')
+    tokens = tokens if isinstance(tokens, dict) else {}
+    counts = [f'{label}: {tokens[key]:,}' for key, label in
+              [('totalTokens', 'total'), ('inputTokens', 'input'), ('outputTokens', 'output'),
+               ('cachedInputTokens', 'cached input')]
+              if type(tokens.get(key)) is int and tokens[key] >= 0]
+    parts.append('Recorded session tokens: ' + ', '.join(counts) + '.' if counts else 'Session token counts: not reported.')
+    parts.append('Monetary cost: not reported by Codex.')
+    return '\n'.join(parts)
 
 
 def freeze(state, seq, observed):

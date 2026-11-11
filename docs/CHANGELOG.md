@@ -1,5 +1,35 @@
 # Feature and fix record
 
+## 0.2.11 — Readable, bounded account quota inspection
+
+Imports maintained commit `6387f61aaee910a62a0ce7bb3059c07a0c78edc6` through the reviewed source export.
+`/usage`, `/cost` and `/quota` show account percentages, reset timing and
+observation age separately from session-token counts. Recent observations
+avoid a socket read; refresh uses an existing backend with a short budget
+and labelled cached/unavailable fallback. Inspection starts no model work.
+Command history publication is queued; final model replies retain their
+confirmed-Git gate and frozen delivery payload. Explicit Codex-pool data
+takes precedence over the legacy single-pool view.
+
+The existing public extension identity, setup/roles guide, dependency lock,
+installer, complete skills and release workflow are retained. Offline tests,
+isolated installation and uploaded-byte evidence are recorded separately
+from live account/Remote SSH and production acceptance.
+
+## 2026-11-12 — Readable quota commands without synchronous Git waits
+
+`/usage`, `/cost` and the new `/quota` alias now return readable account used/left
+percentages, reset timing and observation age. A recent per-conversation snapshot
+avoids a socket round-trip; refresh uses the existing backend with one short
+deadline and clearly labelled cached/unavailable fallback. Inspection does not
+start a backend. A failed initialization closes its socket without hiding the
+original error. Token counts stay separate and monetary cost is not invented.
+
+Quota commands enqueue their history publication so a later command does not
+wait for the previous read-only command's synchronous Git projection/push. Final
+model replies keep their normal Git gate and original frozen payloads. Explicit
+Codex-bucket data takes precedence over a legacy view for another model pool.
+
 ## 0.2.10 — Raw tensor storage and saved-result publication guidance
 
 Imported maintained commit `f451dd79e7ae4e910400ad8f1809f0cc5793a4d3` through the reviewed source export.

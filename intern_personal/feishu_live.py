@@ -59,7 +59,7 @@ HELP = ("Intern Agent tutorial\n\n"
         "Session tools (isolated app-server conversations)\n/compact — compact Codex context without deleting Git history\n"
         "/clear or /restart — start fresh Codex context; Git history and the selected task stay saved\n"
         "/archive /unarchive — retire or restore a conversation without deleting its group or branches\n"
-        "/usage or /cost — observed token counts and account limits; no inferred price\n"
+        "/usage or /cost (/quota alias) — quota used/left, resets and recorded tokens; no inferred price\n"
         "/goal OBJECTIVE /goal set [TOKENS] OBJECTIVE — pursue a persistent goal\n/goal pause|resume|clear /goal auto on|off — goal controls\n/questions /answer CODE TEXT — choices and custom answers; /help questions\n"
         "/progress summary|messages|off — one editable progress message, separate messages, or off; public prose only\n"
         "/queue TEXT — save a separate later task; ordinary owner text steers a running turn\n"
@@ -429,7 +429,7 @@ class Relay:
         # otherwise use the controller conversation bound to this group.
         controller=self.state.controller_session() if management else None
         local_commands={'model','models','reasoning','fast','compact','clear','restart','archive','unarchive',
-            'cost','usage','goal','progress','trigger','skills','send-file','files','task','chat','memory',
+            'cost','usage','quota','goal','progress','trigger','skills','send-file','files','task','chat','memory',
             'stop','cancel','pause','resume','console','recovery','mail','research','questions'}
         if controller and item.get('session')==controller['id'] and command in local_commands:
             if not argument or not argument.startswith('s_'):management=False
@@ -499,10 +499,10 @@ class Relay:
             except ValueError as error:
                 if isinstance(error,Invalid):raise
                 raise Invalid('Invalid team argument') from None
-        if command in {'compact','clear','restart','archive','unarchive','cost','usage'}:
+        if command in {'compact','clear','restart','archive','unarchive','cost','usage','quota'}:
             session=self.state.session(argument if management else item['session'])
             from .operations import session_command,usage
-            return usage(self,session) if command in {'cost','usage'} else session_command(self,session,command)
+            return usage(self,session) if command in {'cost','usage','quota'} else session_command(self,session,command)
         if command=='doctor':
             from .operations import diagnose
             return json.dumps(diagnose(self.state),ensure_ascii=False)
@@ -821,7 +821,14 @@ class Relay:
                 saved=self.state.db.execute("SELECT * FROM events WHERE seq=?",(item["seq"],)).fetchone()
                 from .turn_uploads import ready
                 finalized=role=='agent' and saved['state']=='complete' and ready(self.state,item['seq'])
-                if not finalized and (hasattr(self.tracker,'binding') or item['session']):
+                quota_command=role=='control' and item['text'].strip().split(maxsplit=1)[0].lower() in {'/usage','/cost','/quota'}
+                if quota_command:
+                    # The next inspection must not wait for synchronous Git
+                    # projection/push after this read-only reply was delivered.
+                    self.state.ledger.observe(dict(saved),saved['state'])
+                    from .turn_uploads import enqueue_status
+                    enqueue_status(self.state,self.state.session(item.get('session')))
+                elif not finalized and (hasattr(self.tracker,'binding') or item['session']):
                     self.tracker.queue_record(self.state.session(item["session"]),dict(saved),saved["state"])
 
     def retry_preflight(self,item,error):

@@ -170,17 +170,31 @@ def session_command(relay,session,action):
 
 def usage(relay,session):
     if not session:raise Invalid('Choose a workspace conversation')
-    target=None if relay.terminal.binding(session) else session
-    relay.host.ensure_started(target)
-    connection=relay.host.connect(session=target)
-    try:
-        data=connection.request('account/rateLimits/read',{})
-        limits=data.get('rateLimits') or {}
-        windows={k:{f:v for f,v in (limits.get(k) or {}).items() if f in {'usedPercent','windowDurationMins','resetsAt'}} for k in ['primary','secondary']}
-        recorded=relay.state.db.execute('SELECT usage FROM conversation_usage WHERE session=?',(session['id'],)).fetchone()
-        return json.dumps(dict(rate_limits=windows,tokens=json.loads(recorded[0]) if recorded else None,
-            monetary_cost=None,note='Observed account limits and token counts; price and remaining entitlement are not inferred.'),ensure_ascii=False)
-    finally:connection.close()
+    from . import quota
+    observed=quota.snapshot(relay.state,session)
+    age=time.time()-observed[1]
+    fresh=0<=age<=quota.COMMAND_CACHE_SECONDS and quota.format_line(observed)!=quota.UNAVAILABLE
+    failed=False
+    if not fresh:
+        # Inspection must not start/restart a backend or wait for its normal
+        # initialization retries. Use an existing socket with one short budget.
+        connection=None;deadline=time.monotonic()+quota.COMMAND_TIMEOUT_SECONDS
+        try:
+            target=None if relay.terminal.binding(session) else session
+            connection=relay.host.connect(session=target,timeout=quota.COMMAND_TIMEOUT_SECONDS)
+            remaining=deadline-time.monotonic()
+            if remaining<=0:raise TimeoutError('Quota inspection deadline expired')
+            data=connection.request('account/rateLimits/read',{},timeout=remaining)
+            quota.observe(relay.state,session,data)
+            observed=quota.snapshot(relay.state,session)
+        except Exception:
+            failed=True
+        finally:
+            if connection is not None:
+                try:connection.close()
+                except Exception:pass
+    recorded=relay.state.db.execute('SELECT usage FROM conversation_usage WHERE session=?',(session['id'],)).fetchone()
+    return quota.report(observed,json.loads(recorded[0]) if recorded else None,refresh_failed=failed)
 
 
 def goal(relay,session,tokens):

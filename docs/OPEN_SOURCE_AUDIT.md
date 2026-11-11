@@ -1,21 +1,24 @@
 # Source and release readiness audit
 
-Current release channel: **public**, version **0.2.10**, maintained source
-`f451dd79e7ae4e910400ad8f1809f0cc5793a4d3`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.11**, maintained source
+`6387f61aaee910a62a0ce7bb3059c07a0c78edc6`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
 [distribution](DISTRIBUTION.md).
 
 
-## Current candidate — 2026-11-09
+## Current candidate — 2026-11-12
 
 The candidate imports verified maintained commit
-`f451dd79e7ae4e910400ad8f1809f0cc5793a4d3` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.10
-adds raw tensor storage and saved-result publication repair guidance, plus the
-owner-requested first-bot role map and clearer onboarding. Executable modules,
-installer, editor JavaScript, skills and tests are unchanged from 0.2.9.
+`6387f61aaee910a62a0ce7bb3059c07a0c78edc6` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.11
+adds readable `/usage`, `/cost` and `/quota` inspection, bounded existing-host
+quota reads, explicit Codex-bucket precedence and queued history publication
+for those read-only commands. Five backend modules and quota regressions
+change; the editor JavaScript, installer, dependency lock, skills and release
+workflow are retained from 0.2.10. The existing first-bot role and setup guide
+remains included. Final model replies retain their normal Git gate.
 Clean project-review guidance, WOFF2 support and recovery safeguards remain included. Existing
 pre-setup doctor, hash-verified wheel downloads without system pip, complete
 skill verification and cancellation-safe editor setup remain included.
@@ -48,7 +51,7 @@ exact final artifacts, remote verification and anonymous public access in the re
 | Live acceptance | Explicit real-account, Remote SSH, activation, upgrade/rollback and uninstall/reinstall pilot | Not established by this release audit |
 
 The public profile contains 14 runtime distributions plus a hash-locked pip
-bootstrap tool. Version-specific OSV queries repeated on 2026-11-09 returned no findings
+bootstrap tool. Version-specific OSV queries repeated on 2026-11-12 returned no findings
 for those 15 selected versions; upstream wheel and notice hashes are recorded in
 `requirements/public-profile.json`. This is dated dependency evidence, not a claim
 against future vulnerabilities. The older deployed reference lock retains its

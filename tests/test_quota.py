@@ -2,7 +2,8 @@ import json
 import time
 import unittest
 from datetime import datetime, timezone
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+from types import SimpleNamespace
 
 import test_live as fixture
 import test_terminal as terminal_fixture
@@ -12,6 +13,8 @@ from intern_personal.live_state import LiveState
 from intern_personal.quota import (
     MAX_AGE_SECONDS, UNAVAILABLE, format_line, normalize, observe, reply, snapshot,
 )
+from intern_personal.operations import usage
+from intern_personal.codex_bridge import Connection
 
 
 def reported(used=25, duration=300, reset=None):
@@ -54,6 +57,12 @@ class QuotaFormatTests(unittest.TestCase):
         self.assertEqual(normalize({'rateLimitsByLimitId': {'codex': quota, 'other': reported(90)['rateLimits']}}),
                          normalize(reported(10)))
         self.assertEqual(normalize({'rateLimitsByLimitId': {'one': quota, 'two': quota}}), {})
+
+    def test_explicit_codex_pool_wins_over_legacy_other_model_view(self):
+        data={'rateLimits':dict(reported(90)['rateLimits'],limitId='codex_other'),
+              'rateLimitsByLimitId':{'codex':reported(20,10080)['rateLimits'],
+                                    'codex_other':reported(90)['rateLimits']}}
+        self.assertEqual(normalize(data),normalize(reported(20,10080)))
 
 
 class QuotaDeliveryTests(unittest.TestCase):
@@ -204,6 +213,109 @@ class QuotaDeliveryTests(unittest.TestCase):
             host._turn(Wire(), session, session['thread_id'], 'My task')
         self.assertNotIn('account/rateLimits/read', reads)
         self.assertEqual(self.state.db.execute('SELECT COUNT(*) FROM reply_quota').fetchone()[0], 0)
+
+
+class QuotaCommandTests(unittest.TestCase):
+    setUp = fixture.LiveTests.setUp
+    event = fixture.LiveTests.event
+
+    def session(self):
+        session = self.relay.open_session('project')
+        self.host.connect = Mock()
+        self.host.ensure_started = Mock(side_effect=AssertionError('Inspection must not start a backend'))
+        return session
+
+    def test_recent_quota_is_readable_without_socket_or_git_wait(self):
+        session = self.session()
+        observe(self.state, session, reported(50, 10080, time.time()+3600))
+        self.state.db.execute('INSERT INTO conversation_usage VALUES(?,?)',
+            (session['id'],json.dumps(dict(totalTokens=12345,inputTokens=10000,outputTokens=2345,account='private-account'))))
+        result = usage(self.relay,session)
+        self.assertIn('7d: 50% used, 50% left', result)
+        self.assertIn('7d resets in',result)
+        self.assertIn('total: 12,345',result)
+        self.assertIn('Monetary cost: not reported',result)
+        self.assertNotIn('private-account',result)
+        self.assertNotIn('null',result)
+        self.host.connect.assert_not_called()
+        self.host.ensure_started.assert_not_called()
+
+    def test_cost_usage_and_quota_aliases_do_not_publish_git_synchronously(self):
+        session = self.session()
+        observe(self.state,session,reported(25))
+        for index,command in enumerate(['/usage','/cost','/quota']):
+            self.relay.receive(self.event(command,session['chat_id'],'om_quota_command_'+str(index)))
+            with patch.object(self.tracker,'queue_record',side_effect=AssertionError('Slow Git publication on command path')):
+                self.assertEqual(self.relay.process_once('control'),'complete')
+            self.assertIn('25% used, 75% left',self.api.messages[-1][1])
+            record=self.state.db.execute('SELECT phase,activity FROM turn_records ORDER BY seq DESC LIMIT 1').fetchone()
+            self.assertEqual(tuple(record),('complete','completed'))
+        self.assertTrue(self.state.db.execute('SELECT 1 FROM tracking_pending WHERE workspace=?',('project',)).fetchone())
+        self.assertEqual(self.host.calls,[])
+
+    def test_existing_managed_host_refresh_has_one_short_budget_and_closes(self):
+        session = self.session()
+        wire = SimpleNamespace(request=Mock(return_value=reported(42,10080)),close=Mock())
+        self.host.connect.return_value = wire
+        result=usage(self.relay,session)
+        self.assertIn('42% used, 58% left',result)
+        self.host.connect.assert_called_once_with(session=session,timeout=5)
+        wire.request.assert_called_once()
+        self.assertEqual(wire.request.call_args.args,('account/rateLimits/read',{}))
+        self.assertGreater(wire.request.call_args.kwargs['timeout'],0)
+        self.assertLessEqual(wire.request.call_args.kwargs['timeout'],5)
+        wire.close.assert_called_once()
+        self.host.ensure_started.assert_not_called()
+
+    def test_native_host_uses_catalog_without_restarting_or_steering_terminal(self):
+        session = self.session()
+        wire = SimpleNamespace(request=Mock(return_value=reported(20)),close=Mock())
+        self.host.connect.return_value=wire
+        with patch.object(self.relay.terminal,'binding',return_value={'config_path':'fixture-native'}):
+            self.assertIn('20% used, 80% left',usage(self.relay,session))
+        self.host.connect.assert_called_once_with(session=None,timeout=5)
+        self.host.ensure_started.assert_not_called()
+        self.assertEqual(self.host.calls,[])
+
+    def test_timeout_labels_still_current_observation_and_never_leaks_exception(self):
+        session=self.session()
+        observe(self.state,session,reported(12),observed_at=time.time()-120)
+        wire=SimpleNamespace(request=Mock(side_effect=TimeoutError('private-token-detail')),close=Mock())
+        self.host.connect.return_value=wire
+        result=usage(self.relay,session)
+        self.assertIn('12% used, 88% left',result)
+        self.assertIn('Live refresh unavailable',result)
+        self.assertNotIn('private-token-detail',result)
+        wire.close.assert_called_once()
+
+    def test_missing_or_expired_cache_never_invents_free_quota(self):
+        session=self.session()
+        self.host.connect.side_effect=TimeoutError('private-error')
+        for observed in [None,reported(70,reset=time.time()-1)]:
+            if observed:observe(self.state,session,observed,observed_at=time.time()-60)
+            result=usage(self.relay,session)
+            self.assertIn(UNAVAILABLE,result)
+            self.assertNotIn('% left',result)
+            self.assertNotIn('private-error',result)
+        self.host.ensure_started.assert_not_called()
+
+    def test_new_bucket_schema_is_normalized_without_exposing_credit_details(self):
+        session=self.session()
+        wire=SimpleNamespace(request=Mock(return_value=dict(rateLimitsByLimitId={
+            'codex':dict(primary=dict(usedPercent=33.3,windowDurationMins=10080),credits=dict(balance='private-credit'))})),close=Mock())
+        self.host.connect.return_value=wire
+        result=usage(self.relay,session)
+        self.assertIn('7d: 33.3% used, 66.7% left',result)
+        self.assertNotIn('private-credit',result)
+
+    def test_bounded_connection_closes_a_failed_initialize_and_preserves_error(self):
+        wire=SimpleNamespace(send=Mock(),recv=Mock(side_effect=TimeoutError('initialization timeout')),close=Mock())
+        connector=Mock(return_value=wire)
+        with self.assertRaises(TimeoutError):Connection('/fixture',connector=connector,timeout=5)
+        self.assertEqual(connector.call_args.kwargs['open_timeout'],5)
+        self.assertEqual(connector.call_args.kwargs['close_timeout'],1)
+        self.assertLessEqual(wire.recv.call_args.kwargs['timeout'],5)
+        wire.close.assert_called_once()
 
 
 class NativeQuotaTests(unittest.TestCase):

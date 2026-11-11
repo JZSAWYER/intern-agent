@@ -1,14 +1,35 @@
-# Quota on completed Feishu replies
+# Quota commands and completed Feishu replies
 
-**Purpose:** see observed Codex account usage and the percentage left when a
-conversation finishes a turn.
+**Purpose:** inspect observed Codex account usage, remaining percentage and reset
+timing, or see a quota footer when a conversation finishes a turn.
 
 **Prerequisites:** the Feishu relay is connected to a Codex conversation. Quota
 percentages require Codex to report account rate limits; API-key providers may
 not expose a ChatGPT quota.
 
-**Use:** send a normal message to a project bot, Control or the attached Debug
-Bot. Its completed reply ends with one line, for example:
+**Use:** send `/usage`, `/cost` or `/quota` in a bot chat or bound Control chat.
+All three inspect the same account limits. In management, an explicit session
+argument selects that conversation. The response is readable text, for example:
+
+```text
+Quota (account): 7d: 50% used, 50% left
+Last Codex report: 3s ago.
+7d resets in 6d 4h.
+```
+
+Reported session-token counts are shown separately. Missing counts are labelled
+not reported, and monetary cost is not inferred from quota or tokens. The
+command uses an observation at most 30 seconds old when available. Otherwise it
+queries the existing backend with one five-second connection/initialization/read
+budget and a short close timeout. It never starts or restarts a backend for an
+inspection. If refresh fails, an unexpired observation up to 15 minutes old is
+clearly labelled with its age; missing/stale limits remain unavailable.
+Recording these read-only commands queues history publication in the background,
+so the next command does not wait for their Git projection/push. Final model
+replies retain their normal confirmed-Git publication gate.
+
+A normal message to a project bot, Control or the attached Debug Bot also ends
+its completed reply with one line, for example:
 
 ```text
 Quota (account): 5h: 25% used, 75% left | 7d: 10% used, 90% left
@@ -18,6 +39,9 @@ Quota (account): 5h: 25% used, 75% left | 7d: 10% used, 90% left
 shows only its `7d` window. Remaining percentage is `100 - usedPercent`; the
 windows are not combined. These are account limits shared by conversations
 using that account, rather than a per-turn token cost or context-window usage.
+When the provider returns several metered buckets, the explicitly identified
+`codex` bucket takes precedence over the backward-compatible single-bucket view.
+Primary and secondary labels use their actual durations; primary can be weekly.
 Management command acknowledgements and progress messages have no quota footer.
 
 Managed turns observe quota notifications and make a read-only refresh on their
@@ -40,7 +64,10 @@ and authentication data are excluded.
 remaining-percentage arithmetic, absent/invalid/expired data, bounded refresh,
 unchanged prompts, delivery retries across receiver restarts, and distinct quota
 snapshots for native turns observed together. The real account endpoint and
-native quota-event schema have been checked read-only. Automated tests do not
+native quota-event schema have been checked read-only. Command regressions cover
+native/managed routing, short deadlines, failed initialization cleanup, cached
+fallback, three command aliases, asynchronous history publication and explicit
+Codex-bucket precedence. Automated tests do not
 by themselves establish a live Feishu round-trip.
 The 331 Python checks passed after updating the existing upload-recovery
 expectation for the footer; extension, portable-package and 50 local guide-link

@@ -1,7 +1,7 @@
 # Source repository and archive policy
 
-Current release channel: **public**, version **0.2.10**, maintained source
-`f451dd79e7ae4e910400ad8f1809f0cc5793a4d3`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.11**, maintained source
+`6387f61aaee910a62a0ce7bb3059c07a0c78edc6`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
@@ -9,8 +9,8 @@ Release automation checks visibility and never changes it. See
 
 ## Current release scope
 
-The owner authorized the separate MIT Intern Agent 0.2.10 export from maintained
-commit `f451dd79e7ae4e910400ad8f1809f0cc5793a4d3`. The existing private tracking
+The owner authorized the separate MIT Intern Agent 0.2.11 export from maintained
+commit `6387f61aaee910a62a0ce7bb3059c07a0c78edc6`. The existing private tracking
 repository and Git history remain private. The public product uses
 `intern-agent.intern-agent` with 39 `internAgentPublic` commands; it does not reuse
 the maintained development preview's identity. Final checks and remote publication
@@ -81,7 +81,7 @@ From the public source root:
 python3 tools/check_source_candidate.py --release
 python3 tools/check_distribution.py
 python3 tools/check_release_runtime.py
-python3 tools/build_vsix.py --release --output /path/to/new/intern-agent-0.2.10.vsix
+python3 tools/build_vsix.py --release --output /path/to/new/intern-agent-0.2.11.vsix
 python3 tools/build_release.py --expected-export-commit PUBLIC_COMMIT --output-dir /path/to/new/release-assets
 ```
 

@@ -297,6 +297,12 @@ historical evidence, not fresh verification of this candidate.
 
 ## Features available in every bot
 
+Use `/usage`, `/cost` or `/quota` to inspect account quota as readable used/left
+percentages with reset timing and observation age. The query uses a recent
+snapshot or a bounded read from the existing backend. It does not start model
+work, and its history upload runs in the background. Unknown token counts or
+monetary cost are labelled as unavailable; see [quota](QUOTA.md).
+
 The shared relay supplies file transfer, commands, progress, quota, history,
 independent consoles, recovery and bot communication to registered conversations.
 New bots inherit the same backend. Model/Fast choices, team assignments and

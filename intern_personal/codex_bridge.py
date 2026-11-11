@@ -44,20 +44,31 @@ class TurnFailed(BridgeError):
 
 
 class Connection:
-    def __init__(self, path, request_handler=None, connector=None):
+    def __init__(self, path, request_handler=None, connector=None, *, timeout=None):
         if connector is None:
             from websockets.sync.client import unix_connect
             connector = unix_connect
         from .terminal_bridge import MAX_LINE
-        self.ws = connector(str(path), open_timeout=10, max_size=MAX_LINE)
+        deadline = time.monotonic() + timeout if timeout is not None else None
+        options = {'open_timeout': min(10, timeout) if timeout is not None else 10,
+                   'max_size': MAX_LINE}
+        if timeout is not None:
+            options['close_timeout'] = 1
+        self.ws = connector(str(path), **options)
         self.sequence = 0
         self.pending = queue.Queue(maxsize=10000)
         self.request_handler = request_handler
         self.send_lock = threading.Lock()
-        self.request("initialize", {"clientInfo": {"name": "intern-agent-personal",
-                     "title": "Intern Agent", "version": "0.5.0"},
-                     "capabilities": {"experimentalApi": True}})
-        self.send({"method": "initialized", "params": {}})
+        try:
+            initialization_timeout = max(0, deadline - time.monotonic()) if deadline is not None else 60
+            self.request("initialize", {"clientInfo": {"name": "intern-agent-personal",
+                         "title": "Intern Agent", "version": "0.5.0"},
+                         "capabilities": {"experimentalApi": True}}, timeout=initialization_timeout)
+            self.send({"method": "initialized", "params": {}})
+        except BaseException:
+            try:self.close()
+            except Exception:pass
+            raise
 
     def send(self, message):
         with self.send_lock:
@@ -132,8 +143,9 @@ class CodexHost:
         from .console_observer import ConsoleObserver
         self.observer = ConsoleObserver(state, tracker)
 
-    def connect(self, handler=None, session=None):
-        return Connection(self.hosts.spec(session)['socket'], handler, self.connector)
+    def connect(self, handler=None, session=None, *, timeout=None):
+        options = {} if timeout is None else {'timeout': timeout}
+        return Connection(self.hosts.spec(session)['socket'], handler, self.connector, **options)
 
     def turn_state(self,session):
         """Bounded read-only latest-turn inspection; never resume to inspect."""
