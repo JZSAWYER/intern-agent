@@ -64,6 +64,9 @@ The bundled `docs/FEATURE_GUIDE.md` is the tutorial entry for all features;
 enabled only for explicitly selected Debug Bot and Control sessions.
 In Feishu, `/fast` toggles Codex Fast mode; `/fast on|off|status` sets or inspects
 it, and `/fast SESSION ...` in Control targets another bot. See `docs/FAST.md`.
+`/ultrafast on|off|status` selects or inspects the distinct Ultrafast tier for
+eligible accounts/models. The command also supports an explicit target in
+Control. The attached native CLI's input-adapter limits are documented there.
 
 The app must be published/available with Bot, long connection, the
 `im.message.receive_v1` event and the message/chat permissions documented in

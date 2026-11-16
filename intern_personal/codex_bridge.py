@@ -309,7 +309,8 @@ class CodexHost:
 
     def set_service_tier(self, session, tier):
         """Update future-turn settings, with an exact-thread acknowledgement."""
-        from .speed import is_fast
+        from .speed import known_tier,same_tier
+        if not known_tier(tier):raise Invalid('Unsupported service tier')
         self.ensure_started(session)
         connection = self.connect(session=session)
         try:
@@ -328,8 +329,7 @@ class CodexHost:
                     continue
                 settings = params.get('threadSettings', {})
                 actual = settings.get('serviceTier')
-                if ('serviceTier' not in settings or actual not in {None,'default','priority','fast'}
-                        or is_fast(actual) != is_fast(tier)):
+                if ('serviceTier' not in settings or not same_tier(actual, tier)):
                     raise BridgeError('Codex did not acknowledge the requested service tier')
                 with self.observer.lock:
                     row = self.observer.binding(session)

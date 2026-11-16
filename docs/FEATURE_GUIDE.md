@@ -4,7 +4,11 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.10
+## Installable product 0.2.12
+
+Use `/ultrafast on|off|status` to select or inspect the separate, account/model
+catalogue-gated speed tier. Exact verification, portable preferences and native
+adapter limits are described in [speed commands](FAST.md).
 
 Start with [one project bot and the role guide](BOT_SETUP.md). The paired
 management group runs commands without an optional controller Codex session.
@@ -613,6 +617,7 @@ stopping. See [conversations and stop](CONVERSATIONS.md).
 
 **Use:** `/model`, `/model MODEL [EFFORT]`, `/reasoning EFFORT`, `/help model`,
 `/fast`, `/fast on|off|status`,
+`/ultrafast`, `/ultrafast on|off|status`,
 `/progress summary`, `/progress messages`, or `/progress off`.
 
 **Expected result:** model settings apply to that bot. Public natural-language
@@ -634,6 +639,17 @@ Host-wide defaults come from the private relay configuration's `model` and
 `reasoning_effort`. They seed newly created sessions and `/model default`;
 existing conversations keep their own choices. They are personal setup values,
 not hardcoded account or model choices in the distributable templates.
+
+`/ultrafast on` selects the separate Ultrafast service tier for this managed
+bot's next turns. `/ultrafast off` returns to Standard; `/fast on` selects Fast.
+`/ultrafast status` shows observed and saved settings. Control accepts
+`/ultrafast SESSION on|off|status` for an explicit bot. This requires the current
+account/model catalogue to advertise Ultrafast and uses more allowance/credits.
+Unsupported access is reported without falling back to Fast. Choices survive
+portable recovery and incompatible model changes are rejected. An attached
+native CLI without a verified Ultrafast adapter requires its original speed
+picker; the relay can inspect and confirm its selected tier. See
+[speed commands and usage](FAST.md).
 
 Saved answers that already reached Feishu retry Git publication without new
 chat notices. An unresolved Git incident produces at most one pending-upload

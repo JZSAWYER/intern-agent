@@ -52,7 +52,7 @@ def validate(data,conversations):
         if model is not None and (not isinstance(model,dict) or set(model)!={'model','effort'} or not isinstance(model['model'],str)
                 or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,127}',model['model'])
                 or not isinstance(model['effort'],str) or not re.fullmatch('[a-z]{1,32}',model['effort'])):raise Invalid('Invalid portable model preference')
-        allowed=dict(fast=('tier',{'default','priority','fast'}),trigger=('mode',{'all','mentions'}),automatic_recovery=('enabled',{0,1}))
+        allowed=dict(fast=('tier',{'default','priority','fast','ultrafast'}),trigger=('mode',{'all','mentions'}),automatic_recovery=('enabled',{0,1}))
         for kind,(key,values) in allowed.items():
             item=row[kind]
             if item is not None and (not isinstance(item,dict) or set(item)!={key} or not isinstance(item[key],(str,int)) or item[key] not in values):raise Invalid('Invalid portable '+kind+' preference')

@@ -27,7 +27,7 @@ def allows(state,item):
     command=tokens[0].lower()
     if command in {'/help','/status','/usage','/cost','/quota','/models','/unsupported'}:return True
     if command in {'/model','/reasoning'}:return permission=='operator' or len(tokens)==1
-    if command == '/fast':return tokens[1:] == ['status']
+    if command in {'/fast','/ultrafast'}:return [token.lower() for token in tokens[1:]] == ['status']
     if permission=='viewer':return False
     # Administrative, team, export, archival and instruction-rule changes stay owner-only.
     if command=='/memory':return len(tokens)<2 or tokens[1] in {'show','add','error'}

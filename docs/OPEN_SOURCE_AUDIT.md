@@ -1,24 +1,26 @@
 # Source and release readiness audit
 
-Current release channel: **public**, version **0.2.11**, maintained source
-`6387f61aaee910a62a0ce7bb3059c07a0c78edc6`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.12**, maintained source
+`7b4d511cd77702fe6240e723ab41e245c68a4d19`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
 [distribution](DISTRIBUTION.md).
 
 
-## Current candidate — 2026-11-12
+## Current candidate — 2026-11-16
 
 The candidate imports verified maintained commit
-`6387f61aaee910a62a0ce7bb3059c07a0c78edc6` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.11
-adds readable `/usage`, `/cost` and `/quota` inspection, bounded existing-host
-quota reads, explicit Codex-bucket precedence and queued history publication
-for those read-only commands. Five backend modules and quota regressions
-change; the editor JavaScript, installer, dependency lock, skills and release
-workflow are retained from 0.2.10. The existing first-bot role and setup guide
-remains included. Final model replies retain their normal Git gate.
+`7b4d511cd77702fe6240e723ab41e245c68a4d19` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.12
+adds distinct `/ultrafast` controls, exact three-tier acknowledgement and lost-ack
+reconciliation, portable speed preferences and background history publication for
+speed commands. Five backend modules and new Ultrafast regressions change; the
+editor JavaScript, installer, dependency lock, skills and release workflow are
+retained from 0.2.11. The first-bot role guide remains included. Final model
+replies retain their normal Git gate. Native attachments observe Ultrafast but
+require the original picker unless a verified input adapter exists. Eligible
+Ultrafast inference and throughput remain live acceptance work.
 Clean project-review guidance, WOFF2 support and recovery safeguards remain included. Existing
 pre-setup doctor, hash-verified wheel downloads without system pip, complete
 skill verification and cancellation-safe editor setup remain included.
@@ -51,7 +53,7 @@ exact final artifacts, remote verification and anonymous public access in the re
 | Live acceptance | Explicit real-account, Remote SSH, activation, upgrade/rollback and uninstall/reinstall pilot | Not established by this release audit |
 
 The public profile contains 14 runtime distributions plus a hash-locked pip
-bootstrap tool. Version-specific OSV queries repeated on 2026-11-12 returned no findings
+bootstrap tool. Version-specific OSV queries repeated on 2026-11-16 returned no findings
 for those 15 selected versions; upstream wheel and notice hashes are recorded in
 `requirements/public-profile.json`. This is dated dependency evidence, not a claim
 against future vulnerabilities. The older deployed reference lock retains its

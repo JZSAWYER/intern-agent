@@ -1,5 +1,42 @@
 # Feature and fix record
 
+## 0.2.12 — Separate Ultrafast selection and exact speed verification
+
+Imports maintained commit `7b4d511cd77702fe6240e723ab41e245c68a4d19` through the reviewed export.
+`/ultrafast on|off|status` selects or inspects the distinct, catalogue-gated
+tier for each managed conversation, including explicit Control targets.
+Exact acknowledgements, idempotent retries and portable preferences keep
+Standard, Fast and Ultrafast separate. Model changes preserve the selected
+tier or report incompatibility. Speed-command history publishes in the
+background; final model replies retain their confirmed-Git gate.
+
+Native CLI attachments observe Ultrafast and report their input-adapter
+limit without sending invented keys. The public extension identity,
+first-bot guide, installer, dependency lock, skills and release workflow
+remain included. Offline tests and isolated installation are separate
+from eligible-account inference and measured throughput acceptance.
+
+## 2026-11-16 — Select and verify Ultrafast independently of Fast
+
+Added `/ultrafast`, `/ultrafast on|off|status` and explicit-session Control
+routing. The command selects only a tier advertised for the current model;
+managed bots verify exact-thread settings and persist it for subsequent turns
+and portable Git recovery. Model changes cannot silently drop selected
+Ultrafast. Existing Fast commands retain their legacy `priority`/`fast` aliases.
+
+The previous binary Fast/not-Fast comparison could misclassify Ultrafast as
+Standard. Acknowledgements now distinguish all three tiers, including lost-ack
+reconciliation. Speed commands publish their history asynchronously to avoid
+blocking the next command on Git. Ordinary agent completion retains its normal
+upload gate. Native observations retain Ultrafast, while a CLI without a
+verified Ultrafast input adapter reports that limitation instead of pasting an
+invented command. Existing busy turns, drafts and preferences are preserved.
+
+Verification includes offline routing/new-bot isolation, exact acknowledgements,
+idempotent retries, unchanged prompts, portable preferences and native safety.
+The live account catalogue advertised only Fast during inspection; eligible
+Ultrafast inference and throughput are not yet live-verified.
+
 ## 0.2.11 — Readable, bounded account quota inspection
 
 Imports maintained commit `6387f61aaee910a62a0ce7bb3059c07a0c78edc6` through the reviewed source export.

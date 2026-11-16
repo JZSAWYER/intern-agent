@@ -39,6 +39,7 @@ HELP = ("Intern Agent tutorial\n\n"
         "/model default — restore this conversation's configured defaults\n"
         "/reasoning [EFFORT] — inspect or change thinking effort\n/help model — model tutorial\n"
         "/fast — toggle Fast mode; /fast on|off|status — set or inspect it\n"
+        "/ultrafast — toggle Ultrafast; /ultrafast on|off|status — account/model access required\n"
         "Model changes apply to the next turn; an already running turn continues with its original settings.\n\n"
         "During work\n/status — session status, blocked/running turns and recovery instructions (management also shows the full queue)\n"
         "/research start 10h \"Inspect the existing experiment\" — persistent research wake-up; /research status and /help research\n"
@@ -78,6 +79,7 @@ HELP = ("Intern Agent tutorial\n\n"
         "/model SESSION [MODEL [EFFORT]] — inspect/change a selected session\n"
         "/reasoning SESSION [EFFORT] — inspect/change its thinking effort\n"
         "/fast SESSION [on|off|status] — control Fast mode for another conversation\n"
+        "/ultrafast SESSION [on|off|status] — control Ultrafast for another conversation\n"
         "/cancel SESSION /pause SESSION /resume SESSION — control a selected session\n"
         "/stop SESSION — immediately request interruption of a selected session\n"
         "/task SESSION ACTION [NAME_OR_ID] — manage its named tasks\n"
@@ -428,7 +430,7 @@ class Relay:
         # conversation controls, an explicit SESSION still selects another bot;
         # otherwise use the controller conversation bound to this group.
         controller=self.state.controller_session() if management else None
-        local_commands={'model','models','reasoning','fast','compact','clear','restart','archive','unarchive',
+        local_commands={'model','models','reasoning','fast','ultrafast','compact','clear','restart','archive','unarchive',
             'cost','usage','quota','goal','progress','trigger','skills','send-file','files','task','chat','memory',
             'stop','cancel','pause','resume','console','recovery','mail','research','questions'}
         if controller and item.get('session')==controller['id'] and command in local_commands:
@@ -487,7 +489,7 @@ class Relay:
             return context + "\n\n" + HELP + extra
         if command in {"model","models","reasoning"}:
             return self.model_command(item,command,management)
-        if command == 'fast':
+        if command in {'fast','ultrafast'}:
             from .speed import command as fast_command
             return fast_command(self,item,management)
         if command=='team':
@@ -767,9 +769,8 @@ class Relay:
             effort = selection["effort"] if model==selection["model"] and selection["effort"] in supported else row.get("defaultReasoningEffort")
         if not effort or effort not in supported:
             raise Invalid("Unsupported reasoning effort for this model. Choose: " + (", ".join(supported) or "none listed") + ". No settings changed.")
-        from .speed import saved,is_fast,fast_tier
-        if is_fast(saved(self.state,session)):
-            fast_tier(row)
+        from .speed import saved,validate_model_tier
+        validate_model_tier(row,saved(self.state,session))
         from .model_preferences import save
         preference=save(self.state,session['id'],model,effort,item['seq'])
         if preference['seq']!=item['seq']:
@@ -821,10 +822,10 @@ class Relay:
                 saved=self.state.db.execute("SELECT * FROM events WHERE seq=?",(item["seq"],)).fetchone()
                 from .turn_uploads import ready
                 finalized=role=='agent' and saved['state']=='complete' and ready(self.state,item['seq'])
-                quota_command=role=='control' and item['text'].strip().split(maxsplit=1)[0].lower() in {'/usage','/cost','/quota'}
-                if quota_command:
-                    # The next inspection must not wait for synchronous Git
-                    # projection/push after this read-only reply was delivered.
+                lightweight_command=role=='control' and item['text'].strip().split(maxsplit=1)[0].lower() in {'/usage','/cost','/quota','/fast','/ultrafast'}
+                if lightweight_command:
+                    # Account inspections and settings-only controls must not
+                    # wait for synchronous Git projection/push after delivery.
                     self.state.ledger.observe(dict(saved),saved['state'])
                     from .turn_uploads import enqueue_status
                     enqueue_status(self.state,self.state.session(item.get('session')))
