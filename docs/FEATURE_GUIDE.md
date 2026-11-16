@@ -4,7 +4,7 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.12
+## Installable product 0.2.13
 
 Use `/ultrafast on|off|status` to select or inspect the separate, account/model
 catalogue-gated speed tier. Exact verification, portable preferences and native
@@ -650,6 +650,14 @@ portable recovery and incompatible model changes are rejected. An attached
 native CLI without a verified Ultrafast adapter requires its original speed
 picker; the relay can inspect and confirm its selected tier. See
 [speed commands and usage](FAST.md).
+
+The maintained development record reports live status-command checks for
+attached native and managed conversations. Those upstream observations verify
+the command path in that installation, not Ultrafast inference, speedup or a
+new account's setup. This public release does not repeat those live checks.
+If an upgraded source still produces “Unsupported command”, verify the active
+receiver release: source publication and receiver activation are separate steps.
+Preserve active work and confirm a fresh reply after the guarded rollout.
 
 Saved answers that already reached Feishu retry Git publication without new
 chat notices. An unresolved Git incident produces at most one pending-upload

@@ -3,7 +3,7 @@
   "product": "intern-agent",
   "display_name": "Intern Agent",
   "repository": "JZSAWYER/intern-agent",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "extension": {
     "publisher": "intern-agent",
     "name": "intern-agent",
@@ -21,9 +21,9 @@
   ],
   "final_handoff": {
     "approved": true,
-    "source_commit": "7b4d511cd77702fe6240e723ab41e245c68a4d19",
+    "source_commit": "89f5966aa386debca912548dec1ad9d9bf2ca9f0",
     "repository": "JZSAWYER/intern-agent",
-    "version": "0.2.12",
+    "version": "0.2.13",
     "channel": "public"
   },
   "gates": {

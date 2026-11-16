@@ -1,7 +1,7 @@
 # Source and release readiness audit
 
-Current release channel: **public**, version **0.2.12**, maintained source
-`7b4d511cd77702fe6240e723ab41e245c68a4d19`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.13**, maintained source
+`89f5966aa386debca912548dec1ad9d9bf2ca9f0`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
@@ -11,16 +11,16 @@ Release automation checks visibility and never changes it. See
 ## Current candidate — 2026-11-16
 
 The candidate imports verified maintained commit
-`7b4d511cd77702fe6240e723ab41e245c68a4d19` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.12
-adds distinct `/ultrafast` controls, exact three-tier acknowledgement and lost-ack
-reconciliation, portable speed preferences and background history publication for
-speed commands. Five backend modules and new Ultrafast regressions change; the
-editor JavaScript, installer, dependency lock, skills and release workflow are
-retained from 0.2.11. The first-bot role guide remains included. Final model
-replies retain their normal Git gate. Native attachments observe Ultrafast but
-require the original picker unless a verified input adapter exists. Eligible
-Ultrafast inference and throughput remain live acceptance work.
+`89f5966aa386debca912548dec1ad9d9bf2ca9f0` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.13
+updates only three maintained guides: the change record, speed guide and feature
+tutorial. They document upstream status-command observations and guarded receiver
+activation. The backend, tests, editor script, dependencies, skills and release
+workflow remain byte-identical to 0.2.12. Public version/pin metadata and source
+inventories are refreshed. Site-specific rollout project details and operational
+inventories are excluded; the upstream live record is attributed rather than
+claimed as this operator's acceptance. Source/VSIX publication does not activate
+a receiver. Ultrafast inference and throughput remain live acceptance work.
 Clean project-review guidance, WOFF2 support and recovery safeguards remain included. Existing
 pre-setup doctor, hash-verified wheel downloads without system pip, complete
 skill verification and cancellation-safe editor setup remain included.

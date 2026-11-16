@@ -1,8 +1,8 @@
 {
   "schema": "intern-agent.runtime-baseline.v1",
   "observed": "2026-11-16",
-  "snapshot_sha256": "70cac1d965fab07c678ce742372b1051f49c8b8dd6eac5c4d9192ed57c655253",
-  "source_commit": "7b4d511cd77702fe6240e723ab41e245c68a4d19",
+  "snapshot_sha256": "1734b482b3c8d3eaa9847a86f33a96396b20f95d059fed949f035ec4e7b4d93c",
+  "source_commit": "89f5966aa386debca912548dec1ad9d9bf2ca9f0",
   "runtime_files": [
     {
       "path": "intern_personal/__init__.py",
@@ -330,7 +330,7 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "a208aa1a4eaf74307ace25510ee0f7c4d7cacd3be74ca380f84e0916289264fb"
+      "sha256": "b02c713a67c1bb6e25e9c66a888e8432469832d6dc40f7dae8d4c7de2308d8ce"
     },
     {
       "path": "docs/CLEAN_PUBLICATION.md",
@@ -350,7 +350,7 @@
     },
     {
       "path": "docs/DEPLOYMENT_PARITY.md",
-      "sha256": "8151f657a997aefe3d8c4c10299d9066bab0fdf8e2c1da74143c4b2c65c7c477"
+      "sha256": "517fc3f64dc773face6180876049632a07dd58789f6c6edb803cc6e4038927ac"
     },
     {
       "path": "docs/DEVELOPMENT_WORKFLOW.md",
@@ -358,7 +358,7 @@
     },
     {
       "path": "docs/DISTRIBUTION.md",
-      "sha256": "a74d584c884e880f6c469c2f80804a1d7917b5689d3a638f72a10c9251451258"
+      "sha256": "8abde84acf7c1d8139091c96e020a9f6b0e329e2891871c4d7af8da933731853"
     },
     {
       "path": "docs/EDITOR_TEAMS.md",
@@ -366,11 +366,11 @@
     },
     {
       "path": "docs/FAST.md",
-      "sha256": "036cdbad5994abdac2ef25ab29900a139ec89f3e2dd4485bb3d4d9d945379c47"
+      "sha256": "86a07da63a1c5d5bd962cf53e0f7c892d2ab738ac91ac53fb5dc77bd9932f563"
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "2ae5efe529f19fda3fb06d851173d37a3752d4f0981b169af3a41d8514254c09"
+      "sha256": "d86c16c6144a9f0f0e9bfc06a53051d1c9e31ca4d24ffeba9e9017bbb6357495"
     },
     {
       "path": "docs/FILE_TRANSFER.md",
@@ -382,7 +382,7 @@
     },
     {
       "path": "docs/FRONTEND_READINESS.md",
-      "sha256": "9adfd62a5ff89340b6a846d0e3efe63497c978500ba242e3a6e671379ecbd6d3"
+      "sha256": "7800e7ada28cd29f33663bd8101a45e70480fde68c643b75c36e97eaf4d766a3"
     },
     {
       "path": "docs/GIT_COMPLETION.md",
@@ -398,7 +398,7 @@
     },
     {
       "path": "docs/LICENSING_PROVENANCE.md",
-      "sha256": "ab0d7bc2eb5f6c71a8088da65f65e8837d86a2221117863a297e3879be3c9bb4"
+      "sha256": "52763777833d0a39112ae207ff287f219d5df1849036db9d9201546af1e3479e"
     },
     {
       "path": "docs/LIVE.md",
@@ -406,11 +406,11 @@
     },
     {
       "path": "docs/OPEN_SOURCE_AUDIT.md",
-      "sha256": "e99994061f5609af075a1152bae67e9f16940d80967975a92d6a42be4d791ce1"
+      "sha256": "9f5ba5ed03f3f9a5af6223f2f13830a0f75bd6522affd866e7bd45b766785a5b"
     },
     {
       "path": "docs/OPEN_SOURCE_HANDOFF.md",
-      "sha256": "cf22ca89972a2b4070d40e02fb11f833681fde99b9e8d016318d6c3e4dd9aca8"
+      "sha256": "b9aa726f2552c58d7db2641974a5360c4d5c1c6639187101654a577773923aeb"
     },
     {
       "path": "docs/PERMISSIONS.md",
@@ -470,7 +470,7 @@
     },
     {
       "path": "docs/SOURCE_MANIFEST.md",
-      "sha256": "18a5a18c9b5f87ea95ed941608615b90e191eeb9bddc08473b4ea391e8cc7f90"
+      "sha256": "333e1ca2cfca9ec24426df31de0ba25fca8c24be1a62061f237d996674e30476"
     },
     {
       "path": "docs/TERMINAL.md",
@@ -486,8 +486,8 @@
     "files": [
       {
         "path": "extension/package.json",
-        "sha256": "5aac98625262103d27b2cacd8eb2235e2ad4ef4fad577c23f21dcdb14754527f",
-        "canonical_sha256": "1a05cdc34ddd5d427a6d17bb01aeeb9e7cb996427fec77ab2ae520d90f5ef5bd"
+        "sha256": "933d570f8ab0f594afb506b1d11af58d826e06cce81b52dd5570c845d6a45b64",
+        "canonical_sha256": "f8564b1c3059d6fc4ad4201ba9d995655037e7c79c8302611eda8e24e55a2a25"
       },
       {
         "path": "extension/extension.js",

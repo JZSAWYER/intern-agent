@@ -136,7 +136,20 @@ Ultrafast regression checks cover Control/explicit-target/new-bot routing,
 owner boundaries, catalogue rejection, exact settings acknowledgements, retry
 idempotency, lost acknowledgements, Standard/Fast/Ultrafast transitions,
 unchanged owner prompts, next-turn fields, portable preferences, model changes,
-native observation and preserved busy turns. The real account catalogue checked
-on 2026-11-16 advertised Fast but not Ultrafast. An account-eligible Ultrafast
-inference and a measured speed increase therefore remain live acceptance work;
-automated adapter tests do not establish them.
+native observation and preserved busy turns. The maintained development record
+dated 2026-11-16 reports a later catalogue refresh advertising Ultrafast for its
+selected model, plus managed/native status replies independently read back from
+Feishu without changing speed preferences. These are upstream installation
+observations, not live checks performed by the public release operator or proof
+for a new account. An Ultrafast inference and a measured speed increase remain
+separate live acceptance work; catalogue availability and adapter tests do not
+establish them.
+
+If a newly documented command returns “Unsupported command”, check the running
+relay version. Uploading source or publishing a VSIX alone does not activate a
+new receiver. Deployment must reconcile any already-uploaded completion-hook
+commit against the exact tested source, wait for a safe receiver boundary, and
+verify a new command reply after activation. A preliminary busy check must not
+mistake an attached native follow-up for managed work; the final Codex, delivery
+and process-preservation checks still govern receiver replacement. Do not replay
+the original unsupported command or clear its history to test the new handler.

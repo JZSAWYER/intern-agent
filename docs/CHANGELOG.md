@@ -1,5 +1,19 @@
 # Feature and fix record
 
+## 0.2.13 — Ultrafast rollout and receiver activation guidance
+
+Imports maintained documentation commit `89f5966aa386debca912548dec1ad9d9bf2ca9f0`.
+The executable backend, tests, editor script, dependencies, skills and
+release workflow are unchanged from 0.2.12. The updated guides distinguish
+upstream status-command observations from inference/throughput acceptance,
+and explain why publishing source or a VSIX alone does not activate a
+receiver. Preserve active work, original command history and final rollout
+guards. Private deployment inventories and project details stay excluded.
+
+Current focused tests, editor checks, packaging, isolated installation and
+exact-head CI are recorded separately. No live receiver action is performed
+by this release operator.
+
 ## 0.2.12 — Separate Ultrafast selection and exact speed verification
 
 Imports maintained commit `7b4d511cd77702fe6240e723ab41e245c68a4d19` through the reviewed export.
@@ -34,8 +48,17 @@ invented command. Existing busy turns, drafts and preferences are preserved.
 
 Verification includes offline routing/new-bot isolation, exact acknowledgements,
 idempotent retries, unchanged prompts, portable preferences and native safety.
-The live account catalogue advertised only Fast during inspection; eligible
-Ultrafast inference and throughput are not yet live-verified.
+The maintained development record reports that a later catalogue refresh
+advertised Ultrafast for its selected model. Ultrafast inference and throughput
+remain unverified.
+
+That record also reports a guarded rollout that reconciled an already-
+uploaded completion-hook commit with tested source, then checked managed/native
+status replies without changing speed. Source publication and receiver activation
+remain separate. Site-specific checkpoint details, helper paths and operational
+inventories are excluded from this product record. This release synchronizes
+documentation; it does not deploy a receiver or independently repeat the
+development installation's live checks.
 
 ## 0.2.11 — Readable, bounded account quota inspection
 
