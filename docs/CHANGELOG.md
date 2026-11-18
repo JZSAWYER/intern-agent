@@ -1,5 +1,28 @@
 # Feature and fix record
 
+## 0.2.14 — Checkpointed rolling Codex upgrade guidance
+
+Imports maintained documentation commit `7038c6f4ff398a079575129f42a91d2cce768bba`.
+Adds the rolling upgrade guide and links it from the feature and live guides.
+The procedure preserves the shared receiver, exact conversations, private
+rollback checkpoints, remote-client speed and paused goals. It distinguishes
+managed acceptance from an attached native console's after-reply receipt.
+
+The executable backend, tests, editor script, dependencies, skills and release
+workflow remain unchanged from 0.2.13. Pilot observations are attributed to
+the maintained record; private inventories and operational receipts stay
+excluded. This release publishes guidance and performs no host upgrade.
+
+## 2026-11-18 — Roll Codex forward without restarting Feishu
+
+The maintained development record reports a guarded 0.169.1 rollout that
+preserved the receiver and resumed registered managed threads at idle
+boundaries. It records remote-client Fast reconciliation, paused-goal
+protection and independent model-list readback. Those upstream observations
+do not establish new-model inference access or native after-reply completion.
+The public release operator did not repeat the pilot; no one-click upgrade
+controller is included. See [the upgrade guide](CODEX_UPGRADES.md).
+
 ## 0.2.13 — Ultrafast rollout and receiver activation guidance
 
 Imports maintained documentation commit `89f5966aa386debca912548dec1ad9d9bf2ca9f0`.

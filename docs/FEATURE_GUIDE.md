@@ -4,7 +4,7 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.13
+## Installable product 0.2.14
 
 Use `/ultrafast on|off|status` to select or inspect the separate, account/model
 catalogue-gated speed tier. Exact verification, portable preferences and native
@@ -77,6 +77,33 @@ a stable extension identity, licensed clean source and versioned VSIX/skills
 artifacts; see [the release workflow](PUBLISHED_RELEASE.md). “Implemented” does
 not imply every account permission, editor installation or live operation has
 been accepted.
+
+## Upgrade Codex while keeping Feishu connected
+
+**Purpose:** refresh Codex and its advertised model catalogue while retaining
+each bot's conversation, workspace, history and preferences.
+
+**Prerequisites:** an authorized host operator, a complete verified CLI bundle
+and private rollback checkpoints.
+
+**Use:** follow the [rolling upgrade procedure](CODEX_UPGRADES.md). The receiver
+stays running; each backend and console reconnects only when idle. Incoming
+messages remain in the normal durable queue. An attached native console
+is replaced last, after its own reply is uploaded and delivered. Preserve saved
+speed on the remote TUI as well as the backend, and leave paused goals paused.
+
+**Expected result:** `/models` shows the upgraded account catalogue. Existing
+model/effort/speed choices remain; a CLI update does not select a newer model.
+
+**Verification:** the maintained development record reports a live 0.169.1
+pilot preserving managed conversations, preferences, receiver identity and
+historical reply bytes, with independently checked model-list replies. These
+are upstream installation observations; this release operator did not repeat
+them. Native after-reply completion requires its separate receipt.
+
+**Limits:** this is an operator workflow, not a new Feishu upgrade command.
+Model listing does not establish inference access. Unknown UI states, busy
+turns and drafts defer replacement; they must never trigger forced interruption.
 
 ## Persistent goals and questions
 

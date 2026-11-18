@@ -21,8 +21,11 @@ does not establish that result.
 
 Use the supported Linux x86_64/CPython 3.12 installation profile, tmux, an authenticated Codex CLI, `lark-oapi`, and
 `websockets` with `websockets.sync.client.unix_connect`. The implementation was
-developed against Codex CLI 0.162.0. App-server is a versioned experimental
-interface; validate its generated protocol schema when changing CLI versions.
+developed against Codex CLI 0.162.0. The maintained development record reports
+a rolling-upgrade pilot on 0.169.1; this release operator did not repeat it.
+App-server is a versioned experimental interface; validate its generated protocol
+schema when changing CLI versions. See the [rolling upgrade guide](CODEX_UPGRADES.md)
+for preserving the receiver, exact threads and conversation preferences.
 The stable product VSIX is available from the versioned release; use [installation](INSTALL.md).
 Its installation is checked in an isolated VS Code profile. It runs on Linux workspace hosts,
 including Remote SSH. Live account and editor activation tests are still needed.
