@@ -34,6 +34,58 @@ A useful goal specifies the outcome, evidence and constraints. When the actual
 finish line is unclear, Codex should ask a structured question. When the goal
 finishes, it must report evidence, remaining uncertainty and any unmet condition.
 
+## Rewrite an outdated goal
+
+A blocked or paused goal still occupies the conversation's goal slot. A new
+`/goal OBJECTIVE` does not overwrite it. After reviewing its saved progress and
+authorizing replacement, use these commands in that bot's own chat, in order:
+
+```text
+/goal
+/goal clear
+/goal set REVISED_OBJECTIVE
+```
+
+Wait for the clear acknowledgement before sending the replacement. Pausing
+alone does not free the slot. Clearing records the old goal as cleared rather
+than complete and preserves its history; it does not reset the conversation,
+experiment ledger, resource charges or previous results. A new goal remains
+subject to existing reviews and upload/delivery gates. Inspect its status and
+the next actual Codex turn before claiming that work resumed. Do not repeatedly
+resend a goal while its control response or first iteration is pending.
+
+Keep the persistent objective stable and put changing milestones in the
+existing project plan/checkpoint. A useful research objective states:
+
+- The intended contribution and required evidence, rather than a promised
+  positive result or an impossible requirement to test every scenario.
+- A repeatable next-step/review/revision/experiment loop. A rejected proposal
+  leads to a concrete revision or justified alternative, not identical retries.
+- Current verified authorization and accounting. Later explicit owner decisions
+  supersede obsolete goal wording; available devices do not imply unlimited
+  compute, and replacement does not renew an exhausted allocation.
+- When to continue, wait for an actual background job, or ask one concrete
+  question. Routine milestones should not need another owner "continue".
+- Evidence-based completion criteria, including honest limitations. A negative
+  result is progress, not automatic completion of the broader paper objective.
+
+For example, replace the `REVISED_OBJECTIVE` placeholder with a goal such as:
+
+> Develop a reproducible paper addressing the agreed research question. Use
+> existing results and the assigned review workflow to choose informative next
+> steps, revise rejected ideas, run justified experiments within verified
+> authorization, and update the manuscript. Continue through ordinary
+> milestones. Preserve negative results, original controls and resource charges.
+> Ask only for a genuinely missing decision beyond delegated authority. Complete
+> on independently reviewed evidence supporting the manuscript's claims, or an
+> explicitly accepted change of scope; never promise a positive result.
+
+Updating a progress note does not reactivate a blocked goal. If the objective
+still fits and its blocker is resolved, explicitly resume that same goal. If
+the objective or its embedded historical assumptions no longer fit, replace it
+through the reviewed sequence above. Native goal mirrors remain paused at the
+Git gate even while the relay goal is active; that alone is not a stopped loop.
+
 ## How continuation works
 
 ```mermaid

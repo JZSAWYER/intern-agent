@@ -4,7 +4,7 @@ For a short overview and the setup sequence, start with the
 [project README](../README.md). Use [installation](INSTALL.md) for the full
 commands, prerequisites and account setup, then return here for feature details.
 
-## Installable product 0.2.14
+## Installable product 0.2.15
 
 Use `/ultrafast on|off|status` to select or inspect the separate, account/model
 catalogue-gated speed tier. Exact verification, portable preferences and native
@@ -116,6 +116,12 @@ rewriting it. Codex records evidence and remaining work; each continuation waits
 for the prior Git upload and Feishu reply. `/stop` also pauses the goal.
 
 Resuming also respects unfinished work and questions in that conversation.
+A blocked/paused goal still occupies the slot. An owner-approved replacement
+uses `/goal clear`, waits for its acknowledgement, then `/goal set OBJECTIVE`.
+Pause alone is insufficient. History and resource charges survive replacement;
+new wording does not renew an exhausted budget. Keep the objective stable and
+update milestones in the existing plan. Progress notes alone do not reactivate
+a blocked goal. See [goal replacement guidance](GOALS_AND_QUESTIONS.md).
 An old Fast-command review with an exact verified receipt cannot silently
 block a new goal iteration; its original record remains preserved.
 

@@ -1,26 +1,27 @@
 # Source and release readiness audit
 
-Current release channel: **public**, version **0.2.14**, maintained source
-`7038c6f4ff398a079575129f42a91d2cce768bba`. The owner explicitly authorized
+Current release channel: **public**, version **0.2.15**, maintained source
+`42b111f745f5adef85b872de58004777af9bd637`. The owner explicitly authorized
 making the clean product repository public on 2026-10-30. Private tracking
 repositories, operational records and account/state data remain excluded.
 Release automation checks visibility and never changes it. See
 [distribution](DISTRIBUTION.md).
 
 
-## Current candidate — 2026-11-18
+## Current candidate — 2026-11-24
 
 The candidate imports verified maintained commit
-`7038c6f4ff398a079575129f42a91d2cce768bba` and retains the reviewed product tooling,
-patched dependency profile and complete safe skill installation. Version 0.2.14
-adds a rolling Codex upgrade guide and updates the change record, feature
-tutorial and live guide. It documents checkpointed per-conversation replacement,
-exact-thread resumption, remote-client speed preservation and paused-goal safety
-while retaining the shared Feishu receiver. The backend, tests, editor script,
-dependencies, skills and workflow remain byte-identical to 0.2.13. Private pilot
-inventories and receipts are excluded. Live observations belong to the dated
-maintained development record; the public operator performs no host upgrade or
-independent live acceptance. This is guidance, not a shipped upgrade controller.
+`42b111f745f5adef85b872de58004777af9bd637` and retains the reviewed product tooling,
+patched dependency profile and complete safe skill installation. Version 0.2.15
+updates the change record, feature tutorial and goal/question guide. It
+documents reviewing and clearing an obsolete goal before setting a replacement,
+preserving history, authorization and resource accounting, and verifying the
+next real iteration through existing Git/reply gates. Research milestones belong
+in the existing plan; progress notes alone cannot reactivate blocked lifecycle.
+The backend, tests, editor script, dependencies, skills and workflow remain
+byte-identical to 0.2.14. Live replacement/dispatch observations are attributed
+to the maintained record. This public operator changes no goals or research jobs,
+and no new scheduler, replacement controller or permission bypass is shipped.
 Clean project-review guidance, WOFF2 support and recovery safeguards remain included. Existing
 pre-setup doctor, hash-verified wheel downloads without system pip, complete
 skill verification and cancellation-safe editor setup remain included.
@@ -53,7 +54,7 @@ exact final artifacts, remote verification and anonymous public access in the re
 | Live acceptance | Explicit real-account, Remote SSH, activation, upgrade/rollback and uninstall/reinstall pilot | Not established by this release audit |
 
 The public profile contains 14 runtime distributions plus a hash-locked pip
-bootstrap tool. Version-specific OSV queries repeated on 2026-11-18 returned no findings
+bootstrap tool. Version-specific OSV queries repeated on 2026-11-24 returned no findings
 for those 15 selected versions; upstream wheel and notice hashes are recorded in
 `requirements/public-profile.json`. This is dated dependency evidence, not a claim
 against future vulnerabilities. The older deployed reference lock retains its

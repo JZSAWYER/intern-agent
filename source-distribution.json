@@ -1,7 +1,7 @@
 {
   "schema": "intern-agent.source-candidate.v1",
   "purpose": "Exact reviewed public product inventory, independent of the VSIX allowlist",
-  "source_commit": "7038c6f4ff398a079575129f42a91d2cce768bba",
+  "source_commit": "42b111f745f5adef85b872de58004777af9bd637",
   "history_imported": false,
   "ownership_approved": true,
   "license_approved": true,
@@ -38,13 +38,13 @@
     },
     {
       "path": "NOTICE",
-      "sha256": "db16864391d51eaa5010cedfc06402a94673b2288a8f64aa77580caff0b7fda9",
+      "sha256": "b178f5b18b59ae93d5257bbf339a35543a945f45df32ce7188952cf9ddf03029",
       "rights": "approved_for_distribution",
       "provenance": "owner-authorized-product-release"
     },
     {
       "path": "README.md",
-      "sha256": "0bbb20314a73145370dfe55aad8fca3ccd6490f85d4f093e4be88e96b66f0630",
+      "sha256": "8761a61a2e705c69ed8d3c39023e3e6dbedee0862cab20ce98ee8fe3d22e8833",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "44868df17cbd609a0dd23a0e9244f4ebabe329003cb7e11d6ebd843684b2b099",
@@ -96,10 +96,10 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "43f10e59fab42f300c2ef7deab049ef677a954d80d2c1a4a32c55c7252dec987",
+      "sha256": "11b1e593f4ebc85993e4933328ab6fbf6c2488613585e5520237bd6be97b8db5",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
-      "original_sha256": "0d2d40ef2d32e1f118baf0333ddb545ff51d9a7cb771ef1d23fce65210deb0d4",
+      "original_sha256": "d0ba6ed08a61ed884c8ee1fbdb858440107d2bd98431c2f2b81f8b98249b5639",
       "locally_modified": true
     },
     {
@@ -154,7 +154,7 @@
     },
     {
       "path": "docs/DEPLOYMENT_PARITY.md",
-      "sha256": "5c221397e696be04213bc0203d29214a2b0acafb5d665e86219dbda7f1991a11",
+      "sha256": "04e39301e7b931202369e96bd432c1c75b9e4c09acca28955d0df2d8f14d5f04",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -168,7 +168,7 @@
     },
     {
       "path": "docs/DISTRIBUTION.md",
-      "sha256": "83d62645bf43924f73c570b241db763de3f437988eeabcd9bf6223a660af2f38",
+      "sha256": "47cc9f7506d38533da3b0c346de4ae939d767f1c7d14d0e19b0d4601a2030cff",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "0e4247ec5e55b9042381e360893339e6e2270252b35633b8e96e3aac3390ffd1",
@@ -192,10 +192,10 @@
     },
     {
       "path": "docs/FEATURE_GUIDE.md",
-      "sha256": "9e9ac5d977aa599a13002d307422379e782d97db5079616309123ae800b99866",
+      "sha256": "a880bf97be11b34dcf13a96a9d59f1a1cf694b17dd04014b3df9fd275cdc95c0",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
-      "original_sha256": "6b24a0fc809078848ded004c066c1ab3c2b40120d243badc93233debf86f5e36",
+      "original_sha256": "19f676c4b2cc9ccca0840e8c9d64cc1e20a8ec0329f0a3fc6cb265aac5939326",
       "locally_modified": true
     },
     {
@@ -216,7 +216,7 @@
     },
     {
       "path": "docs/FRONTEND_READINESS.md",
-      "sha256": "cab88dca3253e17b98496a8b258f4c9c57a93b9b0e7c042c68dd9626f22d3e7d",
+      "sha256": "6e37ea4a5c73ab1ce2c274c44fcd8f3eb28a293c0ad280b83c66e548e303901e",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -230,10 +230,10 @@
     },
     {
       "path": "docs/GOALS_AND_QUESTIONS.md",
-      "sha256": "ad6590bbd324f735476321ef8207ec0c76a21e4205b6c4d0e36c3392ddfb5fe2",
+      "sha256": "2a7c8db4ca346ba39acab8cc0711f0479e909af27392c77ecfa44be7486b5d3f",
       "rights": "approved_for_distribution",
       "provenance": "maintained-source",
-      "original_sha256": "ad6590bbd324f735476321ef8207ec0c76a21e4205b6c4d0e36c3392ddfb5fe2",
+      "original_sha256": "2a7c8db4ca346ba39acab8cc0711f0479e909af27392c77ecfa44be7486b5d3f",
       "locally_modified": false
     },
     {
@@ -244,7 +244,7 @@
     },
     {
       "path": "docs/LICENSING_PROVENANCE.md",
-      "sha256": "429fbbc9536748f704e1fdcb1e4d4f088e467898c58d26f75ba3d8df7e3ebef5",
+      "sha256": "bfc120a959b75e9ae194ac810a668f560a94b077aeeacf2299c6b0f55bd1045b",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -258,13 +258,13 @@
     },
     {
       "path": "docs/OPEN_SOURCE_AUDIT.md",
-      "sha256": "a48aeaac7c2c6e23465b18c03155681b36a46d2dc9e4bef0390ca0c05b4ec5aa",
+      "sha256": "7f1be660ce2eb7b5151ff50ea07e369597c7ad57ee8891cc0f09a4e68fdf3c50",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
     {
       "path": "docs/OPEN_SOURCE_HANDOFF.md",
-      "sha256": "9c7b90c89291928763feeb215d9c1e71b5fe2376ac2e523d3401aa5fd45fd851",
+      "sha256": "634e852836be3900f78a4b61faa24a85720826610f78e28cad8bfa9f9fc31418",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -382,7 +382,7 @@
     },
     {
       "path": "docs/SOURCE_MANIFEST.md",
-      "sha256": "82de1ebbed495a2f7aea2a3e26b52ca6f6bc67f90ea2a84b23657e2de14d0594",
+      "sha256": "1d9a6a33ccce25c997aecf9c50561b6691f33b628bf5a0e33673390ba828e040",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -420,7 +420,7 @@
     },
     {
       "path": "extension/package.json",
-      "sha256": "758d0133c89745372a11afcdf7d9532a0198ab46a9ebe11f918a4545e3cdd4d3",
+      "sha256": "259fac1f766ccc7ae928a3e34c35ac7077feab34c4f2da5394a7ccef1bc1cdd0",
       "provenance": "maintained-source",
       "rights": "approved_for_distribution",
       "original_sha256": "cf96888dc1d6ec1f40b7ef30aec71dd95fe7ad45231a439a1aebe961156ff930",
@@ -1030,11 +1030,11 @@
       "path": "release-product.json",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution",
-      "sha256": "4a24c7ebf9eec5402b044dbe045364ceb0ddc3f201ffae2ade23433b2a78dbc2"
+      "sha256": "d2d7e7ead22339dff0cfe8dbae6115bb5f16d4fe709455abbd8cabe1cfcc7d83"
     },
     {
       "path": "release-runtime.json",
-      "sha256": "9cf7dac6a34ba376be4fe45821a5ef0535747a628fb40aca011c439b682fb605",
+      "sha256": "8f8542eefe2f064452e3c700a640bec590b6892684ca941b71d8fc6fe3a50a5e",
       "provenance": "owner-authorized-product-release",
       "rights": "approved_for_distribution"
     },
@@ -1660,13 +1660,13 @@
     }
   ],
   "dependency_security_approved": true,
-  "prepared": "2026-11-18",
-  "runtime_snapshot_sha256": "b18c8cf402d7301a402a368fc275afbc9683e5aa3a27c659b4eedda53547813a",
+  "prepared": "2026-11-24",
+  "runtime_snapshot_sha256": "84e8a170997ec0a6bfa73fe7f69c46523371617ef0c812c5ff84b4f2b4774f4d",
   "release_authorization": {
     "repository": "JZSAWYER/intern-agent",
-    "version": "0.2.14",
+    "version": "0.2.15",
     "license": "MIT",
-    "maintained_source_commit": "7038c6f4ff398a079575129f42a91d2cce768bba",
+    "maintained_source_commit": "42b111f745f5adef85b872de58004777af9bd637",
     "owner_authorized_clean_product_release": true,
     "release_channel": "public",
     "public_visibility_hold": false

@@ -1,5 +1,43 @@
 # Feature and fix record
 
+## 0.2.15 — Reviewed research goal replacement guidance
+
+Imports maintained documentation commit `42b111f745f5adef85b872de58004777af9bd637`.
+Clarifies inspecting the saved goal, clearing it with owner authorization,
+waiting for acknowledgement and setting one revised objective. History,
+resource accounting and the Git/reply gate survive replacement. Pausing or
+editing progress notes does not free the slot or renew a resource budget.
+Research objectives stay stable while milestones, evidence and review-driven
+revisions live in the existing project plan.
+
+The backend, tests, editor script, dependencies, skills and release workflow
+are unchanged from 0.2.14. Live observations are attributed to the maintained
+record; this release changes no active goals or research jobs.
+
+## 2026-11-24 — Replace outdated research goals through existing controls
+
+Documented a reviewed replacement sequence: inspect the saved objective, clear
+it with owner authorization, wait for acknowledgement, then set one revised
+persistent goal. Pause does not free the goal slot. Old goals remain recorded
+as cleared, with conversation history, research accounting and completed work
+preserved. Progress notes alone do not reactivate a blocked lifecycle.
+
+The research-goal example now separates the paper outcome from changing
+milestones, carries forward verified later approvals and delegated review, and
+requires informative revision after rejection. Replacing an obsolete embedded
+limit is not a resource-budget renewal. Real missing decisions require a
+specific question; routine milestones should continue through the normal Git
+and reply gate. This uses existing controls and does not add a new scheduler,
+permission bypass or automatic replacement policy.
+
+The maintained development record reports live replacement, preserved goal
+history/accounting and unchanged conversation/model/effort/speed choices, with
+independently checked control acknowledgements and the next iteration observed
+in the existing conversation. These are attributed upstream observations; this
+release operator did not modify a live goal, inspect private experiment records
+or repeat the research action. Replacement and dispatch do not establish research
+completion or guarantee that later scientific/resource blockers cannot occur.
+
 ## 0.2.14 — Checkpointed rolling Codex upgrade guidance
 
 Imports maintained documentation commit `7038c6f4ff398a079575129f42a91d2cce768bba`.
